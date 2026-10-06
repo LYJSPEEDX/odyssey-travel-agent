@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- 4dp / 8dp 网格 -->
+    <dimen name="space_xs">4dp</dimen>
+    <dimen name="space_sm">8dp</dimen>
+    <dimen name="space_md">12dp</dimen>
+    <dimen name="space_lg">16dp</dimen>
+    <dimen name="space_xl">24dp</dimen>
+    <dimen name="space_xxl">32dp</dimen>
+
+    <!-- 页面 -->
+    <dimen name="screen_padding_horizontal">16dp</dimen>
+    <dimen name="screen_padding_vertical">20dp</dimen>
+
+    <!-- 圆角 -->
+    <dimen name="radius_small">12dp</dimen>
+    <dimen name="radius_medium">20dp</dimen>
+    <dimen name="radius_large">28dp</dimen>
+    <dimen name="radius_chip">24dp</dimen>
+    <dimen name="radius_screen">32dp</dimen>
+
+    <!-- 边框 -->
+    <dimen name="stroke_width">1dp</dimen>
+
+    <!-- 控件 -->
+    <dimen name="touch_target_min">48dp</dimen>
+    <dimen name="composer_height">54dp</dimen>
+    <dimen name="progress_height">48dp</dimen>
+
+    <!-- 字号 -->
+    <dimen name="text_display">28sp</dimen>
+    <dimen name="text_title">20sp</dimen>
+    <dimen name="text_body">14sp</dimen>
+    <dimen name="text_label">12sp</dimen>
+
+</resources>

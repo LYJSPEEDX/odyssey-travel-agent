@@ -1,9 +1,34 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.Odyssey" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+<resources>
+
+    <style name="Base.Theme.Odyssey"
+        parent="Theme.Material3.DayNight.NoActionBar">
+
+        <!-- 主要品牌色 -->
+        <item name="colorPrimary">@color/lime</item>
+        <item name="colorOnPrimary">@color/on_accent</item>
+
+        <!-- 次要品牌色 -->
+        <item name="colorSecondary">@color/red</item>
+        <item name="colorOnSecondary">@color/on_accent</item>
+
+        <!-- 第三强调色 -->
+        <item name="colorTertiary">@color/purple</item>
+        <item name="colorOnTertiary">@color/on_accent</item>
+
+        <!-- 页面与卡片 -->
+        <item name="android:colorBackground">@color/background</item>
+        <item name="android:windowBackground">@color/background</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="colorOutline">@color/outline</item>
+
+        <!-- 系统状态栏 -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@color/background</item>
+        <item name="android:windowLightStatusBar">true</item>
+
     </style>
 
     <style name="Theme.Odyssey" parent="Base.Theme.Odyssey" />
+
 </resources>
