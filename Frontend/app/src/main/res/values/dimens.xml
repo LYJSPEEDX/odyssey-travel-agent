@@ -14,6 +14,7 @@
     <dimen name="screen_padding_vertical">20dp</dimen>
 
     <!-- 圆角 -->
+    <dimen name="radius_send_button">8dp</dimen>
     <dimen name="radius_small">12dp</dimen>
     <dimen name="radius_medium">20dp</dimen>
     <dimen name="radius_large">28dp</dimen>
@@ -24,8 +25,8 @@
     <dimen name="stroke_width">1dp</dimen>
 
     <!-- 控件 -->
-    <dimen name="touch_target_min">48dp</dimen>
-    <dimen name="composer_height">54dp</dimen>
+    <dimen name="touch_target_min">32dp</dimen>
+    <dimen name="composer_height">48dp</dimen>
     <dimen name="progress_height">48dp</dimen>
 
     <!-- 字号 -->

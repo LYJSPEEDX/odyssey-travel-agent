@@ -13,6 +13,11 @@
     <color name="red">#FF765F</color>
     <color name="purple">#A98BF5</color>
     <color name="mint">#B8F2D0</color>
+    <color name="assistant_bubble">#B8F2D0</color>
+    <color name="composer_background">#25231F</color>
+    <color name="composer_on_background">#F5F2E9</color>
+    <color name="composer_hint">#B3F5F2E9</color>
+    <color name="composer_action">#DDFF63</color>
 
     <color name="brand1">#DDFF63</color>
     <color name="brand2">#FF765F</color>

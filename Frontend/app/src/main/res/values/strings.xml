@@ -1,3 +1,35 @@
 <resources>
     <string name="app_name">Odyssey</string>
+    <string name="brand_name">ODYSSEY</string>
+    <string name="step_count">%1$02d / %2$02d</string>
+    <string name="plan_headline">Start your journey from here</string>
+    <string name="step_one_of_five">01 / 05</string>
+
+    <string name="assistant_destination_title">
+    Choose a place you want to visit
+    </string>
+
+    <string name="assistant_destination_message">
+    I’ll organise your choices as we chat. You can also type your own answer.
+    </string>
+
+    <string name="style_city_walk">City walk</string>
+    <string name="style_nature_retreat">Nature retreat</string>
+    <string name="style_food_first">Food first</string>
+
+    <string name="recommended_destinations">Recommended destinations</string>
+    <string name="destination_kyoto">Kyoto</string>
+    <string name="destination_kyoto_description">Temples · Coffee · Slow travel</string>
+    <string name="destination_tokyo">Tokyo</string>
+    <string name="destination_tokyo_description">Neighbourhoods · Design · Night views</string>
+
+    <string name="live_trip_label">LIVE TRIP</string>
+    <string name="live_trip_status">Destination saved · Planning preferences next</string>
+
+    <string name="navigation_back">Back</string>
+    <string name="navigation_next">Next</string>
+
+    <string name="composer_hint">Tell Odyssey your ideas…</string>
+    <string name="send_message">Send message</string>
+
 </resources>
