@@ -1,33 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- 页面 -->
-    <color name="background">#F7F4EC</color>
+    <color name="background">#F6F2EA</color>
     <color name="surface">#FFFFFF</color>
 
     <!-- 文字 -->
-    <color name="text_primary">#25231F</color>
+    <color name="text_primary">#211F1D</color>
     <color name="text_secondary">#6C6A65</color>
+    <color name="step_indicator_text">#615F5B</color>
 
     <!-- 品牌色 -->
-    <color name="lime">#DDFF63</color>
-    <color name="red">#FF765F</color>
+    <color name="lime">#DAFE6C</color>
+    <color name="red">#FB6D59</color>
     <color name="purple">#A98BF5</color>
-    <color name="mint">#B8F2D0</color>
-    <color name="assistant_bubble">#B8F2D0</color>
+    <color name="mint">#B2EFCC</color>
+    <color name="assistant_bubble">#B2EFCC</color>
     <color name="composer_background">#25231F</color>
     <color name="composer_on_background">#F5F2E9</color>
     <color name="composer_hint">#B3F5F2E9</color>
-    <color name="composer_action">#DDFF63</color>
+    <color name="composer_action">#DAFE6C</color>
+    <color name="navigation_icon">#FFFFFF</color>
 
-    <color name="brand1">#DDFF63</color>
-    <color name="brand2">#FF765F</color>
+    <color name="brand1">#DAFE6C</color>
+    <color name="brand2">#FB6D59</color>
     <color name="brand3">#A98BF5</color>
-    <color name="brand4">#B8F2D0</color>
+    <color name="brand4">#B2EFCC</color>
 
 
     <!-- 前景与边框 -->
     <color name="on_accent">#131313</color>
-    <color name="outline">#D5D0C5</color>
+    <color name="outline">#D9D4C6</color>
 
     <!-- 实时旅行板 -->
     <color name="trip_board">#25231F</color>

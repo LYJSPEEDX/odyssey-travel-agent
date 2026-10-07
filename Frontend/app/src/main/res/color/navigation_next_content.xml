@@ -3,5 +3,5 @@
     <item
         android:color="@color/text_secondary"
         android:state_enabled="false" />
-    <item android:color="@color/on_accent" />
+    <item android:color="@color/navigation_icon" />
 </selector>
