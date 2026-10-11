@@ -2,7 +2,15 @@ plugins {
     alias(libs.plugins.android.application)
 }
 
+val itineraryAssets = tasks.register<Sync>("syncItineraryAssets") {
+    from(rootProject.file("../docs/itinerary-contract")) {
+        include("itinerary.schema.json", "examples/*.json")
+    }
+    into(layout.buildDirectory.dir("generated/itineraryAssets"))
+}
+
 android {
+    sourceSets.getByName("main").assets.directories.add(layout.buildDirectory.dir("generated/itineraryAssets").get().asFile.path)
     namespace = "com.example.odyssey"
     compileSdk {
         version = release(37)
@@ -30,6 +38,8 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 }
+
+tasks.named("preBuild").configure { dependsOn(itineraryAssets) }
 
 dependencies {
     implementation(libs.activity.ktx)

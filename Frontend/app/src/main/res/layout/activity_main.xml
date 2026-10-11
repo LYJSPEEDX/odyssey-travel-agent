@@ -151,7 +151,7 @@
 
         </LinearLayout>
 
-        <!-- 选择目的地后显示的实时旅行板 -->
+        <!-- 出发地确认后立即显示的实时旅行板 -->
         <LinearLayout
             android:id="@+id/tripBoard"
             android:layout_width="match_parent"
@@ -191,6 +191,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/space_xs"
                 android:includeFontPadding="false"
+                android:id="@+id/tripBoardStatus"
                 android:text="@string/live_trip_status"
                 android:textColor="@color/on_trip_board"
                 android:textSize="@dimen/text_label" />
@@ -199,6 +200,7 @@
 
         <!-- 主标题 -->
         <TextView
+            android:id="@+id/planHeadline"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_lg"
@@ -223,6 +225,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
+                android:id="@+id/assistantTitle"
                 android:text="@string/assistant_destination_title"
                 android:textColor="@color/on_accent"
                 android:textSize="@dimen/text_body"
@@ -233,172 +236,30 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/space_xs"
                 android:includeFontPadding="false"
+                android:id="@+id/assistantMessage"
                 android:text="@string/assistant_destination_message"
                 android:textColor="@color/on_accent"
                 android:textSize="@dimen/text_label" />
 
         </LinearLayout>
 
-        <!-- 按钮引导区 -->
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/travelStyleChips"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_md"
-            app:chipSpacingHorizontal="@dimen/space_sm"
-            app:chipSpacingVertical="@dimen/space_sm"
-            app:selectionRequired="false"
-            app:singleSelection="true">
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/cityWalkChip"
-                style="@style/Widget.Material3.Chip.Filter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checked="true"
-                android:minHeight="@dimen/touch_target_min"
-                android:text="@string/style_city_walk"
-                android:textColor="@color/chip_text"
-                app:checkedIconVisible="false"
-                app:chipBackgroundColor="@color/chip_background"
-                app:chipCornerRadius="@dimen/radius_chip"
-                app:chipStrokeColor="@color/outline"
-                app:chipStrokeWidth="@dimen/stroke_width" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/natureRetreatChip"
-                style="@style/Widget.Material3.Chip.Filter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:minHeight="@dimen/touch_target_min"
-                android:text="@string/style_nature_retreat"
-                android:textColor="@color/chip_text"
-                app:checkedIconVisible="false"
-                app:chipBackgroundColor="@color/chip_background"
-                app:chipCornerRadius="@dimen/radius_chip"
-                app:chipStrokeColor="@color/outline"
-                app:chipStrokeWidth="@dimen/stroke_width" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/foodFirstChip"
-                style="@style/Widget.Material3.Chip.Filter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:minHeight="@dimen/touch_target_min"
-                android:text="@string/style_food_first"
-                android:textColor="@color/chip_text"
-                app:checkedIconVisible="false"
-                app:chipBackgroundColor="@color/chip_background"
-                app:chipCornerRadius="@dimen/radius_chip"
-                app:chipStrokeColor="@color/outline"
-                app:chipStrokeWidth="@dimen/stroke_width" />
-
-        </com.google.android.material.chip.ChipGroup>
-
-        <!-- 推荐目的地 -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_md"
-            android:includeFontPadding="false"
-            android:text="@string/recommended_destinations"
-            android:textColor="@color/text_secondary"
-            android:textSize="@dimen/text_label" />
-
+        <!-- 每一步的表单内容由 PlannerFormRenderer 填入 -->
         <LinearLayout
+            android:id="@+id/stepContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_md"
+            android:orientation="vertical" />
+
+        <TextView
+            android:id="@+id/inputFeedback"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_sm"
-            android:orientation="horizontal">
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/kyotoCard"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/space_md"
-                android:layout_weight="1"
-                android:clickable="true"
-                android:focusable="true"
-                android:minHeight="@dimen/touch_target_min"
-                app:cardBackgroundColor="@color/lime"
-                app:cardCornerRadius="@dimen/radius_medium"
-                app:cardElevation="0dp"
-                app:rippleColor="@color/outline"
-                app:strokeColor="@color/text_primary"
-                app:strokeWidth="@dimen/stroke_width">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="@dimen/space_md">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:includeFontPadding="false"
-                        android:text="@string/destination_kyoto"
-                        android:textColor="@color/on_accent"
-                        android:textSize="@dimen/text_body"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/space_xs"
-                        android:includeFontPadding="false"
-                        android:text="@string/destination_kyoto_description"
-                        android:textColor="@color/on_accent"
-                        android:textSize="@dimen/text_label" />
-
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/tokyoCard"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:clickable="true"
-                android:focusable="true"
-                android:minHeight="@dimen/touch_target_min"
-                app:cardBackgroundColor="@color/mint"
-                app:cardCornerRadius="@dimen/radius_medium"
-                app:cardElevation="0dp"
-                app:rippleColor="@color/outline"
-                app:strokeColor="@color/outline"
-                app:strokeWidth="@dimen/stroke_width">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="@dimen/space_md">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:includeFontPadding="false"
-                        android:text="@string/destination_tokyo"
-                        android:textColor="@color/on_accent"
-                        android:textSize="@dimen/text_body"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/space_xs"
-                        android:includeFontPadding="false"
-                        android:text="@string/destination_tokyo_description"
-                        android:textColor="@color/on_accent"
-                        android:textSize="@dimen/text_label" />
-
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
-
-        </LinearLayout>
+            android:accessibilityLiveRegion="polite"
+            android:textColor="@color/text_secondary"
+            android:textSize="@dimen/text_label"
+            android:visibility="gone" />
 
         <Space
             android:layout_width="match_parent"
@@ -427,6 +288,8 @@
 
                 <androidx.appcompat.widget.AppCompatEditText
                     android:id="@+id/messageInput"
+                    android:maxLength="300"
+                    android:saveEnabled="false"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"

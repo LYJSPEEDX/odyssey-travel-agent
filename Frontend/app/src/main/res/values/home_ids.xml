@@ -1,0 +1,10 @@
+<resources>
+    <item name="settingsLogin" type="id" />
+    <item name="settingsProfile" type="id" />
+    <item name="settingsTheme" type="id" />
+    <item name="settingsVersion" type="id" />
+    <item name="profileNickname" type="id" />
+    <item name="myEmptyState" type="id" />
+    <item name="saveTripStatus" type="id" />
+    <item name="viewMyTrips" type="id" />
+</resources>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tab_home">Home</string>
+    <string name="tab_my">My Trips</string>
+    <string name="tab_settings">Settings</string>
+    <string name="create_my_trip">Generate my trip</string>
+    <string name="home_banner_eyebrow">YOUR NEXT CHAPTER</string>
+    <string name="home_banner_description">Start with an idea.\nTurn it into a journey.</string>
+    <string name="home_banner_action">Start planning ↗</string>
+    <string name="home_banner_steps">5 simple steps · A trip that feels like you</string>
+    <string name="home_inspiration_title">Where to next?</string>
+    <string name="home_inspiration_subtitle">A little inspiration for your next chapter.</string>
+    <string name="sample_badge">Sample trip · DEMO</string>
+    <string name="sample_description">For inspiration only. Sample trips are not saved to My Trips.</string>
+    <string name="sample_kyoto_title">Kyoto, at your own pace</string>
+    <string name="sample_kyoto_meta">3 days · Temples / Matcha / Walks</string>
+    <string name="sample_kyoto_detail">DAY 01 · Hello, Kyoto\nSettle in, wander along the river and stop for matcha.\n\nDAY 02 · Temples and little lanes\nVisit a temple, then leave the afternoon for exploring neighbourhood streets.\n\nDAY 03 · Room to wander\nBrowse a market, pick up a keepsake and head home at an easy pace.</string>
+    <string name="sample_tokyo_title">Tokyo, a fresh perspective</string>
+    <string name="sample_tokyo_meta">5 days · Design / Food / Night views</string>
+    <string name="sample_tokyo_detail">DAY 01 · Arrive and unwind\nGet to know the neighbourhood around your stay.\n\nDAY 02 · A day of design\nExplore an art museum, design shops and a cosy cafe.\n\nDAY 03 · Follow your appetite\nTry market snacks and neighbourhood restaurants.\n\nDAY 04 · Green spaces, city lights\nSlow down in a park, then watch the skyline light up.\n\nDAY 05 · One last discovery\nRevisit a favourite shop before heading home.</string>
+    <string name="sample_bali_title">Bali, on island time</string>
+    <string name="sample_bali_meta">4 days · Beaches / Nature / Relaxation</string>
+    <string name="sample_bali_detail">DAY 01 · Meet the ocean\nCheck in, rest and catch the sunset.\n\nDAY 02 · Into nature\nExplore a natural landmark and keep the afternoon free.\n\nDAY 03 · The slow life\nEnjoy a cafe, local crafts and a walk by the sea.\n\nDAY 04 · Until next time\nHave a leisurely breakfast, pack up and head home.</string>
+    <string name="my_title">My Trips</string>
+    <string name="my_subtitle">Every journey deserves a place to stay.</string>
+    <string name="my_empty_title">No trips yet</string>
+    <string name="my_empty_description">Your next adventure starts here.\nGenerate a trip to save it to your collection.</string>
+    <string name="local_only_notice">Saved on this device · No cloud sync\nUninstalling or clearing app data removes your saved trips.</string>
+    <plurals name="saved_trip_meta">
+        <item quantity="one">%1$s · %2$d day</item>
+        <item quantity="other">%1$s · %2$d days</item>
+    </plurals>
+    <string name="saved_trip_notice">Demo itinerary · Longer trips include only a three-day preview. Prices, opening hours and suitability have not been verified.</string>
+    <string name="trip_saved">Saved to My Trips · On this device</string>
+    <string name="trip_saving">Saving to this device…</string>
+    <string name="trip_save_failed">Could not save. Your result is still here. Please try again.</string>
+    <string name="trip_save_retry">Try saving again</string>
+    <string name="view_my_trips">View My Trips</string>
+    <string name="trip_read_error">Could not load saved trips. Your existing data has not been overwritten.</string>
+    <string name="trip_not_found">Trip not found. Please return to the list and try again.</string>
+    <string name="retry">Retry</string>
+    <string name="back_home">Back to Home</string>
+    <string name="back_to_list">Back to list</string>
+    <string name="settings_title">Settings</string>
+    <string name="settings_subtitle">Make yourself at home.</string>
+    <string name="settings_account_section">Account and profile</string>
+    <string name="settings_login">Sign in</string>
+    <string name="settings_login_subtitle">Not signed in · Local demo mode</string>
+    <string name="settings_login_message">Sign-in is not connected yet. You can generate and save trips on this device without an account. No profile data is uploaded and no passwords are collected.</string>
+    <string name="settings_edit_profile">Edit profile</string>
+    <string name="settings_nickname">Display name</string>
+    <string name="settings_guest">Traveller</string>
+    <string name="settings_profile_hint">Display name (up to 24 characters)</string>
+    <string name="settings_profile_notice">This changes your display name on this device only. It does not sign you in.</string>
+    <string name="settings_invalid_nickname">Enter a name with 1–24 characters.</string>
+    <string name="settings_save">Save</string>
+    <string name="settings_cancel">Cancel</string>
+    <string name="settings_saved">Saved on this device</string>
+    <string name="settings_save_failed">Could not save. Please try again.</string>
+    <string name="settings_preferences">Preferences</string>
+    <string name="settings_theme">Appearance</string>
+    <string-array name="settings_theme_options">
+        <item>System default</item><item>Light</item><item>Dark</item>
+    </string-array>
+    <string name="settings_about_section">About</string>
+    <string name="settings_about">About us</string>
+    <string name="settings_about_subtitle">Odyssey · From inspiration to itinerary</string>
+    <string name="settings_about_message">Odyssey is a travel planning prototype guided by conversation and simple choices.\n\nThis version uses local sample data. Live pricing, bookings and AI services are not connected.</string>
+    <string name="settings_storage">Data and privacy</string>
+    <string name="settings_storage_description">Your saved trips, display name and appearance preferences stay on this device and are excluded from system backups. There is no cloud sync. Uninstalling or clearing app data removes this local data.</string>
+    <string name="settings_version">Version</string>
+    <string name="settings_version_format">%1$s (%2$d)</string>
+    <string name="settings_version_unavailable">Version unavailable</string>
+    <string name="dialog_ok">Got it</string>
+</resources>

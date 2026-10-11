@@ -1,0 +1,5 @@
+<resources>
+    <style name="HomeNavigationIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">@color/lime</item>
+    </style>
+</resources>

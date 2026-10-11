@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/createTripBanner" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:clickable="true" android:focusable="true" android:contentDescription="@string/create_my_trip"
+    app:cardCornerRadius="@dimen/radius_large" app:cardBackgroundColor="@color/lime"
+    app:cardElevation="0dp" app:strokeWidth="0dp">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical" android:padding="@dimen/space_xl"
+        android:importantForAccessibility="noHideDescendants">
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="@string/home_banner_eyebrow" android:textSize="@dimen/text_label"
+            android:letterSpacing="0.12" android:textStyle="bold" android:textColor="@color/on_accent" />
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_xl" android:text="@string/create_my_trip"
+            android:textSize="@dimen/text_display" android:textStyle="bold" android:textColor="@color/on_accent" />
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_sm" android:text="@string/home_banner_description"
+            android:textSize="@dimen/text_body" android:lineSpacingExtra="4dp" android:textColor="@color/on_accent" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_xl" android:background="@drawable/bg_home_banner_action"
+            android:paddingHorizontal="@dimen/space_lg" android:paddingVertical="@dimen/space_md"
+            android:text="@string/home_banner_action" android:textSize="@dimen/text_body"
+            android:textStyle="bold" android:textColor="@color/lime" />
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_md" android:text="@string/home_banner_steps"
+            android:textSize="@dimen/text_label" android:textColor="@color/on_accent" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="planner_headlines">
+        <item>Where shall we go?</item>
+        <item>Make time for a getaway.</item>
+        <item>Who’s coming along?</item>
+        <item>Find your comfort zone.</item>
+        <item>Make this trip yours.</item>
+    </string-array>
+    <string-array name="planner_prompts">
+        <item>First, where are you leaving from?</item>
+        <item>Tap your departure date, then your return.</item>
+        <item>Good company, a different kind of trip.</item>
+        <item>How would you like to spend?</item>
+        <item>Anything we should keep in mind?</item>
+    </string-array>
+    <string-array name="planner_help">
+        <item>Choose a departure city, then a destination. Recommendations are demo data.</item>
+        <item>Tap an earlier date to reset departure. Or let us suggest dates.</item>
+        <item>Choose one option, or type your own group below.</item>
+        <item>Three demo tiers tailored to your destination. Not live prices.</item>
+        <item>Choose any that apply, or add your own needs below. You can also continue without restrictions.</item>
+    </string-array>
+    <string-array name="planner_hints">
+        <item>Type a departure city…</item>
+        <item>Not fixed? Let us decide…</item>
+        <item>Tell us who’s coming…</item>
+        <item>Have your own budget? Tell us…</item>
+        <item>Any other needs? Tell us…</item>
+    </string-array>
+    <string name="departure_section">DEPARTURE</string>
+    <string name="destination_section">RECOMMENDED DESTINATIONS · DEMO</string>
+    <string name="depart_from">Depart from %1$s</string>
+    <string name="trip_route">%1$s → %2$s</string>
+    <string name="change_departure">Change departure</string>
+    <string name="change_destination">Type another destination</string>
+    <string name="destination_hint">Type your destination city…</string>
+    <string name="choose_destination_prompt">Where would you love to go?</string>
+    <string name="same_city_error">Choose a destination different from your departure city.</string>
+    <string name="location_confirmed">Route saved · Tap the top arrow to continue</string>
+    <string name="departure_confirmed">Departure saved · Choose a destination below</string>
+    <string name="choose_departure_first">Choose a departure city to see recommendations.</string>
+    <string name="custom_city_description">Custom city · Demo keywords: Culture · Food · Explore</string>
+    <string name="date_section">TRAVEL DATES</string>
+    <string name="date_range">%1$s → %2$s</string>
+    <string name="date_start_prompt">Select departure</string>
+    <string name="date_end_prompt">Select return · Departure: %1$s</string>
+    <plurals name="date_range_complete">
+        <item quantity="one">%1$s · %2$d day</item>
+        <item quantity="other">%1$s · %2$d days</item>
+    </plurals>
+    <string name="flexible_dates">Let us suggest dates</string>
+    <string name="flexible_dates_description">No fixed dates yet. The demo will show a 3-day idea.</string>
+    <string name="flexible_dates_summary">Flexible dates · 3-day demo idea</string>
+    <string name="date_restarted">Departure changed. Now choose your return date.</string>
+    <string name="previous_month">Previous month</string>
+    <string name="next_month">Next month</string>
+    <string name="calendar_departure">Departure: %1$s</string>
+    <string name="calendar_return">Return: %1$s</string>
+    <string name="calendar_selected_day">Selected trip day: %1$s</string>
+    <string name="calendar_legend">Filled: departure / return · Tinted: days in between</string>
+    <string-array name="calendar_weekdays">
+        <item>M</item><item>T</item><item>W</item><item>T</item><item>F</item><item>S</item><item>S</item>
+    </string-array>
+    <string name="companion_section">YOUR TRAVEL CREW · CHOOSE ONE</string>
+    <string name="budget_section">DAILY BUDGET · CHOOSE ONE</string>
+    <string name="budget_disclaimer">Illustrative AUD / person / day. Covers stays, food and local activities; excludes flights. Not a quote.</string>
+    <string name="generic_budget_disclaimer">This custom city uses generic demo tiers, not destination-specific estimates.</string>
+    <string name="custom_budget_disclaimer">Custom budget saved as entered. Currency and total / per-day amounts are not inferred.</string>
+    <string name="constraints_section">YOUR PREFERENCES · CHOOSE ANY</string>
+    <string name="no_restrictions">No special requirements</string>
+    <string name="no_restrictions_description">Keep the plan open and flexible.</string>
+    <string name="pace_conflict">“See more” and “Take it slow” are both saved. The demo uses the slower pace.</string>
+    <string name="custom_option">Your own answer</string>
+    <string name="saved_note">Saved: %1$s</string>
+    <string name="empty_message">Type an answer first, or choose an option above.</string>
+    <string name="notes_saved">Saved for this step. Demo mode stores text without AI interpretation.</string>
+    <string name="date_notes_saved">Timing preference saved. Choose dates or “Let us suggest dates” to continue.</string>
+    <string name="selected_option">✓ %1$s</string>
+    <string name="selected_accessibility">%1$s. %2$s. Selected.</string>
+    <string name="option_accessibility">%1$s. %2$s.</string>
+    <string name="generate_action">Generate demo trip</string>
+    <string name="generation_loading_title">Putting your trip together…</string>
+    <string name="generation_loading_prompt">Building a local demo, just for this preview.</string>
+    <string name="generation_loading_help">No AI service, booking or network request is involved.</string>
+    <string name="generation_done_title">Your trip, taking shape.</string>
+    <string name="generation_done_prompt">A little inspiration to get you started.</string>
+    <string name="generation_done_help">MOCK RESULT · Sample activities only. Opening hours, prices and suitability are not verified. Free-text answers are saved, not interpreted.</string>
+    <string name="demo_badge">DEMO</string>
+    <string name="trip_summary">YOUR TRIP BRIEF</string>
+    <string name="summary_route">Route: %1$s</string>
+    <string name="summary_dates">Dates: %1$s</string>
+    <string name="summary_companion">With: %1$s</string>
+    <string name="summary_budget">Budget: %1$s</string>
+    <string name="summary_constraints">Preferences: %1$s</string>
+    <string name="summary_note">%1$s note: %2$s</string>
+    <string-array name="step_names"><item>Location</item><item>Dates</item><item>Companions</item><item>Budget</item><item>Preferences</item></string-array>
+    <plurals name="preview_limit">
+        <item quantity="one">Showing %1$d of %2$d day as a demo preview.</item>
+        <item quantity="other">Showing the first %1$d of %2$d days as a demo preview.</item>
+    </plurals>
+    <string name="edit_trip">Edit my choices</string>
+    <string name="demo_day_title">Day %1$d · %2$s</string>
+</resources>
