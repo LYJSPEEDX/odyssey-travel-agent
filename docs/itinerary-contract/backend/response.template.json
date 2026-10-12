@@ -1,0 +1,325 @@
+{
+  "schemaVersion": "1.0",
+  "id": null,
+  "revision": null,
+  "language": "en",
+  "dataMode": null,
+  "status": null,
+  "generatedAt": null,
+  "requestSnapshot": {
+    "originPlaceId": null,
+    "destinationPlaceIds": [],
+    "dateMode": null,
+    "requestedStartDate": null,
+    "requestedEndDate": null,
+    "returnDateMeaning": null,
+    "companions": null,
+    "travelers": [
+      {
+        "id": null,
+        "age": null,
+        "passportCountry": null,
+        "passportType": null,
+        "residenceCountry": null
+      }
+    ],
+    "budget": {
+      "scope": "ENTIRE_PARTY_WHOLE_TRIP",
+      "target": null,
+      "includeIntercityTransport": null
+    },
+    "constraints": [
+      {
+        "id": null,
+        "code": null,
+        "strength": null,
+        "description": null
+      }
+    ],
+    "notes": []
+  },
+  "summary": {
+    "title": null,
+    "subtitle": null,
+    "startDate": null,
+    "endDate": null,
+    "dayCount": null,
+    "coverImageId": null,
+    "highlights": [],
+    "advice": []
+  },
+  "places": [
+    {
+      "id": null,
+      "name": null,
+      "kind": null,
+      "countryCode": null,
+      "timeZone": null,
+      "address": null,
+      "coordinates": null,
+      "providerPlaceId": null,
+      "imageIds": [],
+      "evidence": {
+        "status": null,
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    }
+  ],
+  "media": [
+    {
+      "id": null,
+      "placeId": null,
+      "usage": null,
+      "status": null,
+      "provider": null,
+      "providerAssetId": null,
+      "assetKey": null,
+      "url": null,
+      "thumbnailUrl": null,
+      "altText": null,
+      "attributions": [
+        {
+          "text": null,
+          "url": null
+        }
+      ],
+      "expiresAt": null
+    }
+  ],
+  "transportGroups": [
+    {
+      "id": null,
+      "title": null,
+      "fromPlaceId": null,
+      "toPlaceId": null,
+      "status": null,
+      "recommendedOptionId": null,
+      "planningOptionId": null,
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": null,
+          "title": null,
+          "reason": null,
+          "legs": [
+            {
+              "id": null,
+              "fromPlaceId": null,
+              "toPlaceId": null,
+              "departure": {
+                "at": null,
+                "timeZone": null
+              },
+              "arrival": {
+                "at": null,
+                "timeZone": null
+              },
+              "durationMinutes": null,
+              "distanceMeters": null,
+              "distanceBasis": null,
+              "timingStatus": null,
+              "evidence": {
+                "status": null,
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "mode": "FLIGHT",
+              "details": {
+                "marketingAirline": null,
+                "operatingAirline": null,
+                "flightNumber": null,
+                "departureAirportCode": null,
+                "arrivalAirportCode": null,
+                "departureTerminal": null,
+                "arrivalTerminal": null,
+                "checkedBaggageKgPerPerson": null,
+                "isSelfTransfer": null
+              }
+            }
+          ],
+          "costItemIds": []
+        }
+      ]
+    }
+  ],
+  "stayGroups": [
+    {
+      "id": null,
+      "title": null,
+      "checkInDate": null,
+      "checkOutDate": null,
+      "nights": null,
+      "status": null,
+      "recommendedOptionId": null,
+      "planningOptionId": null,
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": null,
+          "placeId": null,
+          "title": null,
+          "reason": null,
+          "roomType": null,
+          "roomCount": null,
+          "guestCapacity": null,
+          "amenities": [],
+          "availability": null,
+          "cancellationSummary": null,
+          "costItemIds": [],
+          "evidence": {
+            "status": null,
+            "sourceIds": [],
+            "checkedAt": null
+          }
+        }
+      ]
+    }
+  ],
+  "days": [
+    {
+      "id": null,
+      "dayNumber": null,
+      "date": null,
+      "timeZone": null,
+      "title": null,
+      "summary": null,
+      "walkingDistanceMeters": null,
+      "events": [
+        {
+          "id": null,
+          "title": null,
+          "description": null,
+          "imageIds": [],
+          "type": "TRANSPORT",
+          "transportGroupId": null
+        }
+      ],
+      "continuingEventIds": []
+    }
+  ],
+  "money": {
+    "displayCurrency": null,
+    "currencies": [
+      {
+        "code": null,
+        "minorUnitDigits": null
+      }
+    ],
+    "exchangeRates": [
+      {
+        "id": null,
+        "baseCurrency": null,
+        "quoteCurrency": null,
+        "quotePerBase": null,
+        "asOf": null,
+        "evidence": {
+          "status": null,
+          "sourceIds": [],
+          "checkedAt": null
+        }
+      }
+    ],
+    "exchangeAdvice": [
+      {
+        "title": null,
+        "description": null,
+        "placeId": null,
+        "evidence": {
+          "status": null,
+          "sourceIds": [],
+          "checkedAt": null
+        }
+      }
+    ]
+  },
+  "entryRequirements": [
+    {
+      "id": null,
+      "travelerIds": [],
+      "countryCode": null,
+      "role": null,
+      "status": null,
+      "summary": null,
+      "requiredInputFields": [],
+      "documents": [],
+      "evidence": {
+        "status": null,
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    }
+  ],
+  "budget": {
+    "scope": "ENTIRE_PARTY_WHOLE_TRIP",
+    "lineItems": [
+      {
+        "id": null,
+        "category": null,
+        "label": null,
+        "unit": null,
+        "quantity": null,
+        "unitPrice": null,
+        "originalTotal": null,
+        "displayTotal": null,
+        "exchangeRateId": null,
+        "taxesAndFees": null,
+        "evidence": {
+          "status": null,
+          "sourceIds": [],
+          "checkedAt": null
+        }
+      }
+    ],
+    "tripCostItemIds": [],
+    "activeCostItemIds": [],
+    "completeness": null,
+    "subtotal": {
+      "currency": null,
+      "lowMinor": null,
+      "expectedMinor": null,
+      "highMinor": null
+    },
+    "contingency": {
+      "currency": null,
+      "lowMinor": null,
+      "expectedMinor": null,
+      "highMinor": null
+    },
+    "total": {
+      "currency": null,
+      "lowMinor": null,
+      "expectedMinor": null,
+      "highMinor": null
+    },
+    "excludedCategories": [],
+    "notes": []
+  },
+  "quality": {
+    "sources": [
+      {
+        "id": null,
+        "title": null,
+        "url": null,
+        "retrievedAt": null
+      }
+    ],
+    "assumptions": [],
+    "notices": [
+      {
+        "code": null,
+        "severity": null,
+        "message": null,
+        "relatedIds": []
+      }
+    ],
+    "constraintChecks": [
+      {
+        "constraintId": null,
+        "status": null,
+        "explanation": null,
+        "relatedIds": []
+      }
+    ]
+  }
+}

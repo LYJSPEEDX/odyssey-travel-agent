@@ -1,0 +1,645 @@
+{
+  "events": {
+    "TRANSPORT": {
+      "id": null,
+      "title": null,
+      "description": null,
+      "imageIds": [],
+      "type": "TRANSPORT",
+      "transportGroupId": null
+    },
+    "STAY": {
+      "id": null,
+      "title": null,
+      "description": null,
+      "imageIds": [],
+      "start": {
+        "at": null,
+        "timeZone": null
+      },
+      "end": {
+        "at": null,
+        "timeZone": null
+      },
+      "timingStatus": null,
+      "evidence": {
+        "status": null,
+        "sourceIds": [],
+        "checkedAt": null
+      },
+      "type": "STAY",
+      "stayGroupId": null,
+      "action": null
+    },
+    "ACTIVITY": {
+      "id": null,
+      "title": null,
+      "description": null,
+      "imageIds": [],
+      "start": {
+        "at": null,
+        "timeZone": null
+      },
+      "end": {
+        "at": null,
+        "timeZone": null
+      },
+      "timingStatus": null,
+      "evidence": {
+        "status": null,
+        "sourceIds": [],
+        "checkedAt": null
+      },
+      "type": "ACTIVITY",
+      "placeId": null,
+      "costItemIds": [],
+      "details": {
+        "category": null,
+        "reservationStatus": null,
+        "openingHoursNote": null
+      }
+    },
+    "MEAL": {
+      "id": null,
+      "title": null,
+      "description": null,
+      "imageIds": [],
+      "start": {
+        "at": null,
+        "timeZone": null
+      },
+      "end": {
+        "at": null,
+        "timeZone": null
+      },
+      "timingStatus": null,
+      "evidence": {
+        "status": null,
+        "sourceIds": [],
+        "checkedAt": null
+      },
+      "type": "MEAL",
+      "placeId": null,
+      "costItemIds": [],
+      "details": {
+        "mealType": null,
+        "cuisine": null,
+        "dietaryStatus": null,
+        "reservationStatus": null
+      }
+    },
+    "FREE_TIME": {
+      "id": null,
+      "title": null,
+      "description": null,
+      "imageIds": [],
+      "start": {
+        "at": null,
+        "timeZone": null
+      },
+      "end": {
+        "at": null,
+        "timeZone": null
+      },
+      "timingStatus": null,
+      "evidence": {
+        "status": null,
+        "sourceIds": [],
+        "checkedAt": null
+      },
+      "type": "FREE_TIME",
+      "placeId": null,
+      "costItemIds": []
+    }
+  },
+  "transportLegs": {
+    "FLIGHT": {
+      "id": null,
+      "fromPlaceId": null,
+      "toPlaceId": null,
+      "departure": {
+        "at": null,
+        "timeZone": null
+      },
+      "arrival": {
+        "at": null,
+        "timeZone": null
+      },
+      "durationMinutes": null,
+      "distanceMeters": null,
+      "distanceBasis": null,
+      "timingStatus": null,
+      "evidence": {
+        "status": null,
+        "sourceIds": [],
+        "checkedAt": null
+      },
+      "mode": "FLIGHT",
+      "details": {
+        "marketingAirline": null,
+        "operatingAirline": null,
+        "flightNumber": null,
+        "departureAirportCode": null,
+        "arrivalAirportCode": null,
+        "departureTerminal": null,
+        "arrivalTerminal": null,
+        "checkedBaggageKgPerPerson": null,
+        "isSelfTransfer": null
+      }
+    },
+    "DRIVE": {
+      "id": null,
+      "fromPlaceId": null,
+      "toPlaceId": null,
+      "departure": {
+        "at": null,
+        "timeZone": null
+      },
+      "arrival": {
+        "at": null,
+        "timeZone": null
+      },
+      "durationMinutes": null,
+      "distanceMeters": null,
+      "distanceBasis": null,
+      "timingStatus": null,
+      "evidence": {
+        "status": null,
+        "sourceIds": [],
+        "checkedAt": null
+      },
+      "mode": "DRIVE",
+      "details": {
+        "vehicleSource": null,
+        "avoidTolls": null,
+        "restStopPlaceIds": [],
+        "routeInstructions": null
+      }
+    },
+    "BUS": {
+      "id": null,
+      "fromPlaceId": null,
+      "toPlaceId": null,
+      "departure": {
+        "at": null,
+        "timeZone": null
+      },
+      "arrival": {
+        "at": null,
+        "timeZone": null
+      },
+      "durationMinutes": null,
+      "distanceMeters": null,
+      "distanceBasis": null,
+      "timingStatus": null,
+      "evidence": {
+        "status": null,
+        "sourceIds": [],
+        "checkedAt": null
+      },
+      "mode": "BUS",
+      "details": {
+        "operator": null,
+        "serviceNumber": null,
+        "boardingPoint": null,
+        "alightingPoint": null,
+        "routeInstructions": null
+      }
+    },
+    "TRAIN": {
+      "id": null,
+      "fromPlaceId": null,
+      "toPlaceId": null,
+      "departure": {
+        "at": null,
+        "timeZone": null
+      },
+      "arrival": {
+        "at": null,
+        "timeZone": null
+      },
+      "durationMinutes": null,
+      "distanceMeters": null,
+      "distanceBasis": null,
+      "timingStatus": null,
+      "evidence": {
+        "status": null,
+        "sourceIds": [],
+        "checkedAt": null
+      },
+      "mode": "TRAIN",
+      "details": {
+        "operator": null,
+        "serviceNumber": null,
+        "boardingPoint": null,
+        "alightingPoint": null,
+        "routeInstructions": null
+      }
+    },
+    "FERRY": {
+      "id": null,
+      "fromPlaceId": null,
+      "toPlaceId": null,
+      "departure": {
+        "at": null,
+        "timeZone": null
+      },
+      "arrival": {
+        "at": null,
+        "timeZone": null
+      },
+      "durationMinutes": null,
+      "distanceMeters": null,
+      "distanceBasis": null,
+      "timingStatus": null,
+      "evidence": {
+        "status": null,
+        "sourceIds": [],
+        "checkedAt": null
+      },
+      "mode": "FERRY",
+      "details": {
+        "operator": null,
+        "serviceNumber": null,
+        "boardingPoint": null,
+        "alightingPoint": null,
+        "routeInstructions": null
+      }
+    },
+    "TAXI": {
+      "id": null,
+      "fromPlaceId": null,
+      "toPlaceId": null,
+      "departure": {
+        "at": null,
+        "timeZone": null
+      },
+      "arrival": {
+        "at": null,
+        "timeZone": null
+      },
+      "durationMinutes": null,
+      "distanceMeters": null,
+      "distanceBasis": null,
+      "timingStatus": null,
+      "evidence": {
+        "status": null,
+        "sourceIds": [],
+        "checkedAt": null
+      },
+      "mode": "TAXI",
+      "details": {
+        "operator": null,
+        "serviceNumber": null,
+        "boardingPoint": null,
+        "alightingPoint": null,
+        "routeInstructions": null
+      }
+    },
+    "WALK": {
+      "id": null,
+      "fromPlaceId": null,
+      "toPlaceId": null,
+      "departure": {
+        "at": null,
+        "timeZone": null
+      },
+      "arrival": {
+        "at": null,
+        "timeZone": null
+      },
+      "durationMinutes": null,
+      "distanceMeters": null,
+      "distanceBasis": null,
+      "timingStatus": null,
+      "evidence": {
+        "status": null,
+        "sourceIds": [],
+        "checkedAt": null
+      },
+      "mode": "WALK",
+      "details": {
+        "routeInstructions": null,
+        "accessibilityNotes": null
+      }
+    }
+  },
+  "structures": {
+    "Evidence": {
+      "status": null,
+      "sourceIds": [],
+      "checkedAt": null
+    },
+    "Moment": {
+      "at": null,
+      "timeZone": null
+    },
+    "Money": {
+      "currency": null,
+      "amountMinor": null
+    },
+    "MoneyRange": {
+      "currency": null,
+      "lowMinor": null,
+      "expectedMinor": null,
+      "highMinor": null
+    },
+    "Constraint": {
+      "id": null,
+      "code": null,
+      "strength": null,
+      "description": null
+    },
+    "Traveler": {
+      "id": null,
+      "age": null,
+      "passportCountry": null,
+      "passportType": null,
+      "residenceCountry": null
+    },
+    "Source": {
+      "id": null,
+      "title": null,
+      "url": null,
+      "retrievedAt": null
+    },
+    "Place": {
+      "id": null,
+      "name": null,
+      "kind": null,
+      "countryCode": null,
+      "timeZone": null,
+      "address": null,
+      "coordinates": null,
+      "providerPlaceId": null,
+      "imageIds": [],
+      "evidence": {
+        "status": null,
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    },
+    "Media": {
+      "id": null,
+      "placeId": null,
+      "usage": null,
+      "status": null,
+      "provider": null,
+      "providerAssetId": null,
+      "assetKey": null,
+      "url": null,
+      "thumbnailUrl": null,
+      "altText": null,
+      "attributions": [
+        {
+          "text": null,
+          "url": null
+        }
+      ],
+      "expiresAt": null
+    },
+    "Flight": {
+      "marketingAirline": null,
+      "operatingAirline": null,
+      "flightNumber": null,
+      "departureAirportCode": null,
+      "arrivalAirportCode": null,
+      "departureTerminal": null,
+      "arrivalTerminal": null,
+      "checkedBaggageKgPerPerson": null,
+      "isSelfTransfer": null
+    },
+    "Drive": {
+      "vehicleSource": null,
+      "avoidTolls": null,
+      "restStopPlaceIds": [],
+      "routeInstructions": null
+    },
+    "Transit": {
+      "operator": null,
+      "serviceNumber": null,
+      "boardingPoint": null,
+      "alightingPoint": null,
+      "routeInstructions": null
+    },
+    "Walk": {
+      "routeInstructions": null,
+      "accessibilityNotes": null
+    },
+    "TransportOption": {
+      "id": null,
+      "title": null,
+      "reason": null,
+      "legs": [
+        {
+          "id": null,
+          "fromPlaceId": null,
+          "toPlaceId": null,
+          "departure": {
+            "at": null,
+            "timeZone": null
+          },
+          "arrival": {
+            "at": null,
+            "timeZone": null
+          },
+          "durationMinutes": null,
+          "distanceMeters": null,
+          "distanceBasis": null,
+          "timingStatus": null,
+          "evidence": {
+            "status": null,
+            "sourceIds": [],
+            "checkedAt": null
+          },
+          "mode": "FLIGHT",
+          "details": {
+            "marketingAirline": null,
+            "operatingAirline": null,
+            "flightNumber": null,
+            "departureAirportCode": null,
+            "arrivalAirportCode": null,
+            "departureTerminal": null,
+            "arrivalTerminal": null,
+            "checkedBaggageKgPerPerson": null,
+            "isSelfTransfer": null
+          }
+        }
+      ],
+      "costItemIds": []
+    },
+    "TransportGroup": {
+      "id": null,
+      "title": null,
+      "fromPlaceId": null,
+      "toPlaceId": null,
+      "status": null,
+      "recommendedOptionId": null,
+      "planningOptionId": null,
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": null,
+          "title": null,
+          "reason": null,
+          "legs": [
+            {
+              "id": null,
+              "fromPlaceId": null,
+              "toPlaceId": null,
+              "departure": {
+                "at": null,
+                "timeZone": null
+              },
+              "arrival": {
+                "at": null,
+                "timeZone": null
+              },
+              "durationMinutes": null,
+              "distanceMeters": null,
+              "distanceBasis": null,
+              "timingStatus": null,
+              "evidence": {
+                "status": null,
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "mode": "FLIGHT",
+              "details": {
+                "marketingAirline": null,
+                "operatingAirline": null,
+                "flightNumber": null,
+                "departureAirportCode": null,
+                "arrivalAirportCode": null,
+                "departureTerminal": null,
+                "arrivalTerminal": null,
+                "checkedBaggageKgPerPerson": null,
+                "isSelfTransfer": null
+              }
+            }
+          ],
+          "costItemIds": []
+        }
+      ]
+    },
+    "StayOption": {
+      "id": null,
+      "placeId": null,
+      "title": null,
+      "reason": null,
+      "roomType": null,
+      "roomCount": null,
+      "guestCapacity": null,
+      "amenities": [],
+      "availability": null,
+      "cancellationSummary": null,
+      "costItemIds": [],
+      "evidence": {
+        "status": null,
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    },
+    "StayGroup": {
+      "id": null,
+      "title": null,
+      "checkInDate": null,
+      "checkOutDate": null,
+      "nights": null,
+      "status": null,
+      "recommendedOptionId": null,
+      "planningOptionId": null,
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": null,
+          "placeId": null,
+          "title": null,
+          "reason": null,
+          "roomType": null,
+          "roomCount": null,
+          "guestCapacity": null,
+          "amenities": [],
+          "availability": null,
+          "cancellationSummary": null,
+          "costItemIds": [],
+          "evidence": {
+            "status": null,
+            "sourceIds": [],
+            "checkedAt": null
+          }
+        }
+      ]
+    },
+    "Day": {
+      "id": null,
+      "dayNumber": null,
+      "date": null,
+      "timeZone": null,
+      "title": null,
+      "summary": null,
+      "walkingDistanceMeters": null,
+      "events": [
+        {
+          "id": null,
+          "title": null,
+          "description": null,
+          "imageIds": [],
+          "type": "TRANSPORT",
+          "transportGroupId": null
+        }
+      ],
+      "continuingEventIds": []
+    },
+    "CostItem": {
+      "id": null,
+      "category": null,
+      "label": null,
+      "unit": null,
+      "quantity": null,
+      "unitPrice": null,
+      "originalTotal": null,
+      "displayTotal": null,
+      "exchangeRateId": null,
+      "taxesAndFees": null,
+      "evidence": {
+        "status": null,
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    },
+    "ExchangeRate": {
+      "id": null,
+      "baseCurrency": null,
+      "quoteCurrency": null,
+      "quotePerBase": null,
+      "asOf": null,
+      "evidence": {
+        "status": null,
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    },
+    "EntryRequirement": {
+      "id": null,
+      "travelerIds": [],
+      "countryCode": null,
+      "role": null,
+      "status": null,
+      "summary": null,
+      "requiredInputFields": [],
+      "documents": [],
+      "evidence": {
+        "status": null,
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    },
+    "Notice": {
+      "code": null,
+      "severity": null,
+      "message": null,
+      "relatedIds": []
+    }
+  }
+}
