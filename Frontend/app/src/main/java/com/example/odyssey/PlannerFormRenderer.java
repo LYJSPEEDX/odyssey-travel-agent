@@ -14,7 +14,6 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import java.util.Calendar;
-import java.util.List;
 
 /** Renders the current form only; TripPlanState owns all answers and validation. */
 final class PlannerFormRenderer {

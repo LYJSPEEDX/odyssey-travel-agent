@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="open_itinerary">Open itinerary</string>
+    <string name="journal_adjust">Ask AI to adjust ↗</string>
+    <string name="journal_keep_draft">Keep draft</string>
+    <string name="journal_offline">Offline preview · Not sent</string>
+    <string name="journal_draft_kept">Local draft · Not sent</string>
+    <string name="journal_toolbar">Trip journal</string>
+    <string name="itinerary_day_tab">Day %1$d</string>
     <string name="itinerary_duration_limit">Choose a trip of 60 days or less for this version.</string>
     <string name="itinerary_draft_notice">Open your saved itinerary to see every day. This offline draft preserves your choices; routes, stays and prices still need verification.</string>
     <item name="openItinerary" type="id" />

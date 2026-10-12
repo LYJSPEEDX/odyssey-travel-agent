@@ -14,6 +14,9 @@ final class ItineraryJson {
                 if (escaped) escaped = false;
                 else if (ch == '\\') escaped = true;
                 else if (ch == '"') quoted = false;
+            } else if (ch == '\'' || ch == '/' || ch == '#') {
+                // Android's lenient JSONTokener supports single quotes/comments; our contract does not.
+                throw new JSONException("Non-standard JSON syntax");
             } else if (ch == '"') quoted = true;
             else if (ch == '{' || ch == '[') {
                 if (++depth > 30) throw new JSONException("JSON nesting limit");

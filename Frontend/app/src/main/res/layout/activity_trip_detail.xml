@@ -9,8 +9,24 @@
         app:navigationIconTint="@color/text_primary" app:titleTextColor="@color/text_primary"
         app:navigationContentDescription="@string/back_to_list" />
     <androidx.core.widget.NestedScrollView android:layout_width="match_parent"
+        android:id="@+id/tripDetailScroll"
         android:layout_height="0dp" android:layout_weight="1" android:fillViewport="true">
         <LinearLayout android:id="@+id/tripDetailContent" android:layout_width="match_parent"
             android:layout_height="wrap_content" android:orientation="vertical" android:padding="@dimen/space_lg" />
     </androidx.core.widget.NestedScrollView>
+    <LinearLayout android:id="@+id/journalFooter" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:orientation="vertical"
+        android:paddingHorizontal="@dimen/space_lg" android:paddingTop="4dp"
+        android:paddingBottom="4dp" android:visibility="gone" android:background="@color/background">
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/journalAdjust" android:tag="journal-adjust"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:minHeight="52dp" android:text="@string/journal_adjust"
+            android:textAllCaps="false" android:textColor="@color/on_accent"
+            app:backgroundTint="@color/lime" app:cornerRadius="24dp" />
+        <TextView android:id="@+id/journalDraftStatus" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:gravity="center"
+            android:includeFontPadding="false" android:text="@string/journal_offline"
+            android:textSize="11sp" android:textColor="@color/text_secondary" />
+    </LinearLayout>
 </LinearLayout>

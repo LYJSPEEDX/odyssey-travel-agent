@@ -69,6 +69,22 @@ final class SavedTrip {
         return result;
     }
 
+    /** Future HTTP integration can use this same boundary after backend validation. */
+    static SavedTrip fromContract(Context context, String raw) throws JSONException {
+        ItineraryDocument document = ItineraryDocument.parse(context, raw);
+        JSONObject root = document.root, summary = root.getJSONObject("summary"), request = root.getJSONObject("requestSnapshot");
+        org.json.JSONArray destinations = request.getJSONArray("destinationPlaceIds");
+        StringBuilder route = new StringBuilder(document.place(request.getString("originPlaceId")));
+        String destination = "";
+        for (int i = 0; i < destinations.length(); i++) {
+            destination = document.place(destinations.getString(i));
+            route.append(" → ").append(destination);
+        }
+        return new SavedTrip(root.getString("id"), System.currentTimeMillis(), destination, route.toString(),
+                summary.getString("startDate") + " → " + summary.getString("endDate"), summary.getInt("dayCount"),
+                summary.getString("subtitle"), "", root.toString());
+    }
+
     static SavedTrip fromJson(String value) throws JSONException {
         ItineraryJson.preflight(value, ItineraryAssets.MAX_BYTES * 2);
         JSONObject object = new JSONObject(value);

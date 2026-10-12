@@ -84,6 +84,32 @@ public class ItineraryIntegrationTest {
         assertNull(doc.selected(group));
     }
 
+    @Test public void externalContractBecomesPersistableSnapshot() throws Exception {
+        SavedTrip snapshot = SavedTrip.fromContract(context(), ItineraryAssets.example(context(), "contract_new_york"));
+        assertEquals("demo_new_york_10d", snapshot.id);
+        assertEquals(10, snapshot.totalDays);
+        assertTrue(snapshot.route.contains("Sydney"));
+        assertTrue(snapshot.route.contains("New York"));
+        SavedTrip restored = SavedTrip.fromJson(snapshot.toJson().toString());
+        assertEquals(snapshot.contractJson, restored.contractJson);
+    }
+
+    @Test public void excessiveNestingIsRejectedBeforeParsing() throws Exception {
+        StringBuilder raw = new StringBuilder("{\"value\":");
+        for (int i = 0; i < 3000; i++) raw.append('[');
+        raw.append('0');
+        for (int i = 0; i < 3000; i++) raw.append(']');
+        raw.append('}');
+        try { ItineraryDocument.parse(context(), raw.toString()); fail("Deep JSON accepted"); }
+        catch (org.json.JSONException expected) { assertTrue(expected.getMessage().contains("nesting")); }
+        try { SavedTrip.fromJson(raw.toString()); fail("Deep saved JSON accepted"); }
+        catch (org.json.JSONException expected) { assertTrue(expected.getMessage().contains("nesting")); }
+        ItineraryJson.preflight("{\"text\":\"[\\\"{\"}", 100);
+        String bypass = "{a:'\"',b:" + raw.substring(9, raw.length() - 1) + ",c:'\"'}";
+        try { ItineraryDocument.parse(context(), bypass); fail("Lenient quote bypass accepted"); }
+        catch (org.json.JSONException expected) { assertTrue(expected.getMessage().contains("Non-standard")); }
+    }
+
     private void reject(JSONObject value) {
         try { ItineraryDocument.parse(context(), value.toString()); fail("Malformed contract accepted"); }
         catch (org.json.JSONException expected) { /* Explicit validation failure, never silent defaults. */ }

@@ -15,6 +15,8 @@ public class TripDetailActivity extends AppCompatActivity {
     private int selectedDay;
     private ItineraryDocument document;
     private HomeUi ui;
+    private String adjustmentDraft = "";
+    private final JournalAdjustment adjustment = new JournalAdjustment();
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
@@ -30,6 +32,7 @@ public class TripDetailActivity extends AppCompatActivity {
         });
         ui = new HomeUi(findViewById(R.id.tripDetailContent));
         selectedDay = savedInstanceState == null ? 0 : savedInstanceState.getInt("itinerary_day", 0);
+        if (savedInstanceState != null) adjustmentDraft = savedInstanceState.getString("adjustment_draft", "");
         try {
             String id = getIntent().getStringExtra(EXTRA_ID);
             SavedTrip trip = id == null ? null : sample ? ExampleTrips.get(this, id) : new TripStore(this).get(id);
@@ -38,9 +41,15 @@ public class TripDetailActivity extends AppCompatActivity {
                 return;
             }
             if (trip.contractJson != null) {
+                toolbar.setTitle(R.string.journal_toolbar);
                 document = ItineraryDocument.parse(this, trip.contractJson);
                 selectedDay = Math.max(0, Math.min(selectedDay, document.root.getJSONArray("days").length() - 1));
                 renderItinerary();
+                findViewById(R.id.journalFooter).setVisibility(android.view.View.VISIBLE);
+                updateDraftStatus();
+                findViewById(R.id.journalAdjust).setOnClickListener(view -> adjustment.show(this, adjustmentDraft, draft -> {
+                    adjustmentDraft = draft; updateDraftStatus();
+                }));
                 return;
             }
             ui.text(trip.route, 28, true);
@@ -68,6 +77,12 @@ public class TripDetailActivity extends AppCompatActivity {
     }
     @Override protected void onSaveInstanceState(Bundle outState) {
         outState.putInt("itinerary_day", selectedDay);
+        outState.putString("adjustment_draft", adjustmentDraft);
         super.onSaveInstanceState(outState);
     }
+    private void updateDraftStatus() {
+        ((android.widget.TextView) findViewById(R.id.journalDraftStatus)).setText(adjustmentDraft.trim().isEmpty()
+                ? R.string.journal_offline : R.string.journal_draft_kept);
+    }
+    @Override protected void onDestroy() { adjustment.dismiss(); super.onDestroy(); }
 }
