@@ -4,9 +4,10 @@ import android.content.Context;
 import java.util.Arrays;
 import java.util.List;
 
-/** Home inspiration never enters the user's saved-trip library. */
+/** 首页灵感示例，只用于浏览，不自动写入用户的 My Trips 行程库。 */
 final class ExampleTrips {
     static List<SavedTrip> all(Context context) {
+        // 列表只需要摘要；结构化示例的完整 JSON 在 get 中按需加载。
         return Arrays.asList(
                 new SavedTrip("contract_canberra", 0, "Canberra", "Sydney → Canberra", "3 days · Drive or bus", 3, "", ""),
                 new SavedTrip("contract_new_york", 0, "New York", "Sydney → New York", "10 days · Flights & stopovers", 10, "", ""),
@@ -18,6 +19,7 @@ final class ExampleTrips {
                         R.string.sample_bali_meta, R.string.sample_bali_detail));
     }
     static SavedTrip get(Context context, String id) throws org.json.JSONException {
+        // 两个 contract 示例演示可变天数和交通方式，其余示例沿用旧版文本详情。
         if (id.equals("contract_canberra") || id.equals("contract_new_york")) {
             String raw = ItineraryAssets.example(context, id);
             org.json.JSONObject root = new org.json.JSONObject(raw), summary = root.getJSONObject("summary");

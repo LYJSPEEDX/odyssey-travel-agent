@@ -12,7 +12,11 @@ import androidx.core.view.ViewCompat;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 
-/** Small shared view helpers for the home, library, settings and read-only details. */
+/**
+ * 首页、行程库和设置页共用的基础 View 工具；方法会创建控件并立即加入 content。
+ * Java 的 LayoutParams 中 -1=match_parent、-2=wrap_content；正数尺寸需由 dp 转成 px。
+ * 颜色参数传 R.color 资源 ID，再按当前浅色/深色主题解析，不直接传十六进制色值。
+ */
 final class HomeUi {
     final LinearLayout content;
     final Context context;
@@ -38,6 +42,7 @@ final class HomeUi {
         text(context.getString(subtitle), 14, false);
     }
     MaterialCardView card(String title, String description, int background, Runnable click) {
+        // click 为 null 表示只读展示卡；非空时将整张卡作为可点击区域。
         MaterialCardView card = (MaterialCardView) LayoutInflater.from(context)
                 .inflate(R.layout.item_trip_option, content, false);
         TextView name = card.findViewById(R.id.optionTitle);

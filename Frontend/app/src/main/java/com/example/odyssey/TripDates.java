@@ -6,7 +6,10 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
-/** Date-only keys (yyyyMMdd) avoid device timezone and DST changing selected days. */
+/**
+ * 表单的“纯日期”工具：例如 20261110 表示 2026-11-10，不包含小时或地点时区。
+ * 日期运算统一在 UTC 进行，避免夏令时某天不是 24 小时导致天数算错。
+ */
 final class TripDates {
     private TripDates() {}
     static int key(Calendar day) {
@@ -20,6 +23,7 @@ final class TripDates {
         return date;
     }
     static int daysBetweenInclusive(int start, int end) {
+        // 首尾两天都计入：同一天往返为 1 天，而不是 0 天；不表示实际航程经过的小时数。
         return (int) ((calendar(end).getTimeInMillis() - calendar(start).getTimeInMillis())
                 / 86400000L) + 1;
     }

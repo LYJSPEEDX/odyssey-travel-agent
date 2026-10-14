@@ -7,18 +7,23 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-/** Bounded shape checks for this bundled schema, NOT a general JSON Schema engine.
- * Calendar feasibility, evidence and budget arithmetic require backend validation. */
+/**
+ * 只实现当前打包 Schema 所需的一部分结构检查，不是完整的 JSON Schema 引擎。
+ * 检查类型、必填项、枚举及部分范围；不验证 format、真实行程可行性、证据或预算运算。
+ * 后端仍须进行完整协议及业务校验，不能因本类通过就认为模型结果可信。
+ */
 final class ItineraryShape {
     static void check(Object value, JSONObject schema, JSONObject root, int depth) throws JSONException {
         if (depth > 40) fail("Nesting limit");
         if (schema.has("$ref")) {
+            // 仅解析本地 $defs 定义，不下载或执行外部 Schema 引用。
             String ref = schema.getString("$ref");
             if (!ref.startsWith("#/$defs/")) fail("Unsupported reference");
             check(value, root.getJSONObject("$defs").getJSONObject(ref.substring(8)), root, depth + 1);
             return;
         }
         for (String variant : new String[]{"anyOf", "oneOf"}) {
+            // anyOf 至少匹配一种结构，oneOf 必须恰好匹配一种，例如不同交通方式的 details。
             if (!schema.has(variant)) continue;
             JSONArray choices = schema.getJSONArray(variant);
             int matches = 0;
@@ -49,6 +54,7 @@ final class ItineraryShape {
         if (value instanceof JSONObject) {
             JSONObject object = (JSONObject) value;
             JSONArray required = schema.optJSONArray("required");
+            // “字段存在”和“字段值可为 null”不同；has 检查前者，后续类型分支检查后者。
             if (required != null) for (int i = 0; i < required.length(); i++)
                 if (!object.has(required.getString(i))) fail("Missing " + required.getString(i));
             JSONObject properties = schema.optJSONObject("properties");

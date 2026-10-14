@@ -12,6 +12,7 @@ import androidx.appcompat.widget.AppCompatEditText;
 import androidx.core.content.pm.PackageInfoCompat;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+/** 设置页的动态内容与弹窗；昵称和主题只保存在本机，登录入口目前仅显示说明。 */
 final class HomeSettings {
     private final AppCompatActivity activity;
     private final HomeUi ui;
@@ -65,6 +66,7 @@ final class HomeSettings {
                 .setTitle(R.string.settings_edit_profile).setMessage(R.string.settings_profile_notice)
                 .setView(form).setNegativeButton(R.string.settings_cancel, null)
                 .setPositiveButton(R.string.settings_save, null).create();
+        // 在 show 后接管保存按钮：校验失败时保留弹窗和输入，避免默认行为自动关闭。
         dialog.setOnShowListener(ignored -> dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(view -> {
             String value = name.getText() == null ? "" : name.getText().toString().trim();
             if (value.isEmpty()) { name.setError(activity.getString(R.string.settings_invalid_nickname)); return; }

@@ -15,7 +15,10 @@ import java.util.Calendar;
 import java.util.Locale;
 import java.util.function.IntConsumer;
 
-/** Inline date-range calendar. Month navigation never changes the selected range. */
+/**
+ * 嵌入表单的日期区间日历：本类绘制月份并回传日期，区间选择规则在 TripPlanState。
+ * month 表示正在浏览的月份；翻月不等于修改已选的出发/返回日期。
+ */
 @SuppressLint("ViewConstructor") // Runtime-only view: state and selection callback are required.
 final class TripCalendarView extends LinearLayout {
     private final TripPlanState state;
@@ -62,10 +65,12 @@ final class TripCalendarView extends LinearLayout {
         addView(weekdays);
         Calendar first = (Calendar) month.clone();
         first.set(Calendar.DAY_OF_MONTH, 1);
+        // Calendar 周日=1、周一=2；转换成周一=0 的列下标，决定月初要留几格空白。
         int offset = (first.get(Calendar.DAY_OF_WEEK) + 5) % 7;
         int count = first.getActualMaximum(Calendar.DAY_OF_MONTH);
         int todayKey = TripDates.key(today);
         LinearLayout week = null;
+        // 向上补齐到整周，使首尾不足一周的月份也保持七列对齐。
         for (int cell = 0; cell < ((offset + count + 6) / 7) * 7; cell++) {
             if (cell % 7 == 0) { week = row(); addView(week); }
             int day = cell - offset + 1;
@@ -77,6 +82,7 @@ final class TripCalendarView extends LinearLayout {
             int key = TripDates.key(first);
             date.setTag("date-" + key);
             date.setContentDescription(TripDates.format(key));
+            // 端点和区间内日期使用不同背景，读屏描述也同步说明出发/返回含义。
             boolean endpoint = key == state.getStartDate() || key == state.getEndDate();
             boolean inRange = state.getEndDate() != 0 && key > state.getStartDate()
                     && key < state.getEndDate();

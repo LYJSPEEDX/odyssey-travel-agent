@@ -5,7 +5,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/** Flights read as tickets; local transfers stay visually secondary in the timeline. */
+/**
+ * 将同一种 transport option 按交通类型画成不同卡片：含航班时用票券，否则用紧凑路线卡。
+ * option.legs 是按顺序排列的路段，既可只有一次乘车，也可含多次飞行与地面换乘。
+ */
 final class JournalTransport {
     private final JournalUi journal;
     private final ItineraryDocument doc;
@@ -18,6 +21,7 @@ final class JournalTransport {
         if (ongoing) journal.tag(card, "In transit · Continues from an earlier day", R.color.mint);
         if (!flight) {
             JSONObject first = legs.getJSONObject(0), last = legs.getJSONObject(legs.length() - 1);
+            // 这里只加路段移动时长，不包含换乘等待；多段路线明确标注 moving time。
             int minutes = 0;
             for (int i = 0; i < legs.length(); i++) minutes += legs.getJSONObject(i).getInt("durationMinutes");
             journal.text(card, label(first.getString("mode")) + "  ·  " + JournalTime.duration(minutes)
@@ -47,6 +51,7 @@ final class JournalTransport {
         }
         journal.text(card, "Flight & baggage details  ↗", 12, true);
     }
+    /** 出发/到达各自显示当地日期和时区，不用两端钟表读数相减来估算飞行时长。 */
     private void endpoint(LinearLayout row, JSONObject moment, String label) throws JSONException {
         LinearLayout column = journal.column();
         row.addView(column, journal.stacked() ? new LinearLayout.LayoutParams(-1, -2) : new LinearLayout.LayoutParams(0, -2, 1));

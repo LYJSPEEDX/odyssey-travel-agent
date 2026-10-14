@@ -15,7 +15,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import org.json.JSONException;
 import java.util.List;
 
-/** Three top-level destinations; planning remains a separate, focused five-step flow. */
+/**
+ * 应用首页容器：底部三个 tab 在本 Activity 内切换，五步规划和行程详情是独立 Activity。
+ * 每个 tab 分别保存滚动位置；从生成页回来时重新读取行程库，避免继续显示旧的空状态。
+ */
 public class HomeActivity extends AppCompatActivity {
     static final String EXTRA_OPEN_MY = "open_my";
     private BottomNavigationView navigation;
@@ -59,6 +62,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     @Override protected void onNewIntent(Intent intent) {
+        // 生成页用 CLEAR_TOP/SINGLE_TOP 复用已有首页时，新参数从这里接收而不是 onCreate。
         super.onNewIntent(intent);
         setIntent(intent);
         if (intent.getBooleanExtra(EXTRA_OPEN_MY, false)) navigation.setSelectedItemId(R.id.nav_my);
@@ -112,6 +116,7 @@ public class HomeActivity extends AppCompatActivity {
     }
     private void startPlanner() { startActivity(new Intent(this, MainActivity.class)); }
     private void openTrip(String id, boolean sample) {
+        // 页面间只传 ID 和来源，不把整份大 JSON 塞进 Intent；详情页按来源加载内容。
         startActivity(new Intent(this, TripDetailActivity.class)
                 .putExtra(TripDetailActivity.EXTRA_ID, id).putExtra(TripDetailActivity.EXTRA_SAMPLE, sample));
     }

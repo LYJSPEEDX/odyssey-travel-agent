@@ -10,9 +10,13 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-/** Local draft, never a quote. Unknown travel details remain pending rather than invented. */
+/**
+ * 将用户表单转成与后端协议形状一致的本地草稿，供 UI 联调，不是模型输出或可预订方案。
+ * 已知偏好保留，未知交通/酒店/价格保持 PENDING 或空值，不凭空补全真实信息。
+ */
 final class MockItinerary {
     static JSONObject object(Object... pairs) throws JSONException {
+        // 可变参数按“键、值”成对传入；JSONObject.NULL 保留显式 null 字段而非删除该键。
         JSONObject result = new JSONObject();
         for (int i = 0; i < pairs.length; i += 2)
             result.put((String) pairs[i], pairs[i + 1] == null ? JSONObject.NULL : pairs[i + 1]);
@@ -26,10 +30,12 @@ final class MockItinerary {
         return format.format(calendar.getTime());
     }
     static JSONObject place(String id, String name) throws JSONException {
+        // 城市尚未经过地点服务查询，ZZ 与 Etc/UTC 只是占位，不能当作真实国家/当地时区。
         return object("id", id, "name", name, "kind", "CITY", "countryCode", "ZZ", "timeZone", "Etc/UTC",
                 "address", null, "coordinates", null, "providerPlaceId", null, "imageIds", array(), "evidence", evidence());
     }
     static JSONObject fromPlan(Context context, TripPlanState state, String id) throws JSONException {
+        // 灵活日期暂用“一周后三天”演示；固定日期按完整天数生成，不截成三天预览。
         int count = state.isFlexibleDates() ? 3 : state.getDurationDays();
         if (count < 1 || count > 60) throw new JSONException("Supported duration is 1–60 days");
         Calendar start = state.isFlexibleDates() ? Calendar.getInstance(TimeZone.getTimeZone("UTC"))
@@ -59,6 +65,7 @@ final class MockItinerary {
         String companion = state.getCompanion().toUpperCase(Locale.ROOT);
         if (!companion.matches("SOLO|COUPLE|FRIENDS|FAMILY")) companion = "CUSTOM";
         JSONArray days = array();
+        // 每天只放自由活动占位；生成 days 数组展示结构，不伪造景点、餐厅或开放时间。
         Calendar current = (Calendar) start.clone();
         for (int i = 0; i < count; i++, current.add(Calendar.DAY_OF_MONTH, 1)) {
             String dayDate = date(current);
@@ -73,6 +80,7 @@ final class MockItinerary {
                     "title", "Discover " + state.getDestination(), "summary", "Draft day — arrange details with your travel assistant.",
                     "walkingDistanceMeters", null, "events", array(event), "continuingEventIds", array()));
         }
+        // 空费用表的零小计表示尚未计价；UI 结合 activeCostItemIds 显示 Estimate pending。
         JSONObject zero = object("currency", "AUD", "lowMinor", 0, "expectedMinor", 0, "highMinor", 0);
         SimpleDateFormat timestamp = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
         timestamp.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -112,6 +120,7 @@ final class MockItinerary {
                         "notices", array(object("code", "MOCK_DRAFT", "severity", "WARNING",
                                 "message", "Dates and times are illustrative. Transport, stays, visas and prices still need verification.", "relatedIds", array())),
                         "constraintChecks", checks));
+        // 假数据也走真实解析边界，让字段缺失/引用错误在开发时暴露，而不是 UI 崩溃时才发现。
         ItineraryDocument.parse(context, result.toString());
         return result;
     }

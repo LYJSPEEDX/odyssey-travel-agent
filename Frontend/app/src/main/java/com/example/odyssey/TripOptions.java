@@ -1,6 +1,9 @@
 package com.example.odyssey;
 
-/** Local fixtures only: replace this catalog when a real recommendation service is added. */
+/**
+ * 五步表单的本地假数据目录：目的地=城市+关键词，其余选项=标题+说明。
+ * 这些固定值用于验证交互，不是实时推荐；接入接口后应替换数据来源。
+ */
 final class TripOptions {
     static final class Option {
         final String title;
@@ -51,6 +54,7 @@ final class TripOptions {
         return null;
     }
     static Option[] budgets(String city) {
+        // 根据示例城市的基准值生成三档展示文案，未知城市使用默认值；不是实际报价或总预算。
         Destination destination = destination(city);
         int base = destination == null ? 100 : destination.dailyBase;
         return new Option[]{

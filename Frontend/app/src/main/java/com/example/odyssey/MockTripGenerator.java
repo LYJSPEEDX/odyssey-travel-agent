@@ -3,7 +3,10 @@ package com.example.odyssey;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Deterministic sample content, not an AI response or a bookable itinerary. */
+/**
+ * 旧版纯文字演示生成器：按偏好拼接最多三天的预览，不是模型或真实推荐服务。
+ * 新版完整 JSON 草稿由 MockItinerary 生成，不要将这里的三天预览上限用于正式行程。
+ */
 final class MockTripGenerator {
     static final class Day {
         final String title;
@@ -17,6 +20,7 @@ final class MockTripGenerator {
         boolean easy = state.getConstraints().contains("Take it slow")
                 || state.getConstraints().contains("Less walking")
                 || state.getConstraints().contains("With older adults");
+        // 偏好冲突时，演示文案优先照顾少走路/休息，而不是一味增加停靠点。
         boolean more = state.getConstraints().contains("See more") && !easy;
         List<Day> result = new ArrayList<>();
         String[] themes = {"Arrive & settle in", "A taste of local life", "One last discovery"};
