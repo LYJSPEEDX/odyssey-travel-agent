@@ -160,10 +160,19 @@
             android:accessibilityLiveRegion="polite"
             android:background="@drawable/bg_trip_board"
             android:importantForAccessibility="yes"
-            android:orientation="vertical"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
             android:padding="@dimen/space_lg"
             android:visibility="gone"
             tools:visibility="visible">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/tripBoardPhoto" android:layout_width="56dp" android:layout_height="56dp"
+                android:layout_marginEnd="12dp" android:scaleType="centerCrop" android:visibility="gone"
+                android:importantForAccessibility="no" app:shapeAppearanceOverlay="@style/EditorialThumbnail" />
+
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:orientation="vertical">
 
             <TextView
                 android:layout_width="match_parent"
@@ -196,6 +205,8 @@
                 android:textColor="@color/on_trip_board"
                 android:textSize="@dimen/text_label" />
 
+            </LinearLayout>
+
         </LinearLayout>
 
         <!-- 主标题 -->
@@ -216,9 +227,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_lg"
-            android:background="@drawable/bg_chat_bubble"
+            android:background="@android:color/transparent"
             android:orientation="vertical"
-            android:padding="@dimen/space_lg"
+            android:paddingVertical="@dimen/space_sm"
             >
 
             <TextView
@@ -227,7 +238,7 @@
                 android:includeFontPadding="false"
                 android:id="@+id/assistantTitle"
                 android:text="@string/assistant_destination_title"
-                android:textColor="@color/on_accent"
+                android:textColor="@color/text_primary"
                 android:textSize="@dimen/text_body"
                 android:textStyle="bold" />
 
@@ -238,7 +249,7 @@
                 android:includeFontPadding="false"
                 android:id="@+id/assistantMessage"
                 android:text="@string/assistant_destination_message"
-                android:textColor="@color/on_accent"
+                android:textColor="@color/text_secondary"
                 android:textSize="@dimen/text_label" />
 
         </LinearLayout>
@@ -273,16 +284,19 @@
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/composerContainer"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/composer_height"
+            android:layout_height="wrap_content"
+            android:minHeight="56dp"
             android:layout_marginTop="@dimen/space_md"
             app:cardBackgroundColor="@color/composer_background"
-            app:cardCornerRadius="@dimen/radius_small"
+            app:cardCornerRadius="28dp"
             app:cardElevation="0dp"
-            app:strokeWidth="0dp">
+            app:strokeColor="@color/outline"
+            app:strokeWidth="1dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="56dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
@@ -291,7 +305,8 @@
                     android:maxLength="300"
                     android:saveEnabled="false"
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="56dp"
                     android:layout_weight="1"
                     android:background="@null"
                     android:gravity="center_vertical"
@@ -311,7 +326,8 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/sendButton"
                     android:layout_width="@dimen/composer_height"
-                    android:layout_height="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="4dp"
                     android:contentDescription="@string/send_message"
                     android:insetLeft="@dimen/space_xs"
                     android:insetTop="@dimen/space_xs"
@@ -321,7 +337,7 @@
                     android:minWidth="0dp"
                     android:padding="0dp"
                     app:backgroundTint="@color/composer_action"
-                    app:cornerRadius="@dimen/radius_send_button"
+                    app:cornerRadius="20dp"
                     app:icon="@drawable/ic_arrow_upward"
                     app:iconGravity="textStart"
                     app:iconPadding="0dp"

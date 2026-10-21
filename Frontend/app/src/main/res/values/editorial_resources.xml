@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 照片上的文字始终白色，不随深色模式反转；纸面仍使用 surface 主题色。 -->
+    <color name="on_photo">#FFFFFF</color>
+    <color name="photo_scrim">#B8000000</color>
+    <color name="photo_badge">#F2FFFFFF</color>
+    <color name="photo_placeholder">#5B536C</color>
+    <dimen name="photo_cover_height">232dp</dimen>
+    <dimen name="editorial_corner">28dp</dimen>
+    <string name="editorial_wordmark">Odyssey ✳</string>
+    <string name="editorial_banner_title">Where will your\nnext story begin?</string>
+    <string name="editorial_banner_kicker">A LITTLE CURIOSITY GOES A LONG WAY</string>
+    <string name="editorial_create">Create my trip ↗</string>
+    <string name="editorial_inspiration">A little inspiration.</string>
+    <string name="editorial_inspiration_subtitle">Places to fall for. Plans to make your own.</string>
+    <string name="editorial_my_title">Good things\non the horizon.</string>
+    <string name="editorial_my_subtitle">Your plans, all in one place.</string>
+    <string name="editorial_sample">SAMPLE TRIP · NOT BOOKED</string>
+    <string name="editorial_saved">SAVED TRIP · ON THIS DEVICE</string>
+    <string name="editorial_cover_alt">Destination photograph of %1$s</string>
+    <string name="editorial_no_photo">No cover photo for %1$s</string>
+    <string name="editorial_photo_placeholder">A new place. A new story.</string>
+    <string name="editorial_photo_credit">Destination imagery · Unsplash</string>
+    <string name="editorial_view_trip">View trip</string>
+    <string name="editorial_save_sample">Save sample trip</string>
+    <string name="editorial_sample_saved">Sample saved to My Trips</string>
+    <string name="editorial_sample_note">Sample trips are for inspiration, not bookings. Save a sample to keep it in My Trips.</string>
+    <string name="editorial_collection">YOUR PERSONAL TRAVEL COLLECTION</string>
+    <string name="editorial_select_destination">%1$s. %2$s. %3$s</string>
+    <string name="editorial_selected">Selected</string>
+    <string name="editorial_not_selected">Not selected</string>
+    <plurals name="editorial_days"><item quantity="one">%d day away</item><item quantity="other">%d days away</item></plurals>
+</resources>

@@ -98,17 +98,11 @@ final class PlannerFormRenderer {
         option(state.getDeparture(), context.getString(R.string.change_departure), true,
                 () -> actions.editLocation(true));
         label(R.string.destination_section);
-        for (TripOptions.Destination destination : TripOptions.DESTINATIONS) {
-            // continue 只跳过当前城市，仍继续处理其他推荐，避免推荐出发地本身。
-            if (destination.city.equalsIgnoreCase(state.getDeparture())) continue;
-            // 第三个参数决定选中外观；最后一个 Runnable 是用户点击后要执行的动作。
-            option(destination.city, destination.description(),
-                    destination.city.equalsIgnoreCase(state.getDestination()), () -> {
-                        // 先改答案再通知重绘，否则重画时仍会读到旧目的地。
-                        state.selectDestination(destination.city);
-                        actions.changed();
-                    });
-        }
+        // 图片网格只负责展示；回调依旧更新同一份业务 state，五步流程不变。
+        DestinationCards.add(content, state, city -> {
+            state.selectDestination(city);
+            actions.changed();
+        });
         // 用户输入目录外城市时，额外显示自己的选择，否则选中了也看不到对应卡片。
         if (!state.getDestination().isEmpty() && TripOptions.destination(state.getDestination()) == null) {
             option(state.getDestination(), context.getString(R.string.custom_city_description), true,

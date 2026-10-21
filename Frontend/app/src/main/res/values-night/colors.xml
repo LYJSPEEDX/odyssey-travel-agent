@@ -12,10 +12,10 @@
     <color name="purple">#A98BF5</color>
     <color name="mint">#B2EFCC</color>
     <color name="assistant_bubble">#A98BF5</color>
-    <color name="composer_background">#F5F2E9</color>
-    <color name="composer_on_background">#131313</color>
-    <color name="composer_hint">#B3131313</color>
-    <color name="composer_action">#FB6D59</color>
+    <color name="composer_background">#25231F</color>
+    <color name="composer_on_background">#F5F2E9</color>
+    <color name="composer_hint">#B7B3AA</color>
+    <color name="composer_action">#A98BF5</color>
     <color name="navigation_icon">#131313</color>
 
     <color name="brand1">#DAFE6C</color>

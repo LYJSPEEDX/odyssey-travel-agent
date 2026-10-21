@@ -1,5 +1,9 @@
 <resources>
     <style name="HomeNavigationIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
-        <item name="android:color">@color/lime</item>
+        <item name="android:color">@color/purple</item>
+    </style>
+    <style name="EditorialThumbnail">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">12dp</item>
     </style>
 </resources>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="20dp"
+    android:clickable="true" android:focusable="true" app:cardCornerRadius="@dimen/editorial_corner"
+    app:cardBackgroundColor="@color/surface" app:cardElevation="0dp" app:strokeWidth="0dp">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+        <!-- 照片与标题是叠层；渐变只负责保证白字可读，不修改原始照片。 -->
+        <FrameLayout android:id="@+id/editorialCover" android:layout_width="match_parent" android:layout_height="@dimen/photo_cover_height">
+            <ImageView android:id="@+id/editorialPhoto" android:layout_width="match_parent" android:layout_height="match_parent"
+                android:scaleType="centerCrop" android:importantForAccessibility="no" android:src="@drawable/bg_photo_placeholder" />
+            <View android:layout_width="match_parent" android:layout_height="match_parent" android:background="@drawable/bg_photo_scrim" />
+            <TextView android:id="@+id/editorialBadge" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_margin="16dp" android:layout_marginEnd="68dp" android:paddingHorizontal="12dp" android:paddingVertical="8dp"
+                android:background="@drawable/bg_photo_badge" android:textColor="@color/on_accent" android:textSize="10sp" android:letterSpacing="0.06" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/editorialSave" style="@style/Widget.Material3.Button.IconButton.Filled"
+                android:layout_width="48dp" android:layout_height="48dp" android:layout_gravity="top|end" android:layout_margin="8dp"
+                android:contentDescription="@string/editorial_save_sample" app:icon="@drawable/ic_editorial_bookmark"
+                app:iconTint="@color/on_accent" app:backgroundTint="@color/lime" android:visibility="gone" />
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_gravity="bottom" android:orientation="vertical" android:padding="20dp">
+                <TextView android:id="@+id/editorialEyebrow" android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:textSize="10sp" android:letterSpacing="0.10" android:textColor="@color/on_photo" android:layout_marginBottom="8dp" />
+                <TextView android:id="@+id/editorialTitle" android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:textSize="32sp" android:textStyle="bold" android:fontFamily="sans-serif-medium" android:includeFontPadding="false"
+                    android:letterSpacing="-0.035" android:textColor="@color/on_photo" android:maxLines="3" android:ellipsize="end" />
+            </LinearLayout>
+        </FrameLayout>
+        <LinearLayout android:id="@+id/editorialTicket" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:padding="20dp">
+            <TextView android:id="@+id/editorialRoute" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:textColor="@color/text_primary" android:textSize="19sp" android:textStyle="bold" />
+            <TextView android:id="@+id/editorialDuration" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginTop="6dp" android:textColor="@color/text_secondary" android:textSize="12sp" />
+            <View android:layout_width="match_parent" android:layout_height="16dp" android:layout_marginHorizontal="-20dp"
+                android:layout_marginTop="8dp" android:layout_marginBottom="8dp" android:background="@drawable/bg_ticket_perforation" />
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+                    <TextView android:id="@+id/editorialKeywords" android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:textColor="@color/text_primary" android:textSize="12sp" />
+                    <TextView android:id="@+id/editorialDates" android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp" android:textColor="@color/text_secondary" android:textSize="11sp" />
+                </LinearLayout>
+                <!-- 整卡负责点击，右箭头仅作视觉提示，避免重复的无障碍焦点。 -->
+                <ImageView android:layout_width="48dp" android:layout_height="48dp" android:layout_marginStart="12dp"
+                    android:background="@drawable/bg_editorial_action" android:padding="13dp"
+                    android:src="@drawable/ic_editorial_arrow" android:importantForAccessibility="no" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

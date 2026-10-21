@@ -193,6 +193,11 @@ public class MainActivity extends AppCompatActivity implements PlannerFormRender
         }
         // GONE 不显示也不占空间；有出发地后才显示 Live Trip 旅行板。
         findViewById(R.id.tripBoard).setVisibility(state.getDeparture().isEmpty() ? View.GONE : View.VISIBLE);
+        // 第一部分只选出发地时不显示目的地照片；第二部分确定后显示相同城市的缩略图。
+        android.widget.ImageView boardPhoto = findViewById(R.id.tripBoardPhoto);
+        boardPhoto.setVisibility(state.getDestination().isEmpty() ? View.GONE : View.VISIBLE);
+        // 每次重画都使用当前答案，返回上一步改城市后不会残留上一张照片。
+        if (!state.getDestination().isEmpty()) TripPhotos.show(boardPhoto, state.getDestination());
         // 只有出发地时显示 Depart from；两地都有时用格式化文案显示 XXX → YYY。
         text(R.id.tripBoardDestination, state.getDestination().isEmpty()
                 ? getString(R.string.depart_from, state.getDeparture())

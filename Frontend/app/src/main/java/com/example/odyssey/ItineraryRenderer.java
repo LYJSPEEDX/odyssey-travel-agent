@@ -32,6 +32,10 @@ final class ItineraryRenderer {
     void render() throws JSONException {
         // 首屏保持摘要简短，完整介绍放在 Overview 弹窗，而不是删除原始说明。
         JSONObject root = doc.root, summary = root.getJSONObject("summary");
+        // 封面只读目的地与媒体引用；仍完整保留下方警告、时间轴和预算。
+        JSONArray coverDestinations = root.getJSONObject("requestSnapshot").getJSONArray("destinationPlaceIds");
+        String coverCity = coverDestinations.length() == 0 ? "" : doc.place(coverDestinations.getString(0));
+        TripCoverView.add(ui, ui.content, coverCity, summary.getString("title"), root);
         // column 创建竖排容器；setTag 是测试/查找标记，不是屏幕上显示的文字。
         LinearLayout header = journal.column(); header.setTag("journal-header"); ui.content.addView(header);
         LinearLayout headerActions = journal.row(); header.addView(headerActions);

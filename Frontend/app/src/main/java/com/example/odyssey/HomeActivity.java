@@ -97,21 +97,26 @@ public class HomeActivity extends AppCompatActivity {
         else home();
     }
     private void home() {
+        // 品牌栏保持轻量；主要视觉焦点留给下方照片，而不是重复的彩色面板。
+        ui.text(getString(R.string.editorial_wordmark), 28, true);
         View banner = LayoutInflater.from(this).inflate(R.layout.home_banner, ui.content, false);
         banner.setOnClickListener(view -> startPlanner());
         ui.content.addView(banner);
-        ui.title(R.string.home_inspiration_title, R.string.home_inspiration_subtitle);
-        int[] colors = {R.color.mint, R.color.purple, R.color.red};
+        ui.text(getString(R.string.editorial_inspiration), 23, true).setPadding(0, ui.dp(28), 0, ui.dp(8));
+        ui.text(getString(R.string.editorial_inspiration_subtitle), 12, false);
         List<SavedTrip> examples = ExampleTrips.all(this);
         for (int i = 0; i < examples.size(); i++) {
             SavedTrip trip = examples.get(i);
-            ui.card(trip.route, getString(R.string.sample_badge) + "\n" + trip.dates,
-                    colors[i % colors.length], () -> openTrip(trip.id, true)).setTag("example-" + trip.id);
+            TripCardView.add(ui, trip, true, () -> openTrip(trip.id, true), null)
+                    .setTag("example-" + trip.id);
         }
         ui.text(getString(R.string.sample_description), 12, false);
+        ui.text(getString(R.string.editorial_photo_credit), 11, false);
     }
     private void myTrips() {
-        ui.title(R.string.my_title, R.string.my_subtitle);
+        ui.text(getString(R.string.editorial_wordmark), 28, true);
+        ui.text(getString(R.string.editorial_collection), 11, false);
+        ui.title(R.string.editorial_my_title, R.string.editorial_my_subtitle);
         try {
             List<SavedTrip> trips = new TripStore(this).list();
             if (trips.isEmpty()) {
@@ -120,9 +125,8 @@ public class HomeActivity extends AppCompatActivity {
                 ui.button(R.string.create_my_trip, this::startPlanner);
             } else {
                 for (SavedTrip trip : trips) {
-                    ui.card(trip.route, getResources().getQuantityString(
-                                    R.plurals.saved_trip_meta, trip.totalDays, trip.dates, trip.totalDays),
-                            R.color.surface, () -> openTrip(trip.id, false)).setTag("saved-" + trip.id);
+                    TripCardView.add(ui, trip, false, () -> openTrip(trip.id, false), null)
+                            .setTag("saved-" + trip.id);
                 }
             }
         } catch (JSONException | ClassCastException exception) {

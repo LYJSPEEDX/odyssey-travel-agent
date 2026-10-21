@@ -30,7 +30,7 @@ public class HomeFlowTest {
         assertNotNull(launcher);
         try (ActivityScenario<android.app.Activity> scenario = ActivityScenario.launch(launcher)) {
             scenario.onActivity(activity -> assertTrue(containsText(
-                    activity.findViewById(android.R.id.content), "Generate my trip")));
+                    activity.findViewById(android.R.id.content), context.getString(R.string.editorial_create))));
         }
     }
 

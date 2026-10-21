@@ -15,10 +15,10 @@
     <color name="purple">#A98BF5</color>
     <color name="mint">#B2EFCC</color>
     <color name="assistant_bubble">#B2EFCC</color>
-    <color name="composer_background">#25231F</color>
-    <color name="composer_on_background">#F5F2E9</color>
-    <color name="composer_hint">#B3F5F2E9</color>
-    <color name="composer_action">#DAFE6C</color>
+    <color name="composer_background">#FFFFFF</color>
+    <color name="composer_on_background">#211F1D</color>
+    <color name="composer_hint">#6C6A65</color>
+    <color name="composer_action">#A98BF5</color>
     <color name="navigation_icon">#FFFFFF</color>
 
     <color name="brand1">#DAFE6C</color>

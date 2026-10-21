@@ -9,14 +9,14 @@ final class ExampleTrips {
     static List<SavedTrip> all(Context context) {
         // 列表只需要摘要；结构化示例的完整 JSON 在 get 中按需加载。
         return Arrays.asList(
-                new SavedTrip("contract_canberra", 0, "Canberra", "Sydney → Canberra", "3 days · Drive or bus", 3, "", ""),
-                new SavedTrip("contract_new_york", 0, "New York", "Sydney → New York", "10 days · Flights & stopovers", 10, "", ""),
                 example(context, "kyoto", "Kyoto", 3, R.string.sample_kyoto_title,
                         R.string.sample_kyoto_meta, R.string.sample_kyoto_detail),
                 example(context, "tokyo", "Tokyo", 5, R.string.sample_tokyo_title,
                         R.string.sample_tokyo_meta, R.string.sample_tokyo_detail),
                 example(context, "bali", "Bali", 4, R.string.sample_bali_title,
-                        R.string.sample_bali_meta, R.string.sample_bali_detail));
+                        R.string.sample_bali_meta, R.string.sample_bali_detail),
+                new SavedTrip("contract_canberra", 0, "Canberra", "Sydney → Canberra", "3 days · Drive or bus", 3, "", ""),
+                new SavedTrip("contract_new_york", 0, "New York", "Sydney → New York", "10 days · Flights & stopovers", 10, "", ""));
     }
     static SavedTrip get(Context context, String id) throws org.json.JSONException {
         // 两个 contract 示例演示可变天数和交通方式，其余示例沿用旧版文本详情。

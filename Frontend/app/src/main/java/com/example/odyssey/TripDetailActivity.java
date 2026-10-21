@@ -73,6 +73,7 @@ public class TripDetailActivity extends AppCompatActivity {
                 return;
             }
             // 兼容旧版纯文本记录，不强制迁移或覆盖用户已有数据。
+            TripCoverView.add(ui, ui.content, trip.destination, trip.destination, null);
             ui.text(trip.route, 28, true);
             ui.text(trip.dates, 14, false);
             ui.card(getString(sample ? R.string.sample_badge : R.string.trip_saved),
