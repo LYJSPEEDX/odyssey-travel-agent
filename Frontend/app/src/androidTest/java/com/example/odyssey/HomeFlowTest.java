@@ -19,6 +19,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
+import android.os.SystemClock;
 
 @RunWith(AndroidJUnit4.class)
 public class HomeFlowTest {
@@ -34,6 +36,7 @@ public class HomeFlowTest {
 
     @Test public void bannerOpensPlannerAndFirstBackReturnsHome() {
         try (ActivityScenario<HomeActivity> scenario = ActivityScenario.launch(HomeActivity.class)) {
+            awaitHome(scenario);
             onView(withId(R.id.createTripBanner)).perform(click());
             onView(withId(R.id.stepText)).check(matches(withText("01 / 05")));
             onView(withId(R.id.backButton)).perform(click());
@@ -47,6 +50,7 @@ public class HomeFlowTest {
         boolean initiallyEmpty = store.list().isEmpty();
         String id = UUID.randomUUID().toString();
         try (ActivityScenario<HomeActivity> scenario = ActivityScenario.launch(HomeActivity.class)) {
+            awaitHome(scenario);
             scenario.onActivity(activity -> {
                 ((BottomNavigationView) activity.findViewById(R.id.bottomNavigation)).setSelectedItemId(R.id.nav_my);
                 assertEquals(initiallyEmpty, activity.findViewById(R.id.myEmptyState) != null);
@@ -82,6 +86,7 @@ public class HomeFlowTest {
         String previousName = preferences.nickname(context);
         int previousTheme = preferences.themeIndex();
         try (ActivityScenario<HomeActivity> scenario = ActivityScenario.launch(HomeActivity.class)) {
+            awaitHome(scenario);
             scenario.onActivity(activity -> ((BottomNavigationView) activity.findViewById(R.id.bottomNavigation))
                     .setSelectedItemId(R.id.nav_settings));
             onView(withId(R.id.settingsLogin)).perform(click());
@@ -106,6 +111,18 @@ public class HomeFlowTest {
             preferences.saveTheme(previousTheme);
             InstrumentationRegistry.getInstrumentation().runOnMainSync(preferences::applyTheme);
         }
+    }
+
+    /** 类入口启动等同桌面启动；等欢迎页正常结束再点击，不能点击被遮住的首页。 */
+    private static void awaitHome(ActivityScenario<HomeActivity> scenario) {
+        long deadline = SystemClock.uptimeMillis() + 5000;
+        AtomicBoolean ready = new AtomicBoolean(false);
+        do {
+            scenario.onActivity(activity -> ready.set(activity.findViewById(R.id.launchWelcome) == null));
+            if (ready.get()) return;
+            SystemClock.sleep(50);
+        } while (SystemClock.uptimeMillis() < deadline);
+        fail("Welcome did not reveal home within five seconds");
     }
 
     private static boolean containsText(View view, String expected) {

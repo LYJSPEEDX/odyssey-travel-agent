@@ -1,0 +1,39 @@
+<resources>
+    <!-- 启动票券忠实保留参考图颜色，不随首页的深色主题反转。 -->
+    <color name="launch_paper">#FFFFFF</color>
+    <color name="launch_ink">#000000</color>
+    <color name="launch_lime">#DEFF60</color>
+    <color name="launch_coral">#FF705E</color>
+    <string name="launch_accessibility">Odyssey. Your travel agent is here to help. Opening home.</string>
+    <string name="launch_brand">Odyssey</string>
+    <string name="launch_project">A Project for\nCOMP9003</string>
+    <string name="launch_tagline">Your travel agent is here to help</string>
+    <string name="launch_course">COMP9003</string>
+    <string name="launch_origin">Sydney</string>
+    <string name="launch_destination">Hong Kong</string>
+    <string name="launch_origin_code">SYD</string>
+    <string name="launch_destination_code">HKG</string>
+    <string name="launch_departure_time">11:15</string>
+    <string name="launch_arrival_time">17:50</string>
+    <string name="launch_duration">09h 35m</string>
+    <string name="launch_passenger_label">Passenger Name</string>
+    <string name="launch_passenger">Karlos Ishac</string>
+    <string name="launch_boarding_label">Departure</string>
+    <string name="launch_boarding">10:45</string>
+    <string name="launch_terminal_label">Terminal</string>
+    <string name="launch_terminal">2</string>
+    <string name="launch_gate_label">Gate</string>
+    <string name="launch_gate">C93</string>
+    <string name="launch_seat_label">Seat</string>
+    <string name="launch_seat">03A</string>
+    <style name="LaunchText">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">@color/launch_ink</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:gravity">start|center_vertical</item>
+        <item name="android:maxLines">1</item>
+        <item name="autoSizeTextType">uniform</item>
+        <item name="autoSizeMinTextSize">6sp</item>
+        <item name="autoSizeStepGranularity">1sp</item>
+    </style>
+</resources>

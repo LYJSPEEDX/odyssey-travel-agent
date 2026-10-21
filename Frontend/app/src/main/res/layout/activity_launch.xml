@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 原生票券：TextView 可编辑文字，shape/vector 绘制背景和装饰，不加载参考 PNG。
+     比例坐标对应 382 × 582 设计稿；布局宽高随可用空间缩小，避免横屏裁切。
+     背景必须遮住原首页主题背景；欢迎层移除后不再有额外绘制，故局部忽略 Overdraw。 -->
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="Overdraw"
+    android:id="@+id/launchWelcome"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/purple" android:padding="16dp"
+    android:clickable="true" android:focusable="true"
+    android:importantForAccessibility="yes" android:contentDescription="@string/launch_accessibility">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/launchTicket"
+        android:layout_width="0dp" android:layout_height="0dp"
+        android:background="@color/launch_paper"
+        android:scaleX="0.5" android:scaleY="0.5"
+        android:importantForAccessibility="noHideDescendants"
+        app:layout_constraintDimensionRatio="382:582"
+        app:layout_constraintWidth_max="420dp"
+        app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent">
+
+        <View android:layout_width="0dp" android:layout_height="0dp"
+            app:layout_constraintWidth_percent="1.000000"
+            app:layout_constraintHeight_percent="0.323024"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintVertical_bias="0.000000" android:background="@drawable/bg_launch_header" />
+        <View android:layout_width="0dp" android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.842932"
+            app:layout_constraintHeight_percent="0.003436"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.500000"
+            app:layout_constraintVertical_bias="0.322414" android:background="@drawable/launch_perforation" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/launchBrand" style="@style/LaunchText"
+            android:layout_width="0dp" android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.628272"
+            app:layout_constraintHeight_percent="0.108247"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.140845"
+            app:layout_constraintVertical_bias="0.019268"
+            android:text="@string/launch_brand" android:textSize="56sp"
+            app:autoSizeMaxTextSize="56sp" android:fontFamily="sans-serif-black" android:textStyle="bold" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/launchProject" style="@style/LaunchText"
+            android:layout_width="0dp" android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.248691"
+            app:layout_constraintHeight_percent="0.072165"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.937282"
+            app:layout_constraintVertical_bias="0.050000"
+            android:text="@string/launch_project" android:textSize="13sp"
+            app:autoSizeMaxTextSize="13sp" android:background="@drawable/bg_launch_badge" android:textColor="@color/launch_paper" android:textStyle="bold" android:gravity="center" android:maxLines="2" android:paddingHorizontal="7dp" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/launchTagline" style="@style/LaunchText"
+            android:layout_width="0dp" android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.895288"
+            app:layout_constraintHeight_percent="0.037801"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.500000"
+            app:layout_constraintVertical_bias="0.287500"
+            android:text="@string/launch_tagline" android:textSize="13sp"
+            app:autoSizeMaxTextSize="13sp" android:textStyle="bold" android:gravity="center" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/launchCourse" style="@style/LaunchText"
+            android:layout_width="0dp" android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.863874"
+            app:layout_constraintHeight_percent="0.048110"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.500000"
+            app:layout_constraintVertical_bias="0.375451"
+            android:text="@string/launch_course" android:textSize="24sp"
+            app:autoSizeMaxTextSize="24sp" android:textStyle="bold" android:gravity="center" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/launchOrigin" style="@style/LaunchText"
+            android:layout_width="0dp" android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.340314"
+            app:layout_constraintHeight_percent="0.041237"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.103175"
+            app:layout_constraintVertical_bias="0.430108"
+            android:text="@string/launch_origin" android:textSize="20sp"
+            app:autoSizeMaxTextSize="20sp"  />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/launchDestination" style="@style/LaunchText"
+            android:layout_width="0dp" android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.340314"
+            app:layout_constraintHeight_percent="0.041237"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.896825"
+            app:layout_constraintVertical_bias="0.430108"
+            android:text="@string/launch_destination" android:textSize="20sp"
+            app:autoSizeMaxTextSize="20sp" android:gravity="end|center_vertical" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/launchOriginCode" style="@style/LaunchText"
+            android:layout_width="0dp" android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.327225"
+            app:layout_constraintHeight_percent="0.077320"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.101167"
+            app:layout_constraintVertical_bias="0.489758"
+            android:text="@string/launch_origin_code" android:textSize="46sp"
+            app:autoSizeMaxTextSize="46sp"  />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/launchDestinationCode" style="@style/LaunchText"
+            android:layout_width="0dp" android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.327225"
+            app:layout_constraintHeight_percent="0.077320"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.898833"
+            app:layout_constraintVertical_bias="0.489758"
+            android:text="@string/launch_destination_code" android:textSize="46sp"
+            app:autoSizeMaxTextSize="46sp" android:gravity="end|center_vertical" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/launchDuration" style="@style/LaunchText"
+            android:layout_width="0dp" android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.172775"
+            app:layout_constraintHeight_percent="0.041237"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.506329"
+            app:layout_constraintVertical_bias="0.517921"
+            android:text="@string/launch_duration" android:textSize="12sp"
+            app:autoSizeMaxTextSize="12sp" android:background="@drawable/bg_launch_duration" android:textColor="@color/launch_paper" android:textStyle="bold" android:gravity="center" android:paddingHorizontal="6dp" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/launchDepartureTime" style="@style/LaunchText"
+            android:layout_width="0dp" android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.329843"
+            app:layout_constraintHeight_percent="0.079038"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.101563"
+            app:layout_constraintVertical_bias="0.576493"
+            android:text="@string/launch_departure_time" android:textSize="42sp"
+            app:autoSizeMaxTextSize="42sp" android:textColor="@color/launch_coral" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/launchArrivalTime" style="@style/LaunchText"
+            android:layout_width="0dp" android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.329843"
+            app:layout_constraintHeight_percent="0.079038"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.898438"
+            app:layout_constraintVertical_bias="0.576493"
+            android:text="@string/launch_arrival_time" android:textSize="42sp"
+            app:autoSizeMaxTextSize="42sp" android:textColor="@color/launch_coral" android:gravity="end|center_vertical" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/launchPassengerLabel" style="@style/LaunchText"
+            android:layout_width="0dp" android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.863874"
+            app:layout_constraintHeight_percent="0.030928"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.500000"
+            app:layout_constraintVertical_bias="0.654255"
+            android:text="@string/launch_passenger_label" android:textSize="14sp"
+            app:autoSizeMaxTextSize="14sp"  />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/launchPassenger" style="@style/LaunchText"
+            android:layout_width="0dp" android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.863874"
+            app:layout_constraintHeight_percent="0.048110"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.500000"
+            app:layout_constraintVertical_bias="0.696751"
+            android:text="@string/launch_passenger" android:textSize="23sp"
+            app:autoSizeMaxTextSize="23sp" android:textStyle="bold" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/launchBoardingLabel" style="@style/LaunchText"
+            android:layout_width="0dp" android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.219895"
+            app:layout_constraintHeight_percent="0.030928"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.087248"
+            app:layout_constraintVertical_bias="0.764184"
+            android:text="@string/launch_boarding_label" android:textSize="14sp"
+            app:autoSizeMaxTextSize="14sp"  />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/launchBoarding" style="@style/LaunchText"
+            android:layout_width="0dp" android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.219895"
+            app:layout_constraintHeight_percent="0.048110"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.087248"
+            app:layout_constraintVertical_bias="0.810469"
+            android:text="@string/launch_boarding" android:textSize="24sp"
+            app:autoSizeMaxTextSize="24sp" android:textStyle="bold" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/launchTerminalLabel" style="@style/LaunchText"
+            android:layout_width="0dp" android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.178010"
+            app:layout_constraintHeight_percent="0.030928"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.414013"
+            app:layout_constraintVertical_bias="0.764184"
+            android:text="@string/launch_terminal_label" android:textSize="14sp"
+            app:autoSizeMaxTextSize="14sp"  />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/launchTerminal" style="@style/LaunchText"
+            android:layout_width="0dp" android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.178010"
+            app:layout_constraintHeight_percent="0.048110"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.414013"
+            app:layout_constraintVertical_bias="0.810469"
+            android:text="@string/launch_terminal" android:textSize="24sp"
+            app:autoSizeMaxTextSize="24sp" android:textStyle="bold" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/launchGateLabel" style="@style/LaunchText"
+            android:layout_width="0dp" android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.167539"
+            app:layout_constraintHeight_percent="0.030928"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.716981"
+            app:layout_constraintVertical_bias="0.764184"
+            android:text="@string/launch_gate_label" android:textSize="14sp"
+            app:autoSizeMaxTextSize="14sp"  />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/launchGate" style="@style/LaunchText"
+            android:layout_width="0dp" android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.167539"
+            app:layout_constraintHeight_percent="0.048110"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.716981"
+            app:layout_constraintVertical_bias="0.810469"
+            android:text="@string/launch_gate" android:textSize="24sp"
+            app:autoSizeMaxTextSize="24sp" android:textStyle="bold" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/launchSeatLabel" style="@style/LaunchText"
+            android:layout_width="0dp" android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.143979"
+            app:layout_constraintHeight_percent="0.030928"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.954128"
+            app:layout_constraintVertical_bias="0.764184"
+            android:text="@string/launch_seat_label" android:textSize="14sp"
+            app:autoSizeMaxTextSize="14sp"  />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/launchSeat" style="@style/LaunchText"
+            android:layout_width="0dp" android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.143979"
+            app:layout_constraintHeight_percent="0.048110"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.954128"
+            app:layout_constraintVertical_bias="0.810469"
+            android:text="@string/launch_seat" android:textSize="24sp"
+            app:autoSizeMaxTextSize="24sp" android:textStyle="bold" />
+
+        <View android:id="@+id/launchBarcode" android:layout_width="0dp" android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.769634"
+            app:layout_constraintHeight_percent="0.111684"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.545455"
+            app:layout_constraintVertical_bias="0.947776"
+            android:background="@drawable/launch_barcode" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

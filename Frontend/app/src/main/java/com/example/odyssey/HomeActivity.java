@@ -27,8 +27,11 @@ public class HomeActivity extends AppCompatActivity {
     private int selected = R.id.nav_home;
     private int[] scrollPositions = {0, 0, 0};
     private OnBackPressedCallback backToHome;
+    private LaunchWelcome launchWelcome; // 原生票券欢迎层，展示结束后移除，不新增返回栈页面。
 
     @Override protected void onCreate(Bundle savedInstanceState) {
+        // 系统先读取 Manifest 中的 Launch 主题绘制品牌图标；进入应用后恢复正常浅/深色主题。
+        setTheme(R.style.Theme_Odyssey);
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_home);
@@ -59,18 +62,32 @@ public class HomeActivity extends AppCompatActivity {
             view.setPadding(bars.left, bars.top, bars.right, 0);
             return insets;
         });
+        // 首页先准备好，再盖上欢迎层；1.5 秒后揭开时不需要重新启动 Activity。
+        launchWelcome = new LaunchWelcome(this, savedInstanceState);
     }
 
     @Override protected void onNewIntent(Intent intent) {
         // 生成页用 CLEAR_TOP/SINGLE_TOP 复用已有首页时，新参数从这里接收而不是 onCreate。
         super.onNewIntent(intent);
         setIntent(intent);
-        if (intent.getBooleanExtra(EXTRA_OPEN_MY, false)) navigation.setSelectedItemId(R.id.nav_my);
+        if (intent.getBooleanExtra(EXTRA_OPEN_MY, false)) {
+            if (launchWelcome != null) launchWelcome.dismiss();
+            navigation.setSelectedItemId(R.id.nav_my);
+        }
     }
     @Override protected void onResume() {
         super.onResume();
         // Returning from generation must refresh the library, not a cached empty state.
         if (ui != null) render();
+        if (launchWelcome != null) launchWelcome.resume();
+    }
+    @Override protected void onPause() {
+        if (launchWelcome != null) launchWelcome.pause(); // 切到后台停止计时。
+        super.onPause();
+    }
+    @Override protected void onDestroy() {
+        if (launchWelcome != null) launchWelcome.dismiss(); // 清理延迟任务，避免持有旧 Activity。
+        super.onDestroy();
     }
     private void render() {
         ui.content.removeAllViews();
@@ -122,6 +139,7 @@ public class HomeActivity extends AppCompatActivity {
     }
     private int tabIndex(int id) { return id == R.id.nav_my ? 1 : id == R.id.nav_settings ? 2 : 0; }
     @Override protected void onSaveInstanceState(Bundle outState) {
+        if (launchWelcome != null) launchWelcome.save(outState); // 旋转时保留剩余展示时间。
         scrollPositions[tabIndex(selected)] = scroll.getScrollY();
         outState.putInt("home_tab", selected);
         outState.putIntArray("home_scroll", scrollPositions);

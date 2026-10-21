@@ -1,0 +1,9 @@
+<resources>
+    <!-- Android 11 及以下先显示白色启动窗口；Activity 创建后恢复正常首页主题。 -->
+    <style name="Theme.Odyssey.Launch" parent="Theme.Odyssey">
+        <item name="android:windowBackground">@color/launch_paper</item>
+        <item name="android:statusBarColor">@color/launch_paper</item>
+        <item name="android:navigationBarColor">@color/launch_paper</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+</resources>

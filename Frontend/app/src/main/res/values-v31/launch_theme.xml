@@ -1,0 +1,14 @@
+<resources>
+    <!-- Android 12+ 的系统启动窗口与应用内欢迎层是两层：这里替换系统的模板机器人，
+         不通过动画时长强行延迟系统启动；票券的 1500 ms 仍由 LaunchWelcome 管理。 -->
+    <style name="Theme.Odyssey.Launch" parent="Theme.Odyssey">
+        <item name="android:windowBackground">@color/launch_paper</item>
+        <item name="android:statusBarColor">@color/launch_paper</item>
+        <item name="android:navigationBarColor">@color/launch_paper</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:windowSplashScreenBackground">@color/launch_paper</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_odyssey_splash</item>
+        <item name="android:windowSplashScreenIconBackgroundColor">@color/launch_paper</item>
+    </style>
+</resources>

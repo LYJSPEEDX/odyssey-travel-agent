@@ -1,0 +1,5 @@
+<!-- 纯装饰条码：不是实际机票编码，不包含可扫描的旅客信息。 -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="196dp" android:height="65dp" android:viewportWidth="207" android:viewportHeight="65">
+    <path android:fillColor="@color/launch_ink" android:pathData="M0,0h2v65h-2z M3,0h2v65h-2z M9,0h1v65h-1z M13,0h1v65h-1z M16,0h5v65h-5z M23,0h1v65h-1z M28,0h2v65h-2z M33,0h1v65h-1z M39,0h1v65h-1z M42,0h3v65h-3z M47,0h4v65h-4z M52,0h2v65h-2z M59,0h3v65h-3z M63,0h2v65h-2z M69,0h1v65h-1z M73,0h2v65h-2z M76,0h5v65h-5z M83,0h3v65h-3z M87,0h4v65h-4z M93,0h1v65h-1z M97,0h2v65h-2z M104,0h1v65h-1z M107,0h4v65h-4z M113,0h1v65h-1z M117,0h2v65h-2z M123,0h1v65h-1z M126,0h5v65h-5z M133,0h1v65h-1z M137,0h2v65h-2z M143,0h1v65h-1z M147,0h2v65h-2z M154,0h1v65h-1z M157,0h4v65h-4z M163,0h1v65h-1z M167,0h2v65h-2z M173,0h1v65h-1z M176,0h5v65h-5z M183,0h1v65h-1z M187,0h2v65h-2z M193,0h1v65h-1z M197,0h2v65h-2z M204,0h1v65h-1z" />
+</vector>
