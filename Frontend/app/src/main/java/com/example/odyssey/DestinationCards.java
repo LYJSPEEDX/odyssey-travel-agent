@@ -56,7 +56,8 @@ final class DestinationCards {
             if (selected) {
                 TextView check = new TextView(ui.context);
                 check.setText("✓");
-                check.setTextSize(18);
+                // 这是固定 30dp 圆圈里的装饰图标，不是正文；跟随字号放大会把勾裁掉。
+                check.setTextSize(android.util.TypedValue.COMPLEX_UNIT_DIP, 18);
                 check.setTextColor(ui.color(R.color.on_accent));
                 check.setGravity(Gravity.CENTER);
                 android.graphics.drawable.GradientDrawable circle = new android.graphics.drawable.GradientDrawable();

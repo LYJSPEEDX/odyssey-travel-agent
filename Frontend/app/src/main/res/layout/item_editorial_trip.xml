@@ -27,7 +27,7 @@
             </LinearLayout>
         </FrameLayout>
         <LinearLayout android:id="@+id/editorialTicket" android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:orientation="vertical" android:padding="20dp">
+            android:orientation="vertical" android:padding="20dp" android:clipToPadding="false">
             <TextView android:id="@+id/editorialRoute" android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:textColor="@color/text_primary" android:textSize="19sp" android:textStyle="bold" />
             <TextView android:id="@+id/editorialDuration" android:layout_width="match_parent" android:layout_height="wrap_content"

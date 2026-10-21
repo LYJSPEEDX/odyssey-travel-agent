@@ -58,7 +58,19 @@ public class PlannerFlowTest {
                 assertEquals("DEMO", value(activity, R.id.stepText));
                 assertEquals(View.GONE, activity.findViewById(R.id.composerContainer).getVisibility());
             });
-            SystemClock.sleep(1800); // Wait for the explicit 1.2-second local demo transition.
+            // 1.2 秒只是 Handler 的最早执行时间，之后还有后台落盘和 UI 回调。
+            // 慢速模拟器不能用固定 sleep 猜完成；等待真实成功状态，超时仍明确失败。
+            long deadline = SystemClock.uptimeMillis() + 10000;
+            java.util.concurrent.atomic.AtomicBoolean saved = new java.util.concurrent.atomic.AtomicBoolean(false);
+            do {
+                scenario.onActivity(activity -> {
+                    TextView status = activity.findViewById(R.id.saveTripStatus);
+                    saved.set(status != null && "Saved to My Trips · On this device".contentEquals(status.getText()));
+                });
+                if (saved.get()) break;
+                SystemClock.sleep(50);
+            } while (SystemClock.uptimeMillis() < deadline);
+            assertTrue("Generation must finish and persist within ten seconds", saved.get());
             assertEquals(savedBefore + 1, new TripStore(context).list().size());
             assertEquals("Sydney → Kyoto", new TripStore(context).list().get(0).route);
             assertTrue(new TripStore(context).list().get(0).brief.contains("Avoid stairs"));

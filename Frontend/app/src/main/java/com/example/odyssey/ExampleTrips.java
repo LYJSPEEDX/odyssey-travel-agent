@@ -35,5 +35,22 @@ final class ExampleTrips {
         return new SavedTrip(id, 0, city, context.getString(title), context.getString(meta),
                 days, context.getString(R.string.sample_description), context.getString(detail));
     }
+    /** 由后台线程调用。同步锁防止页面重建后的两个保存任务同时写同一示例。 */
+    static synchronized boolean save(Context context, String id) {
+        try {
+            SavedTrip source = get(context, id);
+            if (source == null) return false;
+            // 结构化示例的入口 ID 与 contract.id 不同，必须用正式解析入口得到正确快照 ID。
+            SavedTrip snapshot = source.contractJson != null ? SavedTrip.fromContract(context, source.contractJson)
+                    : new SavedTrip(source.id, System.currentTimeMillis(), source.destination,
+                    source.route, source.dates, source.totalDays, source.brief, source.itinerary);
+            TripStore store = new TripStore(context);
+            // 已保存就成功返回，不覆盖用户曾保存的版本，也不生成重复条目。
+            if (store.get(snapshot.id) != null) return true;
+            return store.save(snapshot);
+        } catch (org.json.JSONException | ClassCastException exception) {
+            return false; // 不清空原来的行程库，错误反馈由调用页面负责。
+        }
+    }
     private ExampleTrips() {}
 }

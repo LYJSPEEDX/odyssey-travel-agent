@@ -28,6 +28,9 @@ public class HomeActivity extends AppCompatActivity {
     private int[] scrollPositions = {0, 0, 0};
     private OnBackPressedCallback backToHome;
     private LaunchWelcome launchWelcome; // 原生票券欢迎层，展示结束后移除，不新增返回栈页面。
+    // 图片无需网络；这个工作线程只处理用户主动点击的本机示例保存。
+    private final java.util.concurrent.ExecutorService sampleWorker = java.util.concurrent.Executors.newSingleThreadExecutor();
+    private boolean savingSample;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         // 系统先读取 Manifest 中的 Launch 主题绘制品牌图标；进入应用后恢复正常浅/深色主题。
@@ -87,6 +90,7 @@ public class HomeActivity extends AppCompatActivity {
     }
     @Override protected void onDestroy() {
         if (launchWelcome != null) launchWelcome.dismiss(); // 清理延迟任务，避免持有旧 Activity。
+        sampleWorker.shutdown(); // 已开始的短写入可完成，但不再接受新任务。
         super.onDestroy();
     }
     private void render() {
@@ -107,10 +111,10 @@ public class HomeActivity extends AppCompatActivity {
         List<SavedTrip> examples = ExampleTrips.all(this);
         for (int i = 0; i < examples.size(); i++) {
             SavedTrip trip = examples.get(i);
-            TripCardView.add(ui, trip, true, () -> openTrip(trip.id, true), null)
+            TripCardView.add(ui, trip, true, () -> openTrip(trip.id, true), () -> saveExample(trip.id))
                     .setTag("example-" + trip.id);
         }
-        ui.text(getString(R.string.sample_description), 12, false);
+        ui.text(getString(R.string.editorial_sample_note), 12, false);
         ui.text(getString(R.string.editorial_photo_credit), 11, false);
     }
     private void myTrips() {
@@ -136,6 +140,22 @@ public class HomeActivity extends AppCompatActivity {
         ui.text(getString(R.string.local_only_notice), 12, false);
     }
     private void startPlanner() { startActivity(new Intent(this, MainActivity.class)); }
+    /** 收藏示例实际保存完整快照，不只是变一下图标颜色；重复点击不会覆盖已有记录。 */
+    private void saveExample(String id) {
+        if (savingSample) return; // 忽略正在保存期间的重复点击。
+        savingSample = true;
+        sampleWorker.execute(() -> {
+            boolean saved = ExampleTrips.save(getApplicationContext(), id);
+            runOnUiThread(() -> {
+                savingSample = false;
+                if (isFinishing() || isDestroyed()) return; // 旋转后不操作已销毁的页面。
+                android.widget.Toast.makeText(this, saved ? R.string.editorial_sample_saved
+                        : R.string.trip_save_failed, android.widget.Toast.LENGTH_SHORT).show();
+                // 若用户已切到 My Trips，保存后立即刷新；首页不会突然跳页或改变滚动位置。
+                if (saved && selected == R.id.nav_my) render();
+            });
+        });
+    }
     private void openTrip(String id, boolean sample) {
         // 页面间只传 ID 和来源，不把整份大 JSON 塞进 Intent；详情页按来源加载内容。
         startActivity(new Intent(this, TripDetailActivity.class)
