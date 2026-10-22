@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "1.0",
+  "requestId": "req_refine_002",
+  "sessionId": "session_demo_001",
+  "baseRevision": 2,
+  "stepId": "DESTINATION",
+  "questionId": "question_destination_1",
+  "action": "REFINE",
+  "input": {
+    "type": "TEXT",
+    "text": "Somewhere with beaches and less shopping"
+  }
+}

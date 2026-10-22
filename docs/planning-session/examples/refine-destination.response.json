@@ -1,0 +1,102 @@
+{
+  "schemaVersion": "1.0",
+  "requestId": "req_refine_002",
+  "result": {
+    "stepId": "DESTINATION",
+    "status": "UPDATED",
+    "keywords": ["Beaches", "Less shopping"],
+    "navigation": "STAY",
+    "nextStepId": null
+  },
+  "session": {
+    "id": "session_demo_001",
+    "revision": 3,
+    "dataMode": "MOCK",
+    "expiresAt": "2026-10-30T12:00:00+11:00",
+    "profileContext": {
+      "age": 25,
+      "nationalityCountryCode": "AU",
+      "residentialLocation": "Sydney, Australia",
+      "tagCatalogVersion": "1.0",
+      "travelTagIds": ["ISLANDS", "FOOD", "SLOW_TRAVEL"],
+      "travelPreferences": "Prefer quiet neighbourhoods"
+    },
+    "steps": [
+      {
+        "stepId": "ORIGIN",
+        "state": "CONFIRMED",
+        "question": {
+          "id": "question_origin_1",
+          "title": "Where are you leaving from?",
+          "description": "Your home city is a suggestion, not a confirmed departure.",
+          "inputMode": "SINGLE_CHOICE",
+          "allowText": true,
+          "minSelections": 1,
+          "maxSelections": 1,
+          "options": [
+            {
+              "id": "origin_sydney",
+              "title": "Sydney",
+              "description": "Suggested from your home location.",
+              "keywords": [],
+              "imageAssetKey": null,
+              "value": {
+                "type": "LOCATION",
+                "placeId": "place_sydney_au",
+                "name": "Sydney",
+                "countryCode": "AU"
+              }
+            }
+          ]
+        },
+        "answer": {
+          "source": "OPTION",
+          "value": {
+            "type": "LOCATION",
+            "placeId": "place_sydney_au",
+            "name": "Sydney",
+            "countryCode": "AU"
+          }
+        },
+        "keywords": ["Depart from Sydney"]
+      },
+      {
+        "stepId": "DESTINATION",
+        "state": "AWAITING_INPUT",
+        "question": {
+          "id": "question_destination_2",
+          "title": "Which escape feels like you?",
+          "description": "Choose a destination or tell us what to change.",
+          "inputMode": "SINGLE_CHOICE",
+          "allowText": true,
+          "minSelections": 1,
+          "maxSelections": 1,
+          "options": [
+            {
+              "id": "destination_bali",
+              "title": "Bali",
+              "description": "An island break with a slower pace.",
+              "keywords": ["Beaches", "Nature", "Wellness"],
+              "imageAssetKey": "city_bali",
+              "value": {
+                "type": "LOCATION",
+                "placeId": "place_bali_id",
+                "name": "Bali",
+                "countryCode": "ID"
+              }
+            }
+          ]
+        },
+        "answer": null,
+        "keywords": ["Beaches", "Less shopping"]
+      },
+      {"stepId": "DATES", "state": "LOCKED", "question": null, "answer": null, "keywords": []},
+      {"stepId": "COMPANIONS", "state": "LOCKED", "question": null, "answer": null, "keywords": []},
+      {"stepId": "BUDGET", "state": "LOCKED", "question": null, "answer": null, "keywords": []},
+      {"stepId": "CONSTRAINTS", "state": "LOCKED", "question": null, "answer": null, "keywords": []},
+      {"stepId": "FOLLOW_UP_1", "state": "LOCKED", "question": null, "answer": null, "keywords": []},
+      {"stepId": "FOLLOW_UP_2", "state": "LOCKED", "question": null, "answer": null, "keywords": []}
+    ],
+    "canGenerate": false
+  }
+}
