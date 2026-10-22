@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Odyssey profile and location recommendation contracts",
+  "$ref": "#/$defs/profile",
+  "$defs": {
+    "profile": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "age",
+        "residential_location",
+        "travel_preferences"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "age": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 120
+        },
+        "residential_location": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "\\S"
+        },
+        "travel_preferences": {
+          "type": "string",
+          "maxLength": 2000
+        }
+      },
+      "additionalProperties": false
+    },
+    "locationText": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "pattern": "\\S"
+    },
+    "recommendationRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "profile",
+        "origin",
+        "destinations"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "profile": {
+          "$ref": "#/$defs/profile"
+        },
+        "origin": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/locationText"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "destinations": {
+          "type": "array",
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/locationText"
+          }
+        }
+      }
+    },
+    "recommendation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "location",
+        "reason"
+      ],
+      "properties": {
+        "location": {
+          "$ref": "#/$defs/locationText"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000,
+          "pattern": "\\S"
+        }
+      }
+    },
+    "recommendationResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "departure",
+        "destinations"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "departure": {
+          "$ref": "#/$defs/recommendation"
+        },
+        "destinations": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 20,
+          "items": {
+            "$ref": "#/$defs/recommendation"
+          }
+        }
+      }
+    }
+  }
+}

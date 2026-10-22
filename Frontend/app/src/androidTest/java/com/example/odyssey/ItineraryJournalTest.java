@@ -3,6 +3,7 @@ package com.example.odyssey;
 import static org.junit.Assert.*;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.espresso.matcher.ViewMatchers.withTagValue;
@@ -30,8 +31,8 @@ public class ItineraryJournalTest {
             scenario.onActivity(activity -> {
                 View day = activity.findViewById(R.id.tripDetailContent).findViewWithTag("contract-day-0");
                 assertTrue(day.getContentDescription().toString().contains("10 Nov"));
-                activity.findViewById(R.id.tripDetailContent).findViewWithTag("journal-day-notes").performClick();
             });
+            onView(withTagValue(is("journal-day-notes"))).perform(scrollTo(), click());
             onView(withText(org.hamcrest.Matchers.containsString("America/New_York")))
                     .check(matches(withText(org.hamcrest.Matchers.containsString("A flexible day"))));
         }

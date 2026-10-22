@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "1.0",
+  "departure": {
+    "location": "Sydney, Australia",
+    "reason": "A departure location near the supplied residential location."
+  },
+  "destinations": [
+    {
+      "location": "Kyoto, Japan",
+      "reason": "An illustrative suggestion matching the supplied interest in museums and food."
+    }
+  ]
+}
