@@ -63,6 +63,7 @@ def build_react_graph(
     tools: list[AgentTool],
     *,
     max_tool_turns: int = 4,
+    max_calls_per_turn: int = 2,
     on_event: EventSink | None = None,
 ):
     by_name = {t.name: t for t in tools}
@@ -92,8 +93,13 @@ def build_react_graph(
     async def act(state: ReactState) -> dict:
         evidence = dict(state["evidence"])
         replies: list[ToolMessage] = []
-        for call in state["messages"][-1].tool_calls:
-            text = await _run_call(call, by_name, evidence)
+        for index, call in enumerate(state["messages"][-1].tool_calls):
+            if index >= max_calls_per_turn:  # every call id must still get a reply
+                text = (
+                    f"ERROR: at most {max_calls_per_turn} tool calls per turn; this one was skipped"
+                )
+            else:
+                text = await _run_call(call, by_name, evidence)
             replies.append(ToolMessage(content=text, tool_call_id=call["id"], name=call["name"]))
             emit(type="tool", name=call["name"], args=call["args"], observation=text)
         return {"messages": replies, "evidence": evidence}

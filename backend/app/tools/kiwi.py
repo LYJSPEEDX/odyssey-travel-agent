@@ -33,6 +33,8 @@ class FlightQuery(BaseModel):
     max_stops: int | None = None  # per direction
     max_flight_hours: int | None = None  # total flight duration
     max_price: int | None = None  # whole party, in `currency` major units
+    allow_overnight_layovers: bool | None = None  # False = no overnight connections
+    max_layover_hours: int | None = None  # longest single connection
     currency: str = "AUD"
 
 
@@ -53,6 +55,8 @@ def _arguments(q: FlightQuery) -> dict:
         "max_sector_stopovers": q.max_stops,
         "max_fly_duration": q.max_flight_hours,
         "price_to": q.max_price,
+        "allow_overnight_stopovers": q.allow_overnight_layovers,
+        "stopover_to": q.max_layover_hours,
     }
     args.update({k: v for k, v in optional.items() if v is not None})
     return args

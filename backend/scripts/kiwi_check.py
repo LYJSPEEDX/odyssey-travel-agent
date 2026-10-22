@@ -36,6 +36,8 @@ async def main() -> int:
     p.add_argument("--children", type=int, default=0)
     p.add_argument("--max-stops", type=int)
     p.add_argument("--max-hours", type=int)
+    p.add_argument("--no-overnight", action="store_true")
+    p.add_argument("--max-layover", type=int)
     p.add_argument("--currency", default="AUD")
     p.add_argument("--top", type=int, default=5)
     a = p.parse_args()
@@ -43,7 +45,8 @@ async def main() -> int:
     query = FlightQuery(
         fly_from=a.fly_from, fly_to=a.fly_to, depart_date=a.depart, return_date=a.ret,
         adults=a.adults, children=a.children, max_stops=a.max_stops,
-        max_flight_hours=a.max_hours, currency=a.currency,
+        max_flight_hours=a.max_hours, currency=a.currency, max_layover_hours=a.max_layover,
+        allow_overnight_layovers=False if a.no_overnight else None,
     )  # fmt: skip
     try:
         async with McpClient(get_settings().kiwi_mcp_url) as client:
