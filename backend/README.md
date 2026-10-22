@@ -106,3 +106,101 @@ uv run uvicorn app.main:app --reload --host 0.0.0.0
 
 Every response carries an `X-Session-Id` header. Send it back on later requests to stay in the
 same anonymous session; if it is absent or malformed a new one is minted. There is no login.
+
+## Trip API
+
+The API maps to the latest Android sources in `root/odyssey-travel-agent/Frontend/`,
+particularly `TripPlanState` and `SavedTrip.fromContract`. It does not yet replace
+Android's local mock flow; the frontend network client is still to be implemented.
+
+| Method | Path | Result |
+|---|---|---|
+| POST | `/trips` | 201: persist a validated request and QUEUED run atomically |
+| GET | `/trips?limit=20&offset=0` | 200: this session's summaries, newest first |
+| GET | `/trips/{trip_id}` | 200: request, status, itinerary (nullable), latest run |
+| GET | `/trips/{trip_id}/runs/{run_id}` | 200: execution status and error |
+| GET | `/trips/{trip_id}/itinerary` | 200: bare v1 itinerary; 409 while unavailable |
+| DELETE | `/trips/{trip_id}` | 204: delete trip and its runs |
+
+Missing trips, trips belonging to another session, and missing runs return 404.
+Invalid request fields, UUIDs or pagination parameters return 422. List responses
+are `{ "items": [...], "limit": 20, "offset": 0 }` and omit full itinerary/request JSON.
+Detail responses use database status values PENDING/READY/FAILED and include
+`latest_run` (QUEUED/RUNNING/SUCCEEDED/FAILED). Response metadata uses snake_case
+(`created_at`, `updated_at`, `latest_run`); request fields use Android-style camelCase.
+The POST response also includes `Location: /trips/{id}`.
+
+**Generation boundary:** no worker or LLM is implemented. POST stores a PENDING trip
+and QUEUED run; it does not schedule background execution or produce an itinerary.
+Do not poll indefinitely expecting completion in this version. Future generation
+code must validate the complete shared v1 schema and semantics before saving an
+itinerary and setting READY; no public endpoint accepts arbitrary READY/status updates.
+
+### Request example
+
+```json
+{
+  "departure": "Sydney",
+  "destination": "Kyoto",
+  "flexibleDates": false,
+  "startDate": "2026-11-01",
+  "endDate": "2026-11-03",
+  "companion": "Solo",
+  "budget": "AUD 200 per person per day",
+  "constraints": ["Less walking"],
+  "notes": {"5": "Museums and food"}
+}
+```
+
+`departure`, `destination`, `companion`, and `budget` map directly to the corresponding
+`TripPlanState` getters. Convert Android's YYYYMMDD date integers to ISO YYYY-MM-DD
+strings; do not send integers or zero dates. When `flexibleDates` is true, omit dates
+or send null. Fixed ranges include both endpoints and must contain 1–60 days.
+Companion and budget accept custom text as the form does; budget is not assumed to
+be a numeric whole-trip amount. Constraints map to `getConstraints()`; notes use
+keys `"1"` through `"5"` for nonempty submitted `getNote(step)` values. Do not send
+unsent drafts or UI generation state. Unknown top-level fields are rejected.
+
+### Android integration
+
+1. Use `http://10.0.2.2:8000` on the emulator or the computer's LAN IP on a phone.
+2. Send POST `/trips` on a background thread. Persist the response's `X-Session-Id`
+   and send that header on subsequent requests. Keep the trip ID and latest run ID.
+3. Once a generation worker exists, read `/trips/{id}` to inspect progress. Stop on
+   FAILED, handle error information in `latest_run.error`, and enforce a timeout.
+4. On READY, fetch `/trips/{id}/itinerary`. This returns the bare document expected
+   by `SavedTrip.fromContract(context, responseJson)`, not the trip metadata envelope.
+5. Save the snapshot with `TripStore.save` off the UI thread; only open
+   `TripDetailActivity` after successful persistence. Backend storage and local
+   storage are separate; deleting a server trip does not erase a local snapshot.
+
+Android still needs INTERNET permission, development HTTP configuration, an API
+client, lifecycle-aware request handling, and errors/retries. Native Android HTTP
+does not require browser CORS configuration. Anonymous session IDs are bearer
+identifiers, not authenticated accounts: retain them privately and use HTTPS when
+hosting the API. POST is not idempotent; automatically retrying a successful but
+interrupted request can create another trip.
+
+### Tests
+
+```sh
+uv run python -m unittest discover -s tests -v
+RUN_DB_TESTS=1 uv run python -m unittest discover -s tests -v
+```
+
+The first command runs validation/HTTP validation tests without connecting to PostgreSQL.
+The second also exercises create/list/read/run lookup/itinerary/delete and session isolation
+against the configured database. Existing tables must already be initialized. Database tests
+use savepoints inside an outer transaction and roll back all test records. They do not
+initialize or migrate the schema. No additional test dependencies are required.
+
+## Profile-based location recommendations
+
+`POST /recommendations/locations` accepts the latest frontend's profile recommendation
+request and returns a departure plus destination suggestions with reasons. It uses a
+small backend demo catalog and preference keyword ranking; no LLM or live travel service
+is called. Profiles are used transiently, not stored. Locations require user confirmation
+before the five-step form is submitted to POST `/trips`.
+
+See [profile-to-planning workflow](docs/profile-planning-workflow.md) for request/response
+examples, frontend handoff, validation, provider limitations, and verification steps.
