@@ -120,6 +120,8 @@ final class MockItinerary {
                         "notices", array(object("code", "MOCK_DRAFT", "severity", "WARNING",
                                 "message", "Dates and times are illustrative. Transport, stays, visas and prices still need verification.", "relatedIds", array())),
                         "constraintChecks", checks));
+        JSONObject cover = MockPhotoCatalog.media(state.getDestination());
+        if (cover != null) { result.getJSONArray("media").put(cover); result.getJSONObject("summary").put("coverImageId", "mock_cover"); }
         // 假数据也走真实解析边界，让字段缺失/引用错误在开发时暴露，而不是 UI 崩溃时才发现。
         ItineraryDocument.parse(context, result.toString());
         return result;

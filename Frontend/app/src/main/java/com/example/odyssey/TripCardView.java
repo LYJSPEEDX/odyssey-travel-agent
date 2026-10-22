@@ -18,7 +18,11 @@ final class TripCardView {
         ImageView photo = card.findViewById(R.id.editorialPhoto);
         TripPhotos.show(photo, city);
         if (trip.contractJson != null) try {
-            TripPhotos.showCover(photo, new JSONObject(trip.contractJson), city);
+            android.widget.TextView credit = new android.widget.TextView(ui.context);
+            credit.setTextSize(10); credit.setTextColor(ui.color(R.color.text_secondary));
+            ((android.widget.LinearLayout) card.findViewById(R.id.editorialTicket)).addView(credit, 0);
+            JSONObject root = new JSONObject(trip.contractJson);
+            TripPhotos.showResponse(photo, ResponseImage.cover(root, true, System.currentTimeMillis()), TripPhotos.fallbackCity(root, city), credit);
         } catch (JSONException ignored) { /* 兼容旧快照；详情页负责报告不可读的 contract。 */ }
         String title = sample ? sampleTitle(city) : city;
         text(card, R.id.editorialTitle, title);

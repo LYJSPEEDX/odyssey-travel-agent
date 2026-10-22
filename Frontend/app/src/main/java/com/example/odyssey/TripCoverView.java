@@ -25,8 +25,7 @@ final class TripCoverView {
         FrameLayout layers = new FrameLayout(ui.context);
         card.addView(layers, new FrameLayout.LayoutParams(-1, -1));
         ImageView image = new ImageView(ui.context);
-        if (root == null) TripPhotos.show(image, city);
-        else TripPhotos.showCover(image, root, city);
+        TripPhotos.show(image, city);
         layers.addView(image, new FrameLayout.LayoutParams(-1, -1));
         // 叠加半透明黑色，亮色照片上也能读清白色标题。
         View scrim = new View(ui.context);
@@ -44,6 +43,9 @@ final class TripCoverView {
         ViewCompat.setAccessibilityHeading(heading, true);
         FrameLayout.LayoutParams titleParams = new FrameLayout.LayoutParams(-1, -2, Gravity.BOTTOM);
         layers.addView(heading, titleParams);
+        TextView credit = new TextView(ui.context); credit.setTextSize(10); credit.setTextColor(ui.color(R.color.text_secondary));
+        parent.addView(credit, new LinearLayout.LayoutParams(-1, -2));
+        TripPhotos.showResponse(image, ResponseImage.cover(root, false, System.currentTimeMillis()), TripPhotos.fallbackCity(root, city), credit);
     }
     private TripCoverView() {}
 }

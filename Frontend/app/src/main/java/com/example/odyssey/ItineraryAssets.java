@@ -28,12 +28,25 @@ final class ItineraryAssets {
         } catch (IOException error) { throw new JSONException("Cannot load itinerary asset"); }
     }
     static String example(Context context, String id) throws JSONException {
+        String raw, city;
         // 只允许预设示例 ID 映射到固定路径，不把外部 ID 直接当作资源路径打开。
         switch (id) {
-            case "contract_canberra": return read(context, "examples/canberra-3-days.json");
-            case "contract_new_york": return read(context, "examples/new-york-10-days.json");
+            case "contract_canberra": raw = read(context, "examples/canberra-3-days.json"); city = "Canberra"; break;
+            case "contract_new_york": raw = read(context, "examples/new-york-10-days.json"); city = "New York"; break;
             default: throw new JSONException("Unknown example");
         }
+        JSONObject root = new JSONObject(raw);
+        JSONObject photo = MockPhotoCatalog.media(city);
+        String coverId = root.getJSONObject("summary").getString("coverImageId");
+        org.json.JSONArray media = root.getJSONArray("media");
+        for (int i = 0; i < media.length(); i++) {
+            JSONObject existing = media.getJSONObject(i);
+            if (coverId.equals(existing.getString("id"))) {
+                photo.put("id", coverId).put("placeId", existing.opt("placeId"));
+                media.put(i, photo); return root.toString();
+            }
+        }
+        photo.put("id", coverId); media.put(photo); return root.toString();
     }
     static JSONObject schema(Context context) throws JSONException {
         return new JSONObject(read(context, "itinerary.schema.json"));

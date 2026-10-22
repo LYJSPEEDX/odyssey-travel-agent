@@ -78,7 +78,8 @@ final class PlanningJson {
                 if (!ids.add(option.id)) throw new IllegalArgumentException("Duplicate option");
                 readStrings(o.getJSONArray("keywords"), option.keywords, 20, 200);
                 if (i == 1 && option.keywords.size() != 3) throw new IllegalArgumentException("Destination needs three keywords");
-                if (!o.isNull("imageUrl")) option.imageUrl = string(o, "imageUrl", 2000);
+                // 可选坏图片不应拒绝整个已完成的行程回答；远程加载边界再验证 URL。
+                option.imageUrl = ResponseImage.text(o.opt("imageUrl"), 2000);
                 q.options.add(option);
             }
             step.question = q;

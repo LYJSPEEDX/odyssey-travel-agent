@@ -123,7 +123,15 @@ public class MainActivity extends AppCompatActivity implements PlannerFormRender
         findViewById(R.id.tripBoard).setVisibility(session.answer(0).isEmpty() ? View.GONE : View.VISIBLE);
         android.widget.ImageView photo = findViewById(R.id.tripBoardPhoto);
         photo.setVisibility(session.answer(1).isEmpty() ? View.GONE : View.VISIBLE);
-        if (!session.answer(1).isEmpty()) TripPhotos.show(photo, session.answer(1));
+        if (!session.answer(1).isEmpty()) {
+            // Live Trip 使用已确认选项的响应 URL，不把用户输入的城市拼成图库查询。
+            String imageUrl = null;
+            for (PlanningSession.Option option : session.steps[1].question.options)
+                if (option.value.equals(session.answer(1))) imageUrl = option.imageUrl;
+            String credit = imageUrl != null && imageUrl.equals(MockPhotoCatalog.url(session.answer(1), true)) ? "Photo: Unsplash · illustrative" : "";
+            TripPhotos.showResponse(photo, new ResponseImage(imageUrl, session.answer(1) + " atmosphere photo", credit),
+                    session.answer(1), findViewById(R.id.tripBoardPhotoCredit));
+        } else SafeImageLoader.SHARED.cancel(photo);
         text(R.id.tripBoardDestination, session.answer(1).isEmpty() ? "Depart from " + session.answer(0) : session.answer(0) + " → " + session.answer(1));
         text(R.id.tripBoardStatus, "Local demo · " + (session.answer(2).isEmpty() ? "Dates to choose" : session.answer(2)));
         View next = findViewById(R.id.nextButton);

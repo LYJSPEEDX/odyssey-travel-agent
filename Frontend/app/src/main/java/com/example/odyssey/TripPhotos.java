@@ -9,7 +9,7 @@ import java.util.Locale;
 /**
  * 离线城市照片目录：只接受明确的城市名或 assetKey，不把模型字符串当文件路径/网络地址。
  * 复用同一目录让首页、目的地选择、Live Trip 和详情封面保持一致。
- * 后续接远程图片可替换此显示边界；本轮不增加网络权限，也不改最终 JSON 协议。
+ * 远程图片由独立安全加载边界处理，本地素材始终先显示。
  */
 final class TripPhotos {
     static int resource(String city) {
@@ -43,6 +43,7 @@ final class TripPhotos {
     }
 
     static void show(ImageView view, String city) {
+        SafeImageLoader.SHARED.cancel(view);
         int resource = resource(city);
         view.setImageResource(resource); // 打包资源不依赖网络；系统会复用 Bitmap drawable 的缓存。
         view.setScaleType(ImageView.ScaleType.CENTER_CROP); // 裁掉边缘，不拉伸建筑和人物。
@@ -50,23 +51,32 @@ final class TripPhotos {
                 ? R.string.editorial_no_photo : R.string.editorial_cover_alt, city));
     }
 
-    /** 仅使用 READY 且列入白名单的本地 assetKey；不尝试访问任意 url 或 file URI。 */
+    /** 旧调用默认列表尺寸；详情明确请求完整图。 */
     static void showCover(ImageView view, JSONObject root, String fallbackCity) {
-        JSONObject summary = root.optJSONObject("summary");
-        JSONArray media = root.optJSONArray("media");
-        String id = summary == null ? "" : summary.optString("coverImageId", "");
-        if (media != null) for (int i = 0; i < media.length(); i++) {
+        showResponse(view, ResponseImage.cover(root, true, System.currentTimeMillis()), fallbackCity(root, fallbackCity), null);
+    }
+    static String fallbackCity(JSONObject root, String city) {
+        JSONObject summary = root == null ? null : root.optJSONObject("summary");
+        JSONArray media = root == null ? null : root.optJSONArray("media");
+        String id = summary == null ? "" : ResponseImage.text(summary.opt("coverImageId"), 200);
+        if (!id.isEmpty() && media != null) for (int i = 0; i < Math.min(media.length(), 300); i++) {
             JSONObject item = media.optJSONObject(i);
-            if (item == null || !id.equals(item.optString("id")) || !"READY".equals(item.optString("status"))) continue;
-            String key = item.optString("assetKey", "");
-            // 目录 key 与文档一一对应，禁止资源名猜测和路径穿越。
-            for (String city : new String[]{"Kyoto", "Tokyo", "Bali", "Paris", "New York", "Canberra"}) {
-                if (("city_" + city.toLowerCase(Locale.ROOT).replace(' ', '_')).equals(key)) {
-                    show(view, city); return;
-                }
-            }
+            if (item == null || !id.equals(ResponseImage.text(item.opt("id"), 200)) || !"READY".equals(ResponseImage.text(item.opt("status"), 30))) continue;
+            String key = ResponseImage.text(item.opt("assetKey"), 100);
+            for (String known : new String[]{"Kyoto", "Tokyo", "Bali", "Paris", "New York", "Canberra"})
+                if (("city_" + known.toLowerCase(Locale.ROOT).replace(' ', '_')).equals(key)) return known;
         }
-        show(view, fallbackCity);
+        return city;
+    }
+    static void showResponse(ImageView view, ResponseImage image, String city, android.widget.TextView credit) {
+        show(view, city);
+        if (credit != null) { credit.setText(""); credit.setVisibility(android.view.View.GONE); }
+        if (image == null) return;
+        java.lang.ref.WeakReference<android.widget.TextView> label = new java.lang.ref.WeakReference<>(credit);
+        SafeImageLoader.SHARED.load(view, image.url, image.alt, () -> {
+            android.widget.TextView text = label.get();
+            if (text != null && !image.credit.isEmpty()) { text.setText(image.credit); text.setVisibility(android.view.View.VISIBLE); }
+        });
     }
 
     static String keywords(String city) {

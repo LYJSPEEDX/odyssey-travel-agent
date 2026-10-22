@@ -28,6 +28,7 @@ final class PlanningSession implements Serializable {
         final List<String> keywords = new ArrayList<>();
         Option(String id, String title, String description, String value, String... keywords) {
             this.id = id; this.title = title; this.description = description; this.value = value;
+            this.imageUrl = MockPhotoCatalog.url(value, true);
             this.keywords.addAll(Arrays.asList(keywords));
         }
     }

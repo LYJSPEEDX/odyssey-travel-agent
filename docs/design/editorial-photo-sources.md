@@ -1,6 +1,6 @@
 # 旅行封面素材（2026-10-21）
 
-本轮为离线原型素材，不调用图片搜索/API，不传输用户行程。照片打包于 `Frontend/app/src/main/res/drawable-nodpi/`，1000×650 JPEG，显示时 centerCrop。
+本地后备照片打包于 `Frontend/app/src/main/res/drawable-nodpi/`，1000×650 JPEG，显示时 centerCrop。MockPhotoCatalog 复用下表固定链接，填入 Mock 响应；前端现在可加载响应的远程图片，不调用图片搜索/API，不向图库发送用户资料、城市输入或行程。
 
 来源：Unsplash 免费图片；使用许可：https://unsplash.com/license 。不得将原图作为素材库出售或复制竞争图片服务。拍摄地点仅作城市氛围参考，不代表酒店、餐厅、价格或预订。
 
@@ -17,7 +17,8 @@ Canberra 图片页面：https://unsplash.com/photos/a-large-building-with-a-flag
 
 ## 与后端协议的边界
 
-- 既有 `summary.coverImageId` → `media[]` 引用不变；`status=READY` 且 `assetKey` 命中上表时显示本地素材。
-- 本次未接网络 `url` / `thumbnailUrl`；未知 key、缺图和不可用媒体使用匹配城市的离线氛围图或明确占位。
-- 不执行模型返回的文件路径、HTML、URL，不用 `getIdentifier` 猜测资源名。
-- 城市氛围图不能放到具体餐厅/酒店卡上声称是该场所实拍。未来远程图库需要独立处理来源、作者署名、缓存、到期与许可条款。
+- 既有 `summary.coverImageId` → `media[]` 引用不变；仅加载 READY、未到期、类型及 URL 合法的媒体。列表优先 thumbnailUrl，详情使用 url；旧 assetKey 目录仍可作为本地后备。
+- 中央白名单配置为 `Frontend/app/src/main/java/com/example/odyssey/ImageUrlPolicy.java`：仅 HTTPS、images.unsplash.com 与 images.pexels.com，无凭据，每一跳重定向均重新验证。增加提供商须在此审核配置。
+- 先显示本地城市照片或中性占位；下载、离线、过期或解码失败保留后备。下载最多 4MB、采样解码最长边 1200、位图缓存 8MB、两个线程及 12 个排队请求；重新绑定和离屏取消阻止旧图覆盖。
+- 成功显示响应图片后，在附近显示其 attribution 纯文本，不自动打开 attribution URL；不执行文件路径、HTML，也不用 getIdentifier 猜资源名。
+- 城市氛围图不代表具体酒店或餐厅实拍。此实现仍无真实业务后端访问；Mock 与本地示例通过同一媒体协议展示固定目录链接。

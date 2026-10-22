@@ -48,8 +48,10 @@ final class PlanningSessionRenderer {
                 ImageView image = new ImageView(content.getContext()); image.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 image.setContentDescription(option.title + " demo photo");
                 body.addView(image, new LinearLayout.LayoutParams(-1, dp(72)));
-                // imageUrl 已保留在数据模型中；Task 3 再接远程图，当前始终用本地图片。
-                TripPhotos.show(image, option.value);
+                TextView credit = paragraphView("", 10); body.addView(credit);
+                TripPhotos.showResponse(image, new ResponseImage(option.imageUrl, option.title + " atmosphere photo",
+                        MockPhotoCatalog.url(option.value, true) != null && MockPhotoCatalog.url(option.value, true).equals(option.imageUrl)
+                                ? "Photo: Unsplash · illustrative" : ""), option.value, credit);
             }
             TextView title = paragraphView(option.title, 17);
             title.setTypeface(null, selected ? Typeface.BOLD : Typeface.NORMAL); body.addView(title);

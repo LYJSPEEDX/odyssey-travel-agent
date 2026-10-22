@@ -221,6 +221,10 @@
                 android:textColor="@color/on_trip_board"
                 android:textSize="@dimen/text_label" />
 
+            <TextView android:id="@+id/tripBoardPhotoCredit" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:textSize="10sp"
+                android:textColor="@color/on_trip_board" android:visibility="gone" />
+
             </LinearLayout>
 
         </LinearLayout>
