@@ -85,7 +85,7 @@ public class EditorialLayoutTest {
         writeImage(root.getContext(), image, filename);
     }
     /** 实机截图保留硬件裁剪圆角；离屏 Canvas 只适合测量布局，不能验证 GPU outline。 */
-    private static void saveScreen(Context context, String filename) {
+    static void saveScreen(Context context, String filename) {
         Bitmap image = InstrumentationRegistry.getInstrumentation().getUiAutomation().takeScreenshot();
         assertNotNull("Device screenshot available", image);
         writeImage(context, image, filename);

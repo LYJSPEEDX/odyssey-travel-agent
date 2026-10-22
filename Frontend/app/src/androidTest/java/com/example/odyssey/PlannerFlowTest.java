@@ -153,7 +153,7 @@ public class PlannerFlowTest {
             scenario.onActivity(a -> { clickText(a, "No restrictions"); clickText(a, "Continue"); }); awaitStep(scenario, "6/7");
             choose(scenario, "Balanced", "7/7"); choose(scenario, "Local discoveries", "DEMO");
             scenario.onActivity(a -> { for (int i = 0; i < 4; i++) click(a, R.id.backButton); });
-            awaitStep(scenario, "4/7"); choose(scenario, "✓ Comfort", "5/7");
+            awaitStep(scenario, "4/7"); choose(scenario, "Comfort", "5/7");
             scenario.onActivity(a -> assertFalse(value(a, R.id.stepText).equals("DEMO")));
         } finally {
             SharedPreferences.Editor restore = library.edit().clear();

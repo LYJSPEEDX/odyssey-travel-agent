@@ -1,6 +1,7 @@
 package com.example.odyssey;
 
 import android.content.res.ColorStateList;
+import android.graphics.Typeface;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -35,25 +36,25 @@ final class PlanningSessionRenderer {
         for (PlanningSession.Option option : step.question.options) {
             MaterialCardView card = new MaterialCardView(content.getContext());
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-1, -2);
-            params.setMargins(0, dp(6), 0, dp(6)); card.setLayoutParams(params);
+            params.setMargins(0, dp(3), 0, dp(3)); card.setLayoutParams(params);
             card.setRadius(dp(20)); card.setCardElevation(0);
             boolean selected = step.selected.contains(option.id);
-            card.setCardBackgroundColor(color(selected ? R.color.lime : R.color.surface));
+            // 选中只改变标题字重；背景/边框保持一致，selected 属性仍供读屏识别。
+            card.setSelected(selected); card.setMinimumHeight(dp(48));
+            card.setCardBackgroundColor(color(R.color.surface));
             card.setStrokeColor(color(R.color.outline)); card.setStrokeWidth(dp(1));
-            LinearLayout body = new LinearLayout(content.getContext()); body.setOrientation(LinearLayout.VERTICAL); body.setPadding(dp(18), dp(14), dp(18), dp(14));
+            LinearLayout body = new LinearLayout(content.getContext()); body.setOrientation(LinearLayout.VERTICAL); body.setPadding(dp(12), dp(8), dp(12), dp(8));
             if (session.current == 1) {
                 ImageView image = new ImageView(content.getContext()); image.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 image.setContentDescription(option.title + " demo photo");
-                body.addView(image, new LinearLayout.LayoutParams(-1, dp(110)));
+                body.addView(image, new LinearLayout.LayoutParams(-1, dp(72)));
                 // imageUrl 已保留在数据模型中；Task 3 再接远程图，当前始终用本地图片。
                 TripPhotos.show(image, option.value);
             }
-            TextView title = paragraphView((selected ? "✓ " : "") + option.title, 20); body.addView(title);
-            body.addView(paragraphView(option.description, 14));
-            if (session.current == 1) body.addView(paragraphView(String.join(" · ", option.keywords), 14));
-            // 浅绿色选中卡片在深色主题下也使用深色前景，不能继承夜间白字。
-            if (selected) for (int n = 0; n < body.getChildCount(); n++)
-                if (body.getChildAt(n) instanceof TextView) ((TextView) body.getChildAt(n)).setTextColor(color(R.color.on_accent));
+            TextView title = paragraphView(option.title, 17);
+            title.setTypeface(null, selected ? Typeface.BOLD : Typeface.NORMAL); body.addView(title);
+            body.addView(paragraphView(option.description, 13));
+            if (session.current == 1) body.addView(paragraphView(String.join(" · ", option.keywords), 13));
             card.addView(body); card.setEnabled(!loading); card.setClickable(true);
             card.setOnClickListener(view -> actions.option(option.id)); content.addView(card);
         }
@@ -70,7 +71,8 @@ final class PlanningSessionRenderer {
     private void paragraph(String value) { content.addView(paragraphView(value, 15)); }
     private TextView paragraphView(String value, int size) {
         TextView view = new TextView(content.getContext()); view.setText(value); view.setTextSize(size);
-        view.setTextColor(color(R.color.text_primary)); view.setPadding(0, dp(5), 0, dp(5)); return view;
+        view.setTypeface(null, Typeface.NORMAL);
+        view.setTextColor(color(R.color.text_primary)); view.setPadding(0, dp(2), 0, dp(2)); return view;
     }
     private int color(int id) { return ContextCompat.getColor(content.getContext(), id); }
     private int dp(int value) { return Math.round(value * content.getResources().getDisplayMetrics().density); }
