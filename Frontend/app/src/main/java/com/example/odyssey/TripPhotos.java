@@ -14,7 +14,7 @@ import java.util.Locale;
 final class TripPhotos {
     static int resource(String city) {
         // 精确匹配而非 contains：例如 Paris, Texas 不能错误使用法国巴黎照片。
-        String key = city == null ? "" : city.trim().toLowerCase(Locale.ROOT);
+        String key = InputValidation.text(city).toLowerCase(Locale.ROOT);
         switch (key) {
             case "kyoto": return R.drawable.photo_kyoto;
             case "tokyo": return R.drawable.photo_tokyo;

@@ -68,14 +68,14 @@ final class JournalAdjustment {
             changed.accept(input.getText() == null ? "" : input.getText().toString()); dialog.dismiss();
         });
         // 只有非空白文字才允许保留；下面输入监听器会持续更新这个状态。
-        keep.setEnabled(!draft.trim().isEmpty());
+        keep.setEnabled(!InputValidation.text(draft).isEmpty());
         // 每次编辑都通知 Activity，关闭弹层或页面重建时也能恢复，而非只有 Keep draft 才记录。
         input.addTextChangedListener(new TextWatcher() {
             // 接口要求三个方法；本功能只用 onTextChanged，其余两个方法保持空实现。
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
                 // s 是变化后的完整文字；accept 同步草稿，再更新 Keep draft 是否可点。
-                changed.accept(s.toString()); keep.setEnabled(!s.toString().trim().isEmpty());
+                changed.accept(s.toString()); keep.setEnabled(!InputValidation.text(s.toString()).isEmpty());
             }
             @Override public void afterTextChanged(Editable value) {}
         });

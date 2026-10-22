@@ -109,8 +109,8 @@ public class TripDetailActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
     }
     private void updateDraftStatus() {
-        // trim().isEmpty() 将全空格也视为无草稿；setText 接收的是两种英文文案资源 ID。
-        ((android.widget.TextView) findViewById(R.id.journalDraftStatus)).setText(adjustmentDraft.trim().isEmpty()
+        // 空白归一化统一由 InputValidation 处理；这里只选择草稿状态文案。
+        ((android.widget.TextView) findViewById(R.id.journalDraftStatus)).setText(InputValidation.text(adjustmentDraft).isEmpty()
                 ? R.string.journal_offline : R.string.journal_draft_kept);
     }
     // 页面销毁时关闭持有 Activity 的弹层，避免旧窗口继续挂在已销毁的页面上。

@@ -16,8 +16,9 @@ final class AppPreferences {
         return preferences.getString("nickname", context.getString(R.string.settings_guest));
     }
     boolean saveNickname(String value) {
-        String name = value.trim();
-        if (name.isEmpty() || name.length() > 24) return false;
+        final String name;
+        try { name = InputValidation.requiredText(value, 24, "Nickname"); }
+        catch (IllegalArgumentException exception) { return false; }
         return preferences.edit().putString("nickname", name).commit();
     }
     int themeIndex() {

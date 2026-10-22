@@ -27,6 +27,7 @@ import static org.junit.Assert.*;
 
 @RunWith(AndroidJUnit4.class)
 public class LaunchWelcomeTest {
+    @org.junit.Rule public final ProfileTestFixture profile = new ProfileTestFixture();
     private Context context() {
         return InstrumentationRegistry.getInstrumentation().getTargetContext();
     }

@@ -31,6 +31,8 @@ public class HomeActivity extends AppCompatActivity {
     // 图片无需网络；这个工作线程只处理用户主动点击的本机示例保存。
     private final java.util.concurrent.ExecutorService sampleWorker = java.util.concurrent.Executors.newSingleThreadExecutor();
     private boolean savingSample;
+    private boolean checkingProfile, openingProfile;
+    private boolean profileComplete, profileChecked;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         // 系统先读取 Manifest 中的 Launch 主题绘制品牌图标；进入应用后恢复正常浅/深色主题。
@@ -67,6 +69,7 @@ public class HomeActivity extends AppCompatActivity {
         });
         // 首页先准备好，再盖上欢迎层；1.5 秒后揭开时不需要重新启动 Activity。
         launchWelcome = new LaunchWelcome(this, savedInstanceState);
+        launchWelcome.onDismiss(this::openProfileIfNeeded);
     }
 
     @Override protected void onNewIntent(Intent intent) {
@@ -80,9 +83,12 @@ public class HomeActivity extends AppCompatActivity {
     }
     @Override protected void onResume() {
         super.onResume();
+        openingProfile = false;
+        profileChecked = false;
         // Returning from generation must refresh the library, not a cached empty state.
         if (ui != null) render();
         if (launchWelcome != null) launchWelcome.resume();
+        checkProfile();
     }
     @Override protected void onPause() {
         if (launchWelcome != null) launchWelcome.pause(); // 切到后台停止计时。
@@ -99,6 +105,7 @@ public class HomeActivity extends AppCompatActivity {
         if (selected == R.id.nav_my) myTrips();
         else if (selected == R.id.nav_settings) new HomeSettings(this, ui, this::render).render();
         else home();
+        enableTree(findViewById(R.id.homeRoot), profileComplete);
     }
     private void home() {
         // 品牌栏保持轻量；主要视觉焦点留给下方照片，而不是重复的彩色面板。
@@ -121,6 +128,8 @@ public class HomeActivity extends AppCompatActivity {
         ui.text(getString(R.string.editorial_wordmark), 28, true);
         ui.text(getString(R.string.editorial_collection), 11, false);
         ui.title(R.string.editorial_my_title, R.string.editorial_my_subtitle);
+        ui.button(R.string.profile_edit, () -> startActivity(new Intent(this, RegistrationActivity.class)
+                .putExtra(RegistrationActivity.EXTRA_EDIT_PROFILE, true))).setId(R.id.editProfile);
         try {
             List<SavedTrip> trips = new TripStore(this).list();
             if (trips.isEmpty()) {
@@ -140,6 +149,40 @@ public class HomeActivity extends AppCompatActivity {
         ui.text(getString(R.string.local_only_notice), 12, false);
     }
     private void startPlanner() { startActivity(new Intent(this, MainActivity.class)); }
+    /** 首页保持桌面入口；欢迎层结束后再打开本机资料门槛，防止重复启动。 */
+    private void checkProfile() {
+        if (checkingProfile) return;
+        checkingProfile = true;
+        enableTree(findViewById(R.id.homeRoot), false);
+        sampleWorker.execute(() -> {
+            boolean complete = false;
+            try { complete = ProfileStore.isComplete(new ProfileStore(this).load()); }
+            catch (java.io.IOException | JSONException | IllegalArgumentException ignored) { /* 由资料页展示读取错误与重试。 */ }
+            final boolean ready = complete;
+            runOnUiThread(() -> {
+                checkingProfile = false;
+                if (isFinishing() || isDestroyed()) return;
+                profileComplete = ready; profileChecked = true;
+                enableTree(findViewById(R.id.homeRoot), ready);
+                openProfileIfNeeded();
+            });
+        });
+    }
+    /** 只在前台且欢迎层真正结束后跳转，不持有后台延迟跳转任务。 */
+    private void openProfileIfNeeded() {
+        if (!profileChecked || profileComplete || openingProfile || isFinishing() || isDestroyed()
+                || !getLifecycle().getCurrentState().isAtLeast(androidx.lifecycle.Lifecycle.State.RESUMED)
+                || (launchWelcome != null && launchWelcome.isShowing())) return;
+        openingProfile = true;
+        startActivity(new Intent(this, RegistrationActivity.class));
+    }
+    private void enableTree(View view, boolean enabled) {
+        view.setEnabled(enabled);
+        if (view instanceof android.view.ViewGroup) {
+            android.view.ViewGroup group = (android.view.ViewGroup) view;
+            for (int i = 0; i < group.getChildCount(); i++) enableTree(group.getChildAt(i), enabled);
+        }
+    }
     /** 收藏示例实际保存完整快照，不只是变一下图标颜色；重复点击不会覆盖已有记录。 */
     private void saveExample(String id) {
         if (savingSample) return; // 忽略正在保存期间的重复点击。

@@ -68,8 +68,9 @@ final class HomeSettings {
                 .setPositiveButton(R.string.settings_save, null).create();
         // 在 show 后接管保存按钮：校验失败时保留弹窗和输入，避免默认行为自动关闭。
         dialog.setOnShowListener(ignored -> dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(view -> {
-            String value = name.getText() == null ? "" : name.getText().toString().trim();
-            if (value.isEmpty()) { name.setError(activity.getString(R.string.settings_invalid_nickname)); return; }
+            final String value;
+            try { value = InputValidation.requiredText(name.getText() == null ? null : name.getText().toString(), 24, "Nickname"); }
+            catch (IllegalArgumentException exception) { name.setError(activity.getString(R.string.settings_invalid_nickname)); return; }
             if (!preferences.saveNickname(value)) {
                 name.setError(activity.getString(R.string.settings_save_failed)); return;
             }

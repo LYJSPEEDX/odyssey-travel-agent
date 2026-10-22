@@ -17,6 +17,7 @@
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".TripDetailActivity" android:exported="false" />
+        <activity android:name=".RegistrationActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
         <activity android:name=".HomeActivity" android:exported="true"
             android:theme="@style/Theme.Odyssey.Launch">
             <intent-filter>

@@ -25,7 +25,7 @@ final class ProfileContracts {
                                              JSONArray destinations) throws JSONException {
         JSONObject request = new JSONObject().put("schemaVersion", "1.0")
                 .put("profile", new JSONObject(profile.toString()))
-                .put("origin", origin == null ? JSONObject.NULL : origin.trim())
+                .put("origin", origin == null ? JSONObject.NULL : InputValidation.text(origin))
                 .put("destinations", destinations == null ? new JSONArray() : new JSONArray(destinations.toString()));
         check(request, schema(context), "recommendationRequest");
         return request;

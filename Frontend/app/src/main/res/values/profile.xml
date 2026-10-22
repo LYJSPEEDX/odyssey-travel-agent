@@ -1,0 +1,12 @@
+<resources>
+    <item name="registrationName" type="id" />
+    <item name="registrationNationality" type="id" />
+    <item name="registrationGender" type="id" />
+    <item name="registrationCancel" type="id" />
+    <item name="editProfile" type="id" />
+    <string name="profile_name">Name</string>
+    <string name="profile_nationality">Nationality</string>
+    <string name="profile_edit">Edit profile &amp; preferences</string>
+    <string name="profile_save">Save profile</string>
+    <string name="profile_cancel">Cancel</string>
+</resources>

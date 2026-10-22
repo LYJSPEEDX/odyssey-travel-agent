@@ -22,6 +22,7 @@ import java.io.FileOutputStream;
 /** 在不同宽度、字体和主题下实际测量/绘制原生 View，不修改用户设备全局设置。 */
 @RunWith(AndroidJUnit4.class)
 public class EditorialLayoutTest {
+    @org.junit.Rule public final ProfileTestFixture profile = new ProfileTestFixture();
     @Test public void coversFitSmallScreensAndLargeTypeInBothThemes() {
         Context base = InstrumentationRegistry.getInstrumentation().getTargetContext();
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {

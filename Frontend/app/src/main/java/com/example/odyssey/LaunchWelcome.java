@@ -27,6 +27,9 @@ final class LaunchWelcome {
     private final boolean previousLightNavigation;
     private final LaunchCountdown countdown;
     private View overlay;
+    private Runnable onDismiss;
+    void onDismiss(Runnable action) { onDismiss = action; }
+    boolean isShowing() { return overlay != null; }
 
     // Runnable 是要稍后执行的任务；保存同一个实例，暂停时才能准确取消。
     private final Runnable finish = this::dismiss;
@@ -107,5 +110,6 @@ final class LaunchWelcome {
         home.setVisibility(View.VISIBLE);
         bars.setAppearanceLightStatusBars(previousLightStatus);
         bars.setAppearanceLightNavigationBars(previousLightNavigation);
+        if (onDismiss != null) onDismiss.run();
     }
 }

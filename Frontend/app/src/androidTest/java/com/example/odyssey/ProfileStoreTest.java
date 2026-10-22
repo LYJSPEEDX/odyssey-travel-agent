@@ -15,6 +15,24 @@ import java.util.UUID;
 
 @RunWith(AndroidJUnit4.class)
 public class ProfileStoreTest {
+    @Test public void completeProfileRoundtripAndRejectedEditPreservesPrevious() throws Exception {
+        File path = fixture();
+        try {
+            ProfileStore store = store(path);
+            store.save(30, "Sydney", "Art");
+            assertFalse(ProfileStore.isComplete(store.load()));
+            JSONObject profile = new JSONObject().put("schema_version", 2).put("name", " Alex ")
+                    .put("gender", "Prefer not to say").put("age", 30).put("nationality", "Australian")
+                    .put("residential_location", "Sydney").put("travel_preferences", "Art")
+                    .put("preference_tags", new org.json.JSONArray().put("DIVING"));
+            store.save(profile);
+            assertTrue(ProfileStore.isComplete(store(path).load()));
+            assertEquals("Alex", store.load().getString("name"));
+            profile.put("name", " ");
+            assertThrows(IllegalArgumentException.class, () -> store.save(profile));
+            assertEquals("Alex", store.load().getString("name"));
+        } finally { path.delete(); }
+    }
     @Test public void profileSurvivesReopeningAndPreferencesAreOptional() throws Exception {
         File path = fixture();
         try {

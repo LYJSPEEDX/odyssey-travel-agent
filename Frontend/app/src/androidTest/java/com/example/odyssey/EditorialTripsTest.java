@@ -17,6 +17,7 @@ import org.junit.runner.RunWith;
 /** 不依赖网络：首页/行程库必须有真实离线图片，并保留原来的数据与点击入口。 */
 @RunWith(AndroidJUnit4.class)
 public class EditorialTripsTest {
+    @org.junit.Rule public final ProfileTestFixture profile = new ProfileTestFixture();
     @Test public void homeExamplesHavePhotoCoversAndRealMetadata() {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         // 内部入口跳过欢迎层，测试聚焦新版首页，不用等待固定动画时间。
