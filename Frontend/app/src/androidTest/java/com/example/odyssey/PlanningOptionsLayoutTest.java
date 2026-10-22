@@ -52,9 +52,11 @@ public class PlanningOptionsLayoutTest {
                     assertEquals(normal.getStrokeColor(), selected.getStrokeColor());
                     assertTrue(selected.getHeight() >= dp(context, 48)); assertTrue(normal.getHeight() >= dp(context, 48));
                     if (scale == 1) assertTrue("Compact companion card stays at most 76dp high", selected.getHeight() <= dp(context, 76));
+                    assertRenderedTextFits(root);
                     session.current = 1; renderer.render(session, Calendar.getInstance(), false); layout(root, width);
                     ImageView image = image(root); assertNotNull(image);
                     assertEquals("Destination image uses a compact 72dp strip", dp(context, 72), image.getHeight());
+                    assertRenderedTextFits(root);
                 }
         });
     }
@@ -77,6 +79,29 @@ public class PlanningOptionsLayoutTest {
             InstrumentationRegistry.getInstrumentation().waitForIdleSync();
             EditorialLayoutTest.saveScreen(context, "compact-companions.png");
         }
+    }
+    /** 不只检查测量值：绘制每种主题/字号配置，并验证每一行文字没有被挤出可用范围。 */
+    private static void assertRenderedTextFits(View root) {
+        android.graphics.Bitmap bitmap = android.graphics.Bitmap.createBitmap(root.getWidth(), root.getHeight(),
+                android.graphics.Bitmap.Config.ARGB_8888);
+        try { root.draw(new android.graphics.Canvas(bitmap)); }
+        finally { bitmap.recycle(); }
+        assertTextFits(root);
+    }
+    private static void assertTextFits(View view) {
+        if (view instanceof TextView) {
+            TextView text = (TextView) view;
+            assertNotNull(text.getLayout());
+            assertTrue(text.getText().toString(), text.getLayout().getHeight()
+                    <= text.getHeight() - text.getCompoundPaddingTop() - text.getCompoundPaddingBottom());
+            for (int line = 0; line < text.getLayout().getLineCount(); line++) {
+                assertEquals(0, text.getLayout().getEllipsisCount(line));
+                assertTrue(text.getText().toString(), text.getLayout().getLineWidth(line)
+                        <= text.getWidth() - text.getCompoundPaddingLeft() - text.getCompoundPaddingRight() + 1);
+            }
+        }
+        if (view instanceof ViewGroup) for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++)
+            assertTextFits(((ViewGroup) view).getChildAt(i));
     }
     private static MaterialCardView card(View view) {
         while (!(view instanceof MaterialCardView) && view.getParent() instanceof View) view = (View) view.getParent();
