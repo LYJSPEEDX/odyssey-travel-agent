@@ -70,7 +70,7 @@
                 android:textAlignment="center"
                 android:textColor="@color/step_indicator_text"
                 android:textSize="@dimen/text_body"
-                tools:text="01 / 05" />
+                tools:text="1/7" />
 
             <Space
                 android:layout_width="0dp"
@@ -102,7 +102,7 @@
 
         </LinearLayout>
 
-        <!-- 五段进度条 -->
+        <!-- 七轮进度；START 出发地不占用段数 -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/progress_height"
@@ -145,6 +145,22 @@
                 android:id="@+id/progressStep5"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/space_xs"
+                android:layout_weight="1"
+                android:background="@color/outline" />
+
+            <View
+                android:id="@+id/progressStep6"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/space_xs"
+                android:layout_marginStart="@dimen/space_xs"
+                android:layout_weight="1"
+                android:background="@color/outline" />
+
+            <View
+                android:id="@+id/progressStep7"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/space_xs"
+                android:layout_marginStart="@dimen/space_xs"
                 android:layout_weight="1"
                 android:background="@color/outline" />
 

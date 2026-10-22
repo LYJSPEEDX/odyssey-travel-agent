@@ -36,19 +36,16 @@ public class EditorialTripsTest {
     }
     @Test public void destinationSelectionHasPhotosAndUpdatesLiveBoard() {
         try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
+            PlannerFlowTest.choose(scenario, "Sydney", "1/7");
+            scenario.onActivity(activity -> assertTrue(containsPhoto(activity.findViewById(R.id.stepContent))));
+            PlannerFlowTest.choose(scenario, "Kyoto", "2/7");
             scenario.onActivity(activity -> {
-                clickText(activity.findViewById(R.id.main), "Sydney");
-                View card = activity.findViewById(R.id.stepContent).findViewWithTag("destination-Kyoto");
-                assertNotNull("Destination needs the new image card", card);
-                assertTrue(containsPhoto(card));
-                card.performClick();
                 assertTrue(containsText(activity.findViewById(R.id.tripBoard), "Sydney → Kyoto"));
                 assertTrue("Live Trip needs the selected destination thumbnail",
                         containsPhoto(activity.findViewById(R.id.tripBoard)));
             });
             scenario.recreate();
-            scenario.onActivity(activity -> assertTrue(
-                    activity.findViewById(R.id.stepContent).findViewWithTag("destination-Kyoto").isSelected()));
+            scenario.onActivity(activity -> assertTrue(containsText(activity.findViewById(R.id.tripBoard), "Sydney → Kyoto")));
         }
     }
     @Test public void structuredItineraryHasCoverWithoutLosingJournal() {
