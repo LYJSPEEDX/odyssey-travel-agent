@@ -6,6 +6,10 @@
    See https://developer.android.com/about/versions/12/backup-restore
 -->
 <full-backup-content>
+    <!-- 资料目前只保存在本机；原子写入的临时/恢复副本也不能进入系统云备份。 -->
+    <exclude domain="file" path="profile.json" />
+    <exclude domain="file" path="profile.json.bak" />
+    <exclude domain="file" path="profile.json.new" />
     <exclude domain="sharedpref" path="trip_library.xml" />
     <exclude domain="sharedpref" path="app_preferences.xml" />
     <!--

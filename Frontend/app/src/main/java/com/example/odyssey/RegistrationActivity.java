@@ -130,6 +130,10 @@ public class RegistrationActivity extends AppCompatActivity {
     private TextInputEditText field(HomeUi ui, int id, int hint, int type, int limit) {
         TextInputLayout wrapper = new TextInputLayout(this);
         wrapper.setHint(hint);
+        // 品牌 lime 适合按钮填充，但在米白底上不足以作为小号标签文字；使用语义正文色。
+        android.content.res.ColorStateList labelColor = android.content.res.ColorStateList.valueOf(ui.color(R.color.text_primary));
+        wrapper.setHintTextColor(labelColor);
+        wrapper.setBoxStrokeColor(ui.color(R.color.text_primary));
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-1, -2);
         params.bottomMargin = ui.dp(16);
         ui.content.addView(wrapper, params);
@@ -180,6 +184,8 @@ public class RegistrationActivity extends AppCompatActivity {
     }
     /** 旋转只保存未提交草稿，动态标签使用稳定业务 ID 而非生成的 View ID。 */
     @Override protected void onSaveInstanceState(Bundle state) {
+        // 连续旋转时磁盘读取可能尚未完成，此时继续传递已有草稿，不能让旧存档取代它。
+        if (restoredDraft != null) state.putString("profile_draft", restoredDraft.toString());
         if (name.isEnabled()) {
             try {
                 org.json.JSONArray selected = new org.json.JSONArray();

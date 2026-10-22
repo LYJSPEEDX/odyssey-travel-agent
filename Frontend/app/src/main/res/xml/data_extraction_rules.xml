@@ -5,6 +5,9 @@
 -->
 <data-extraction-rules>
     <cloud-backup>
+        <exclude domain="file" path="profile.json" />
+        <exclude domain="file" path="profile.json.bak" />
+        <exclude domain="file" path="profile.json.new" />
         <exclude domain="sharedpref" path="trip_library.xml" />
         <exclude domain="sharedpref" path="app_preferences.xml" />
         <!-- TODO: Use <include> and <exclude> to control what is backed up.
@@ -13,6 +16,9 @@
         -->
     </cloud-backup>
     <device-transfer>
+        <exclude domain="file" path="profile.json" />
+        <exclude domain="file" path="profile.json.bak" />
+        <exclude domain="file" path="profile.json.new" />
         <exclude domain="sharedpref" path="trip_library.xml" />
         <exclude domain="sharedpref" path="app_preferences.xml" />
     </device-transfer>
