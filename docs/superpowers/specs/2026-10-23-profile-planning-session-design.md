@@ -2,7 +2,7 @@
 
 日期：2026-10-23（Australia/Sydney）
 
-状态：待用户与后端负责人评审；不是已上线接口。已确认本轮使用 Mock，不连接真实服务。
+状态：用户已确认方案，并要求扩充至 60 个标签、Companions 多选；待后端负责人联调评审，不是已上线接口。本轮使用 Mock，不连接真实服务。
 
 ## 1. 范围与方案选择
 
@@ -46,12 +46,12 @@
 | age | integer，1–120 | 延续现有范围；年龄不是生日 |
 | nationality_country_code | ISO 两位国家码或 null | null 表示未提供；不是常住国，也不是护照验证 |
 | residential_location | 非空 string，最多 200 字符 | 手动填写，不请求定位权限，不自动当作已确认出发地 |
-| travel_tag_ids | 去重 string[]，0–36 项 | 稳定 ID，不发送标签显示文案作为 ID |
+| travel_tag_ids | 去重 string[]，0–60 项 | 稳定 ID，不发送标签显示文案作为 ID |
 | travel_preferences | string，最多 2000 字符 | 自由补充，可为空；保留 v1 内容 |
 
 界面将资料与偏好分为两个小页面。标签自动换行，描边胶囊、多选、再次点击取消；选中同时显示底色和勾选，不只依赖颜色。可不选标签；设置提供修改入口。资料保存成功再进入首页。
 
-固定目录 v1（36 个，后续改显示名称不得改变 ID）：
+固定目录 v1（60 个，后续改显示名称不得改变 ID；尚未发布，所以仍为 v1）：
 
 | ID | English label | ID | English label | ID | English label |
 |---|---|---|---|---|---|
@@ -67,8 +67,18 @@
 | WILDLIFE | Wildlife | ADVENTURE | Adventure | WELLNESS | Wellness |
 | SLOW_TRAVEL | Slow travel | PACKED_ITINERARY | See more places | HIDDEN_GEMS | Hidden gems |
 | LUXURY | Luxury stays | BUDGET_FRIENDLY | Budget-friendly | ECO_CONSCIOUS | Eco-conscious |
+| DIVING | Diving | SNORKELING | Snorkeling | FREEDIVING | Freediving |
+| SURFING | Surfing | KITESURFING | Kitesurfing | WINDSURFING | Windsurfing |
+| KAYAKING | Kayaking | CANOEING | Canoeing | PADDLEBOARDING | Paddleboarding |
+| SAILING | Sailing | RAFTING | Rafting | SWIMMING | Swimming |
+| SKIING | Skiing | SNOWBOARDING | Snowboarding | ICE_SKATING | Ice skating |
+| ROCK_CLIMBING | Rock climbing | BOULDERING | Bouldering | TRAIL_RUNNING | Trail running |
+| RUNNING | Running | MOUNTAIN_BIKING | Mountain biking | HORSE_RIDING | Horse riding |
+| TENNIS | Tennis | GOLF | Golf | SPORTS_EVENTS | Sports events |
 
 标签表示初始偏好，不是硬限制；矛盾偏好交由问卷澄清，不能自行删除用户选择。同行人、无障碍、素食等仍在本次旅行问卷表达，不由性别/国籍推断。
+
+运动标签只表达兴趣，不代表拥有潜水证、技能、装备或适合参加某活动；后续动态问题可询问经验等级，不能因勾选 Diving 就安排需要资质的具体项目。界面按水上、山地/冬季、其他运动和旅行主题分组展示，不把 60 个标签挤进固定高度容器。
 
 ### 对后端披露的最小档案
 
@@ -83,13 +93,15 @@
 | ORIGIN | Departure，预选页（用户所说 0.5 轮） | 推荐城市或文本 | 文本 REFINE 留在本轮；选中后 CONFIRM |
 | DESTINATION | 01 / 07 | 城市卡（城市名＋三个关键词）或文本 | 文本 REFINE 留在本轮；选中后 CONFIRM |
 | DATES | 02 / 07 | 日历区间、建议区间或灵活日期说明 | 文本 REFINE 留在本轮；选中后 CONFIRM |
-| COMPANIONS | 03 / 07 | 四种单选或文本 | 单选 CONFIRM；文本 SUBMIT，接受后显示关键词并前进 |
-| BUDGET | 04 / 07 | 三档单选或文本 | 同上 |
+| COMPANIONS | 03 / 07 | 四种多选或文本 | 多选完成后 CONFIRM；文本 SUBMIT，接受后显示关键词并前进 |
+| BUDGET | 04 / 07 | 三档单选或文本 | 单选 CONFIRM；文本 SUBMIT，接受后显示关键词并前进 |
 | CONSTRAINTS | 05 / 07 | 六种多选、No restrictions 或文本 | 多选完 CONFIRM；文本 SUBMIT，接受后前进 |
 | FOLLOW_UP_1 | 06 / 07 | 后端问题，单选/多选/文本 | 单选可直接 CONFIRM，多选明确提交；文本 SUBMIT |
 | FOLLOW_UP_2 | 07 / 07 | 后端问题，单选/多选/文本 | 同上，成功后进入独立生成状态 |
 
 第 6、7 轮始终占两个固定槽位，不增加第八轮或任意追问链；第七轮依赖第六轮答案生成。Mock 根据先前答案确定问题，不能始终返回同一组硬编码问题。无法生成有效问题时本轮显示错误并可重试，不跳过为完成。
+
+Companions 保留 Solo、Partner、Family、Friends 四种卡片，使用 MULTI_CHOICE、minSelections=1、maxSelections=3。Partner、Family、Friends 可组合；选择 Solo 时取消其他选项，选择其他选项时取消 Solo。页面显示明确 Continue 按钮，不在第一次点击后跳页。客户端和 Mock/后端都必须拒绝 SOLO 与其他类别同时出现的请求。
 
 选中多选标签、点击日历第一天、编辑草稿、纯前后浏览都是本地操作，不逐个请求；发送文字/确认完整答案才请求一次。选项必须有稳定 ID，不能通过 label 猜答案。第 3–7 轮文本若含糊，返回 CLARIFY 并停在当前轮，只有 ACCEPTED 才前进。接受的关键词在 Live Trip 和可回看的本轮摘要中保留，不采用转瞬即逝的提示。
 
@@ -227,7 +239,7 @@ answer 固定字段为 `value` 与 `source`；source=OPTION / TEXT / CALENDAR。
 |---|---|---|
 | LOCATION | placeId、name：非空 string；countryCode：两位国家码或 null | ORIGIN、DESTINATION |
 | DATES | mode：FIXED/FLEXIBLE；startDate、endDate：日期或 null；notes：string | DATES；FIXED 两日期必填，FLEXIBLE 两者为 null |
-| COMPANIONS | kind：SOLO/PARTNER/FAMILY/FRIENDS/CUSTOM；partySize：1–30 integer 或 null；description：string | COMPANIONS；未知人数不能猜成 2 |
+| COMPANIONS | kinds：1–4 项去重数组，元素为 SOLO/PARTNER/FAMILY/FRIENDS/CUSTOM；partySize：1–30 integer 或 null；description：string | COMPANIONS；SOLO 必须独占且 partySize=1；其他类别未知人数不能猜成 2 |
 | BUDGET | tier：ECONOMY/COMFORT/PREMIUM/CUSTOM；currency：三位币种码或 null；amountMinor：非负 integer 或 null；scope：PER_PERSON_PER_DAY/PER_PERSON_WHOLE_TRIP/ENTIRE_PARTY_WHOLE_TRIP 或 null；notes：string | BUDGET；有金额必须有币种和口径，金额单位为最小币种单位 |
 | CONSTRAINTS | items：0–36 个 Constraint；notes：string | CONSTRAINTS；No restrictions 规范化为 items=[]、notes="" |
 | FOLLOW_UP | semanticKey：非空稳定 string；values：1–36 个非空 string；notes：string | FOLLOW_UP_1/2；由问题语义解释，不能用题目标题当 key |
@@ -235,6 +247,10 @@ answer 固定字段为 `value` 与 `source`；source=OPTION / TEXT / CALENDAR。
 Constraint 固定字段：id、label、strength（HARD/SOFT）。初始六种为 VEGETARIAN、WITH_PETS、OLDER_TRAVELLERS、LESS_WALKING、SEE_MORE、RELAXED_PACE；另设 NONE 互斥选项。模型不可静默降级用户明确的硬限制。自由输入产生本轮稳定 CUSTOM ID 与英文 label，用户原文保留于 notes。以上 string 字段除地名/ID外最多 2000 字符，标签最多 120 字符。
 
 Option.value 同样使用这些类型；单个限制选项包含一个 Constraint，NONE 包含空列表。确认多个限制时由会话层合并成一个 CONSTRAINTS answer。确认多个动态选项时，必须具有相同 semanticKey，再合并 values 去重；本次问题不允许混合多个语义。
+
+每个同行人选项的 value.kinds 只有一个元素。多选确认后合并 kinds，固定按 SOLO、PARTNER、FAMILY、FRIENDS、CUSTOM 顺序保存。partySize 表示包含用户在内的总人数，不能按选中标签数相加：Partner 与 Family 可能包含同一个人；未明确人数则为 null，已明确的非 SOLO 人数至少为 2。后端通过动态问题补充所需人数，不把未知自动写成 1。
+
+Companions 自由文本 SUBMIT 替换该轮完整答案，而不是偷偷追加到已选标签。解析出多个类别时全部保留，无法归类的同行关系用 CUSTOM 和 description 表达；矛盾（如同时要求独自出行和带家人）返回 CLARIFY，停留本轮。关键词可同时显示 Partner、Friends 等多个项目；最终 itinerary 的旅客数量不得由 kinds.length 推断。
 
 日期建议是建议，不是已确认答案：日历上可预览，CONFIRM 成功才保存为 answer。模型给出不合法日期、超长区间或无法确定的金额时必须澄清，不强行归一化为有效答案。
 
@@ -294,11 +310,11 @@ GenerateRequest：
 
 实施按三个可验收增量：
 
-1. 协议：JSON Schema、字段说明、36 标签目录、八轮请求响应示例、错误/回退/重试示例、最终 itinerary 映射。后端同学拿到这些文件即可按同一格式开发。
+1. 协议：JSON Schema、字段说明、60 标签目录、八轮请求响应示例、错误/回退/重试示例、最终 itinerary 映射。后端同学拿到这些文件即可按同一格式开发。
 2. 档案：补全首次输入与标签多选、旧资料安全升级、设置修改；无登录、无网络。
 3. 会话：Mock 往返、加载/错误、固定八槽位、动态问题、回退重算、恢复、最终行程生成。
 
-必须验证：结构与语义校验分别执行；八轮正常路径；前两轮连续 REFINE 不前进；第三至五轮文本提取关键词；动态题随上下文变化；多选不会第一次点击就跳页；更改出发地；旧问题 ID 被拒绝；回退不增轮数；旧响应不抢页面；依赖答案需复核；失败保留草稿；同 ID 重试只提交一次；生成重试不重复存储；重启恢复未决状态；v1 档案不丢字段；非法模型 JSON 不进入 UI；深色、小屏、大字体与英文文案。
+必须验证：结构与语义校验分别执行；60 个标签 ID 唯一且包括 Diving；标签多选可恢复；Companions 多选不推算人数、SOLO 互斥；八轮正常路径；前两轮连续 REFINE 不前进；第三至五轮文本提取关键词；动态题随上下文变化；多选不会第一次点击就跳页；更改出发地；旧问题 ID 被拒绝；回退不增轮数；旧响应不抢页面；依赖答案需复核；失败保留草稿；同 ID 重试只提交一次；生成重试不重复存储；重启恢复未决状态；v1 档案不丢字段；非法模型 JSON 不进入 UI；深色、小屏、大字体与英文文案。
 
 每个 Mock 返回都走与未来真实响应相同的解析、Schema 与业务检查。JSON Schema 不足以验证选项 ID 归属、日期先后、revision 等关系，必须补语义测试。现有 ItineraryShape 是有限子集，不能冒充完整 JSON Schema 引擎；后端测试使用完整实现。
 

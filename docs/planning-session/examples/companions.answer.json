@@ -1,0 +1,9 @@
+{
+  "value": {
+    "type": "COMPANIONS",
+    "kinds": ["PARTNER", "FRIENDS"],
+    "partySize": null,
+    "description": "Travelling with a partner and friends; group size has not been specified."
+  },
+  "source": "OPTION"
+}

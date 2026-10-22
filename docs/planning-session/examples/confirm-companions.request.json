@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "1.0",
+  "requestId": "req_companions_001",
+  "sessionId": "session_demo_001",
+  "baseRevision": 5,
+  "stepId": "COMPANIONS",
+  "questionId": "question_companions_1",
+  "action": "CONFIRM",
+  "input": {
+    "type": "OPTIONS",
+    "optionIds": ["companions_partner", "companions_friends"]
+  }
+}
