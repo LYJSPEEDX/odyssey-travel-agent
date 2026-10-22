@@ -92,6 +92,15 @@ final class PlanningJson {
     }
     /** 请求号、会话号、版本、当前槽位与问题必须同时匹配，晚到的回包不可劫持浏览位置。 */
     static PlanningSession apply(PlanningSession current, JSONObject request, String raw) throws JSONException {
+        return applyResult(current, request, raw).session;
+    }
+    /** UI 接收经过同一边界验证的导航结果，不自行解析 result JSON 或用资料完整度猜导航。 */
+    static final class Applied {
+        final PlanningSession session;
+        final String navigation;
+        Applied(PlanningSession session, String navigation) { this.session = session; this.navigation = navigation; }
+    }
+    static Applied applyResult(PlanningSession current, JSONObject request, String raw) throws JSONException {
         ItineraryJson.preflight(raw, MAX_CHARS);
         JSONObject response = new JSONObject(raw), result = response.getJSONObject("result");
         if (integer(response, "schemaVersion", 1, 1) != 1
@@ -111,18 +120,17 @@ final class PlanningJson {
                 || !next.residence.equals(current.residence) || !next.preferences.equals(current.preferences))
             throw new IllegalArgumentException("Wrong session revision");
         int expected = navigation.equals("NEXT") ? Math.min(7, current.current + 1) : current.current;
-        if (next.current != expected || navigation.equals("GENERATE") && !next.canGenerate()
+        if (next.current != expected || navigation.equals("GENERATE") && (current.current != 7 || !next.canGenerate())
                 || status.equals("UPDATED") && !navigation.equals("STAY")
                 || status.equals("ACCEPTED") && !next.steps[current.current].state.equals("CONFIRMED"))
             throw new IllegalArgumentException("Invalid navigation");
         Object nextId = result.opt("nextStepId");
         if (navigation.equals("NEXT") ? !PlanningSession.IDS[expected].equals(nextId) : nextId != JSONObject.NULL)
             throw new IllegalArgumentException("Invalid next slot");
-        return next;
+        return new Applied(next, navigation);
     }
     static String string(JSONObject o, String key, int limit) {
-        if (!(o.opt(key) instanceof String)) throw new IllegalArgumentException("Invalid " + key);
-        return InputValidation.optionalText(o.opt(key), limit, key);
+        return InputValidation.typedText(o.opt(key), limit, key);
     }
     static int integer(JSONObject o, String key, int min, int max) {
         Object value = o.opt(key);

@@ -149,8 +149,9 @@ public class MainActivity extends AppCompatActivity implements PlannerFormRender
         if (loading) return;
         saveDraft(); session.toggle(id); error = "";
         if (session.current == 2) session.dateDraft.useFlexibleDates();
-        // 同行人/限制为多选，只有 Continue 才确认；其余卡片点击即明确接受当前建议。
-        if (session.current == 3 || session.current == 5) render(false); else confirm();
+        // 城市卡片只选择；用户点明确的确认按钮（或前进箭头）才提交，允许先比较建议。
+        // 同行人/限制为多选，只有 Continue 才确认；预算与追问仍可点击接受。
+        if (session.current < 2 || session.current == 3 || session.current == 5) render(false); else confirm();
     }
     @Override public void confirm() {
         if (loading) return;
@@ -186,9 +187,10 @@ public class MainActivity extends AppCompatActivity implements PlannerFormRender
                 try {
                     String response = service.respond(request.toString(), snapshot);
                     if (ticket != operation) return;
-                    session = PlanningJson.apply(session, request, response);
+                    PlanningJson.Applied applied = PlanningJson.applyResult(session, request, response);
+                    session = applied.session;
                     loading = false; pending = null; retryInput = null; retryAction = null;
-                    if (session.canGenerate()) {
+                    if (applied.navigation.equals("GENERATE")) {
                         // 全八槽位均确认后才能转换旧模型；生成 ID 只在新一轮生成时创建。
                         // 后续保存失败重试/旋转恢复继续复用此 ID，避免行程库新增重复记录。
                         state = session.toPlan(); generationForm = new PlannerFormRenderer(findViewById(R.id.stepContent), state, calendarMonth, this);
@@ -227,6 +229,9 @@ public class MainActivity extends AppCompatActivity implements PlannerFormRender
         loading = false; pending = null; retryInput = null; retryAction = null;
     }
     @Override public void date(int date) {
+        if (session.current != 2 || state.isGenerating() || state.isGenerated()) return;
+        // 日历仍可在 loading 时修改；先取消旧确认并更新票号，迟到回包不能覆盖新区间。
+        cancelOperation();
         saveDraft(); boolean earlier = session.dateDraft.getStartDate() != 0 && session.dateDraft.getEndDate() == 0 && date < session.dateDraft.getStartDate();
         session.selectDate(date); session.steps[2].selected.clear(); session.steps[2].state = "AWAITING_INPUT";
         error = earlier ? "Departure changed. Now choose your return date." : ""; render(false);

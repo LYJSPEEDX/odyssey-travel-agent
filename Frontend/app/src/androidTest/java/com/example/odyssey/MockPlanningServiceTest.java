@@ -74,4 +74,16 @@ public class MockPlanningServiceTest {
         assertTrue("Text replacement must not keep an unrelated checked card", s.steps[3].selected.isEmpty());
         assertEquals(java.util.Arrays.asList("Three", "colleagues"), s.steps[3].keywords);
     }
+    @Test public void sameEarlierAnswerInCompleteSessionNavigatesWithoutGenerating() throws Exception {
+        PlanningSession s = new PlanningSession("Sydney", "");
+        s = confirm(s, "home"); s = confirm(s, "tokyo"); s = confirm(s, "flexible");
+        s = confirm(s, "solo"); s = confirm(s, "budget-1"); s = confirm(s, "none");
+        s = confirm(s, s.step().question.options.get(0).id); s = confirm(s, s.step().question.options.get(0).id);
+        assertTrue(s.canGenerate()); s.current = 0;
+        JSONObject request = PlanningJson.request(s, "CONFIRM", PlanningJson.optionsInput(java.util.Collections.singleton("home")));
+        String response = new MockPlanningService().respond(request.toString(), PlanningJson.snapshot(s).toString());
+        assertEquals("NEXT", new JSONObject(response).getJSONObject("result").getString("navigation"));
+        s = PlanningJson.apply(s, request, response);
+        assertEquals(1, s.current); assertTrue(s.canGenerate());
+    }
 }

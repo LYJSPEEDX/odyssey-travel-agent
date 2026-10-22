@@ -69,10 +69,11 @@ public class EditorialLayoutTest {
             saveScreen(context, "native-home.png");
         }
         try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
+            PlannerFlowTest.choose(scenario, "Sydney", "1/7");
             scenario.onActivity(activity -> {
-                ((TextView) activity.findViewById(R.id.messageInput)).setText("Sydney");
-                activity.findViewById(R.id.sendButton).performClick();
-                activity.findViewById(R.id.stepContent).findViewWithTag("destination-Kyoto").performClick();
+                PlannerFlowTest.clickText(activity, "Kyoto");
+                assertEquals("1/7", PlannerFlowTest.value(activity, R.id.stepText));
+                assertNotNull(PlannerFlowTest.findText(activity.findViewById(R.id.stepContent), "Confirm destination"));
             });
             InstrumentationRegistry.getInstrumentation().waitForIdleSync();
             saveScreen(context, "native-planner.png");

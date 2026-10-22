@@ -12,6 +12,11 @@ final class InputValidation {
         if (normalized.length() > maxLength) throw new IllegalArgumentException(field + " is too long");
         return normalized;
     }
+    /** JSON 字段必须存在且为字符串，但允许空串；类型判断仍统一交给 text。 */
+    static String typedText(Object value, int maxLength, String field) {
+        if (value == null) throw new IllegalArgumentException(field + " must be a string");
+        return optionalText(value, maxLength, field);
+    }
     static String requiredText(Object value, int maxLength, String field) {
         String normalized = optionalText(value, maxLength, field);
         if (normalized.isEmpty()) throw new IllegalArgumentException(field + " is required");

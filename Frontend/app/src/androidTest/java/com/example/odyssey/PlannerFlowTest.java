@@ -104,6 +104,63 @@ public class PlannerFlowTest {
             assertTrue(restore.commit());
         }
     }
+    @Test public void cityCardsStayUntilExplicitConfirmation() {
+        try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
+            scenario.onActivity(a -> {
+                clickText(a, "Sydney");
+                assertEquals("START", value(a, R.id.stepText));
+                assertEquals(View.GONE, a.findViewById(R.id.tripBoard).getVisibility());
+                clickText(a, "Confirm departure");
+            });
+            awaitStep(scenario, "1/7");
+            scenario.onActivity(a -> {
+                clickText(a, "Tokyo"); assertEquals("1/7", value(a, R.id.stepText));
+                assertEquals("Depart from Sydney", value(a, R.id.tripBoardDestination));
+                clickText(a, "Confirm destination");
+            });
+            awaitStep(scenario, "2/7");
+        }
+    }
+    @Test public void dateEditCancelsOlderPendingConfirmation() {
+        Calendar month = Calendar.getInstance(); month.set(Calendar.DAY_OF_MONTH, 1); month.add(Calendar.MONTH, 1);
+        int base = TripDates.key(month) - 1;
+        try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
+            choose(scenario, "Sydney", "1/7"); choose(scenario, "Tokyo", "2/7");
+            scenario.onActivity(a -> {
+                findDescription(a.findViewById(R.id.main), "Next month").performClick();
+                clickDate(a, base + 10); clickDate(a, base + 20);
+                mock(a).delayMillis = 1500;
+                clickText(a, "Confirm dates");
+                clickDate(a, base + 25);
+            });
+            SystemClock.sleep(1800);
+            scenario.onActivity(a -> {
+                assertEquals("2/7", value(a, R.id.stepText));
+                assertFalse(a.findViewById(R.id.nextButton).isEnabled());
+                assertTrue(a.findViewById(R.id.stepContent).findViewWithTag("date-" + (base + 25)).isSelected());
+                assertTrue(a.findViewById(R.id.sendButton).isEnabled());
+            });
+        }
+    }
+    @Test public void cachedEarlierConfirmationDoesNotGenerate() {
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        SharedPreferences library = context.getSharedPreferences(TripStore.FILE, Context.MODE_PRIVATE);
+        java.util.Map<String, ?> previous = library.getAll();
+        try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
+            choose(scenario, "Sydney", "1/7"); choose(scenario, "Tokyo", "2/7"); choose(scenario, "Flexible dates", "3/7");
+            scenario.onActivity(a -> { clickText(a, "Solo"); clickText(a, "Continue"); }); awaitStep(scenario, "4/7");
+            choose(scenario, "Comfort", "5/7");
+            scenario.onActivity(a -> { clickText(a, "No restrictions"); clickText(a, "Continue"); }); awaitStep(scenario, "6/7");
+            choose(scenario, "Balanced", "7/7"); choose(scenario, "Local discoveries", "DEMO");
+            scenario.onActivity(a -> { for (int i = 0; i < 4; i++) click(a, R.id.backButton); });
+            awaitStep(scenario, "4/7"); choose(scenario, "✓ Comfort", "5/7");
+            scenario.onActivity(a -> assertFalse(value(a, R.id.stepText).equals("DEMO")));
+        } finally {
+            SharedPreferences.Editor restore = library.edit().clear();
+            for (java.util.Map.Entry<String, ?> entry : previous.entrySet()) restore.putString(entry.getKey(), (String) entry.getValue());
+            assertTrue(restore.commit());
+        }
+    }
     @Test public void backDuringResponseCannotHijackViewAndEditingRequiresReview() {
         try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
             choose(scenario, "Sydney", "1/7"); choose(scenario, "Tokyo", "2/7"); choose(scenario, "Flexible dates", "3/7");
@@ -151,7 +208,13 @@ public class PlannerFlowTest {
         }
     }
     static void choose(ActivityScenario<MainActivity> scenario, String title, String step) {
-        scenario.onActivity(a -> clickText(a, title)); awaitStep(scenario, step);
+        scenario.onActivity(a -> {
+            String before = value(a, R.id.stepText);
+            clickText(a, title);
+            if (before.equals("START")) clickText(a, "Confirm departure");
+            else if (before.equals("1/7")) clickText(a, "Confirm destination");
+        });
+        awaitStep(scenario, step);
     }
     private static MockPlanningService mock(MainActivity activity) {
         try {

@@ -4,6 +4,14 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class InputValidationTest {
+    @org.junit.Test public void typedTextRejectsMissingAndWrongTypesButAllowsEmptyStrings() {
+        org.junit.Assert.assertEquals("", InputValidation.typedText("", 10, "Value"));
+        org.junit.Assert.assertEquals("Sydney", InputValidation.typedText("\u00a0Sydney\u00a0", 10, "Value"));
+        for (Object invalid : new Object[]{null, 3, true, "12345678901"}) {
+            try { InputValidation.typedText(invalid, 10, "Value"); org.junit.Assert.fail(); }
+            catch (IllegalArgumentException expected) { }
+        }
+    }
     @Test public void normalizesUnicodeEdgesWithoutDestroyingParagraphs() {
         assertEquals("Sydney\nArt", InputValidation.text("\u00a0 Sydney\nArt\u2003"));
         assertEquals("", InputValidation.text(null));

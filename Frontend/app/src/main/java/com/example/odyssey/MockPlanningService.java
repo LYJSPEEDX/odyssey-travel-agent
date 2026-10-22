@@ -64,7 +64,8 @@ final class MockPlanningService {
             s.accept(PlanningSession.IDS[index], answer, keywords);
             if (index == 1) { s.steps[4].question = null; s.rebuildQuestions(); }
         }
-        String navigation = action.equals("REFINE") ? "STAY" : s.canGenerate() ? "GENERATE" : "NEXT";
+        // canGenerate 表示资料完整，不表示用户本次要求生成；重确认早期槽位仍只向前浏览。
+        String navigation = action.equals("REFINE") ? "STAY" : index == 7 && s.canGenerate() ? "GENERATE" : "NEXT";
         JSONObject result = new JSONObject().put("stepId", PlanningSession.IDS[index])
                 .put("status", action.equals("REFINE") ? "UPDATED" : "ACCEPTED").put("keywords", new JSONArray(keywords))
                 .put("navigation", navigation).put("nextStepId", navigation.equals("NEXT") ? PlanningSession.IDS[s.current] : JSONObject.NULL);

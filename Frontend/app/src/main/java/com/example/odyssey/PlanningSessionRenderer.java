@@ -57,6 +57,8 @@ final class PlanningSessionRenderer {
             card.addView(body); card.setEnabled(!loading); card.setClickable(true);
             card.setOnClickListener(view -> actions.option(option.id)); content.addView(card);
         }
+        if (session.current < 2) button(session.current == 0 ? "Confirm departure" : "Confirm destination",
+                actions::confirm, !loading && !step.selected.isEmpty());
         if (session.current == 3 || session.current == 5) button("Continue", actions::confirm, !loading && !step.selected.isEmpty());
         if (loading) paragraph("Updating your local demo…");
     }
