@@ -220,6 +220,21 @@ uv run python -m scripts.run_transport_agent --from Sydney --to Osaka \
 uv run python -m scripts.run_transport_agent --scripted ...   # canned model, real flight data
 ```
 
+Data-source adapters (all live, none need an API key) each have a check script:
+
+```sh
+uv run python -m scripts.kiwi_check --from Sydney --to Osaka --depart 2026-12-10   # flights
+uv run python -m scripts.trivago_check --to "Kyoto, Japan" --in 2026-12-10 --out 2026-12-13 \
+    --min-stars 4 --feature pet_friendly                                           # hotels
+uv run python -m scripts.fx_check --from AUD --to JPY --amount 1500                # ECB rates
+uv run python -m scripts.weather_check --place "Kyoto, Japan" --from 2026-12-10 --to 2026-12-13
+```
+
+Notes: flight and hotel prices are quotes, not bookings; hotel totals cover all rooms for the
+whole stay. Weather is a real forecast for the next ~2 weeks and labelled `typical` (average of
+the same dates in the previous 3 years) beyond that. Open-Meteo's free tier is limited per IP per
+day; a 429 is surfaced as an error.
+
 The Transport agent is a bounded ReAct loop (`app/agents/react.py`): the model calls
 `search_flights` (real Kiwi MCP data), sees a compact, labelled shortlist, and answers with the
 chosen labels. Party size and currency come from the trip facts, not from the model.
