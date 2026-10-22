@@ -24,11 +24,12 @@ import android.os.SystemClock;
 
 @RunWith(AndroidJUnit4.class)
 public class HomeFlowTest {
-    @Test public void launcherShowsCreateTripBanner() {
+    @Test public void homeShowsCreateTripBanner() {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         Intent launcher = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
         assertNotNull(launcher);
-        try (ActivityScenario<android.app.Activity> scenario = ActivityScenario.launch(launcher)) {
+        assertEquals(RegistrationActivity.class.getName(), launcher.getComponent().getClassName());
+        try (ActivityScenario<HomeActivity> scenario = ActivityScenario.launch(HomeActivity.class)) {
             scenario.onActivity(activity -> assertTrue(containsText(
                     activity.findViewById(android.R.id.content), context.getString(R.string.editorial_create))));
         }

@@ -1,0 +1,19 @@
+<resources>
+    <string name="registration_brand">Odyssey</string>
+    <string name="registration_welcome">Your next chapter starts here.</string>
+    <string name="registration_title">Make it your journey</string>
+    <string name="registration_subtitle">Tell us a little about yourself before you start exploring.</string>
+    <string name="registration_age">Age</string>
+    <string name="registration_location">Current residential location</string>
+    <string name="registration_preferences">Travel preferences (optional)</string>
+    <string name="registration_privacy">Your profile is saved on this device. No username or password is needed.</string>
+    <string name="registration_continue">Save profile and explore</string>
+    <string name="registration_invalid_age">Enter an age between 1 and 120.</string>
+    <string name="registration_invalid_location">Enter your current city or residential location.</string>
+    <string name="registration_saving">Saving your profile…</string>
+    <string name="registration_save_error">Could not save your profile. Please try again.</string>
+    <string name="registration_read_error">Your saved profile could not be read. Please register again to replace it.</string>
+    <item name="registrationAge" type="id" />
+    <item name="registrationLocation" type="id" />
+    <item name="registrationPreferences" type="id" />
+</resources>

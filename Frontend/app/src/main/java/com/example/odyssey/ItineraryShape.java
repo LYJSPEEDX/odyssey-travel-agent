@@ -76,8 +76,9 @@ final class ItineraryShape {
             }
         } else if (value instanceof String) {
             String text = (String) value;
-            if (text.length() < schema.optInt("minLength", 0) || text.length() > 20000) fail("Text length");
-            if (schema.has("pattern") && !text.matches(schema.getString("pattern"))) fail("Text format");
+            if (text.codePointCount(0, text.length()) < schema.optInt("minLength", 0)
+                    || text.codePointCount(0, text.length()) > schema.optInt("maxLength", 20000)) fail("Text length");
+            if (schema.has("pattern") && !java.util.regex.Pattern.compile(schema.getString("pattern")).matcher(text).find()) fail("Text format");
         } else if (value instanceof Number) {
             double number = ((Number) value).doubleValue();
             if (!Double.isFinite(number) || number < schema.optDouble("minimum", -Double.MAX_VALUE)

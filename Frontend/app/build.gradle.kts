@@ -6,6 +6,9 @@ val itineraryAssets = tasks.register<Sync>("syncItineraryAssets") {
     from(rootProject.file("../docs/itinerary-contract")) {
         include("itinerary.schema.json", "examples/*.json")
     }
+    from(rootProject.file("../docs/profile")) {
+        include("profile.schema.json")
+    }
     into(layout.buildDirectory.dir("generated/itineraryAssets"))
 }
 

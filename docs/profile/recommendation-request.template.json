@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "1.0",
+  "profile": {
+    "schema_version": 1,
+    "age": 25,
+    "residential_location": "Sydney, Australia",
+    "travel_preferences": "Museums, food, relaxed pace"
+  },
+  "origin": null,
+  "destinations": []
+}
