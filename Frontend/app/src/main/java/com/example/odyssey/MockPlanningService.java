@@ -34,6 +34,8 @@ final class MockPlanningService {
             if (type.equals("TEXT")) {
                 if (index < 3) throw new IllegalArgumentException("Confirm a refreshed suggestion first");
                 answer = InputValidation.requiredText(input.opt("text"), 500, "Answer");
+                // 文字替换旧卡片答案时同时清除勾选，避免缓存和下一次确认又提交旧选项。
+                s.step().selected.clear();
                 for (String word : answer.split("[\\s,;]+")) if (keywords.size() < 8 && !word.isEmpty()) keywords.add(word);
             } else if (type.equals("DATE_RANGE")) {
                 if (index != 2) throw new IllegalArgumentException("Date range is only valid for dates");

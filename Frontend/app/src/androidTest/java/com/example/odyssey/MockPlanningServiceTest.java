@@ -64,4 +64,14 @@ public class MockPlanningServiceTest {
         JSONObject request = PlanningJson.request(s, "CONFIRM", PlanningJson.optionsInput(java.util.Arrays.asList(ids)));
         return PlanningJson.apply(s, request, new MockPlanningService().respond(request.toString(), PlanningJson.snapshot(s).toString()));
     }
+    @Test public void textAnswerReplacesPreviousOptionSelection() throws Exception {
+        PlanningSession s = new PlanningSession("Sydney", "");
+        s = confirm(s, "home"); s = confirm(s, "tokyo"); s = confirm(s, "flexible"); s = confirm(s, "friends");
+        s.current = 3;
+        JSONObject request = PlanningJson.request(s, "SUBMIT", PlanningJson.textInput("Three colleagues"));
+        s = PlanningJson.apply(s, request, new MockPlanningService().respond(request.toString(), PlanningJson.snapshot(s).toString()));
+        assertEquals("Three colleagues", s.answer(3));
+        assertTrue("Text replacement must not keep an unrelated checked card", s.steps[3].selected.isEmpty());
+        assertEquals(java.util.Arrays.asList("Three", "colleagues"), s.steps[3].keywords);
+    }
 }
