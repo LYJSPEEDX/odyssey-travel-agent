@@ -4,7 +4,9 @@ from fastapi import FastAPI, Response
 
 from app.config import get_settings
 from app.db import create_engine, create_session_factory, init_db, ping
+from app.recommendations import router as recommendations_router
 from app.session import SessionIdMiddleware
+from app.trips import router as trips_router
 
 
 @asynccontextmanager
@@ -21,6 +23,8 @@ async def lifespan(app: FastAPI):
 def create_app() -> FastAPI:
     app = FastAPI(title="Odyssey Backend", version="0.1.0", lifespan=lifespan)
     app.add_middleware(SessionIdMiddleware)
+    app.include_router(trips_router)
+    app.include_router(recommendations_router)
 
     @app.get("/healthz")
     async def healthz(response: Response) -> dict:
