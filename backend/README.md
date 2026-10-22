@@ -204,3 +204,22 @@ before the five-step form is submitted to POST `/trips`.
 
 See [profile-to-planning workflow](docs/profile-planning-workflow.md) for request/response
 examples, frontend handoff, validation, provider limitations, and verification steps.
+
+## Agents (work in progress)
+
+Configure the model in `.env` (see `.env.example`): `LLM_PROVIDER` (`openai` for any
+OpenAI-compatible server, `anthropic` with `uv sync --extra anthropic`), `LLM_MODEL`,
+`LLM_BASE_URL` (e.g. `http://localhost:11434/v1` for Ollama), `LLM_API_KEY` (optional for local
+servers).
+
+```sh
+uv run python -m scripts.llm_check                      # one message to your model
+uv run python -m scripts.kiwi_check --from Sydney --to Osaka --depart 2026-12-10 --return 2026-12-14
+uv run python -m scripts.run_transport_agent --from Sydney --to Osaka \
+    --depart 2026-12-10 --return 2026-12-14 --adults 2 --constraint "avoid long flights"
+uv run python -m scripts.run_transport_agent --scripted ...   # canned model, real flight data
+```
+
+The Transport agent is a bounded ReAct loop (`app/agents/react.py`): the model calls
+`search_flights` (real Kiwi MCP data), sees a compact, labelled shortlist, and answers with the
+chosen labels. Party size and currency come from the trip facts, not from the model.
