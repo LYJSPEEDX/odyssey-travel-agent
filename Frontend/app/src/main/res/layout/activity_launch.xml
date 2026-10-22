@@ -16,7 +16,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/launchTicket"
         android:layout_width="0dp" android:layout_height="0dp"
-        android:background="@color/launch_paper"
+        android:background="@android:color/transparent"
         android:scaleX="0.5" android:scaleY="0.5"
         android:importantForAccessibility="noHideDescendants"
         app:layout_constraintDimensionRatio="382:582"
@@ -24,6 +24,13 @@
         app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent">
 
+        <!-- 白纸只覆盖票身；票头圆角外保持透明，直接透出欢迎页紫色。 -->
+        <View android:layout_width="0dp" android:layout_height="0dp"
+            app:layout_constraintWidth_percent="1.000000"
+            app:layout_constraintHeight_percent="0.676976"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:background="@color/launch_paper" />
         <View android:layout_width="0dp" android:layout_height="0dp"
             app:layout_constraintWidth_percent="1.000000"
             app:layout_constraintHeight_percent="0.323024"

@@ -117,6 +117,17 @@ public class LaunchWelcomeTest {
         assertTrue(ticket.getTop() >= 0 && ticket.getBottom() <= height);
         assertEquals(382f / 582f, (float) ticket.getWidth() / ticket.getHeight(), 0.01f);
         checkTextFits(ticket);
+        // 单独绘制票券：圆角外必须透明，不能让白色父背景露在紫色欢迎页上。
+        Bitmap silhouette = Bitmap.createBitmap(ticket.getWidth(), ticket.getHeight(), Bitmap.Config.ARGB_8888);
+        ticket.draw(new Canvas(silhouette));
+        try {
+            assertEquals("Outside the rounded ticket header must be transparent", 0,
+                    android.graphics.Color.alpha(silhouette.getPixel(1, 1)));
+            assertEquals("The ticket body must remain white paper", android.graphics.Color.WHITE,
+                    silhouette.getPixel(1, ticket.getHeight() * 3 / 4));
+        } finally {
+            silhouette.recycle();
+        }
         Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         root.draw(new Canvas(bitmap));
         File image = new File(activity.getExternalFilesDir("launch-previews"),
