@@ -34,11 +34,11 @@ final class TripPlanState implements Serializable {
     private int generationStatus; // 0: form, 1: mock loading, 2: mock result
 
     // trim 去掉首尾空格；这里只存名字，不查询城市是否真实存在。
-    void selectDeparture(String value) { departure = value.trim(); }
+    void selectDeparture(String value) { departure = InputValidation.optionalText(value, 200, "Departure"); }
 
     void selectDestination(String value) {
         // 局部变量 city 是清理后的新答案，不直接改传入的 value 字符串。
-        String city = value.trim();
+        String city = InputValidation.optionalText(value, 200, "Destination");
         // equalsIgnoreCase 忽略大小写；同一个城市仅改变大小写时不清理预算。
         if (!destination.equalsIgnoreCase(city)) {
             // 预算档位依赖目的地，更换城市后不能沿用上一座城市的预算答案。
@@ -76,8 +76,8 @@ final class TripPlanState implements Serializable {
         endDate = 0;
     }
 
-    void setCompanion(String value) { companion = value.trim(); }
-    void setBudget(String value) { budget = value.trim(); }
+    void setCompanion(String value) { companion = InputValidation.optionalText(value, 2000, "Companions"); }
+    void setBudget(String value) { budget = InputValidation.optionalText(value, 2000, "Budget"); }
     void toggleConstraint(String value) {
         // remove 成功返回 true，说明原本选中，已取消；返回 false 才 add，说明原本没选。
         if (!constraints.remove(value)) constraints.add(value);
@@ -85,9 +85,9 @@ final class TripPlanState implements Serializable {
     // 点击“No restrictions”同时清除预设限制、已提交备注和输入草稿。
     void clearConstraints() { constraints.clear(); notes[5] = ""; drafts[5] = ""; }
     // 备注属于已提交答案，去除多余首尾空格。
-    void setNote(int step, String value) { notes[step] = value.trim(); }
+    void setNote(int step, String value) { notes[step] = InputValidation.optionalText(value, 2000, "Note"); }
     // 草稿属于正在编辑的内容，原样保留空格，避免重绘时改变用户输入。
-    void setDraft(int step, String value) { drafts[step] = value; }
+    void setDraft(int step, String value) { drafts[step] = InputValidation.optionalText(value, 2000, "Draft"); }
 
     /** 决定能否前进；限制可留空，但日期最多 60 天且包含出发和返回当天。 */
     boolean isStepComplete(int step) {
