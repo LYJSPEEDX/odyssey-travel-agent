@@ -16,10 +16,10 @@ import json
 import sys
 from datetime import date
 
+from app.agents.errors import AgentOutputError
 from app.agents.fake import ScriptedChatModel
 from app.agents.llm import LlmConfigError, build_chat_model
 from app.agents.transport import (
-    AgentOutputError,
     NoFlightsError,
     TransportTask,
     format_offer,
