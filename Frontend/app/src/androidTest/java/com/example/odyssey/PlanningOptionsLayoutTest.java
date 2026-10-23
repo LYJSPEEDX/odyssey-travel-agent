@@ -89,6 +89,8 @@ public class PlanningOptionsLayoutTest {
         assertTextFits(root);
     }
     private static void assertTextFits(View view) {
+        // 隐藏的来源标签无需布局；测试树尚未 attach，不能用 isShown() 判断可见性。
+        if (view.getVisibility() != View.VISIBLE) return;
         if (view instanceof TextView) {
             TextView text = (TextView) view;
             assertNotNull(text.getLayout());

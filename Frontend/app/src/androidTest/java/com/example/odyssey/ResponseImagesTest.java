@@ -5,6 +5,16 @@ import org.json.JSONObject;
 import org.junit.Test;
 import static org.junit.Assert.*;
 public class ResponseImagesTest {
+    @Test public void homeContractSamplesCarryResponseCovers() throws Exception {
+        android.content.Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        int covers = 0;
+        for (SavedTrip trip : ExampleTrips.all(context)) if (trip.id.startsWith("contract_")) {
+            assertNotNull("Home must receive media before opening details", trip.contractJson);
+            assertNotNull(ResponseImage.cover(new JSONObject(trip.contractJson), true, System.currentTimeMillis()));
+            covers++;
+        }
+        assertEquals(2, covers);
+    }
     @Test public void completedButQueuedResultCannotUpdateDetachedView() throws Exception {
         SafeImageLoader loader = new SafeImageLoader(url -> android.graphics.Bitmap.createBitmap(2, 2, android.graphics.Bitmap.Config.ARGB_8888));
         class LifecycleImage extends ImageView {
@@ -35,6 +45,12 @@ public class ResponseImagesTest {
         assertEquals("https://images.unsplash.com/full", ResponseImage.cover(root, false, 0).url);
         assertEquals("Photo source", ResponseImage.cover(root, false, 0).credit);
         JSONObject media = root.getJSONArray("media").getJSONObject(0);
+        for (String expiry : new String[]{"2099-01-01T00:00:00Z", "2099-01-01T00:00:00.123Z", "2099-01-01T11:00:00+11:00"}) {
+            media.put("expiresAt", expiry); assertNotNull(expiry, ResponseImage.cover(root, false, System.currentTimeMillis()));
+        }
+        for (String expiry : new String[]{"invalid", "2099-02-30T00:00:00Z", "2099-01-01T00:00:00Zjunk", "2099-01-01"}) {
+            media.put("expiresAt", expiry); assertNull(expiry, ResponseImage.cover(root, false, System.currentTimeMillis()));
+        }
         media.put("expiresAt", "2020-01-01T00:00:00Z"); assertNull(ResponseImage.cover(root, false, System.currentTimeMillis()));
         media.put("expiresAt", JSONObject.NULL).put("status", "PENDING"); assertNull(ResponseImage.cover(root, false, 0));
         media.put("status", "READY").put("url", 42); assertNull(ResponseImage.cover(root, false, 0));

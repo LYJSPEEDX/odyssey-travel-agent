@@ -8,6 +8,8 @@
 
 **Tech Stack:** Android Java 11、Material Components、JUnit、AndroidX instrumentation。
 
+**2026-10-23 验收状态：** 三项前端适配及追加视觉修改已实现。完整构建、29 项单元测试、72 项模拟器测试通过；lint 为 0 错误、58 条非阻断提示（主要为未使用资源）。分项审查已进行，最后的隐藏控件测试与首页媒体字段问题由主任务修复并回归验证；独立全量终审因子任务额度耗尽未完成，未将其标记为通过。仍使用 Mock，无真实业务后端连接。
+
 ## Global Constraints
 
 - 只改前端，不连接或修改真实后端，不修改后端 schema；之前 protocol-first 计划暂停。
