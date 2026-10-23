@@ -6,11 +6,11 @@ from collections import Counter
 from datetime import date
 
 from langchain_core.language_models.chat_models import BaseChatModel
-from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
+from langchain_core.messages import AIMessage
 from pydantic import BaseModel, Field, ValidationError
 
-from app.agents.errors import AgentOutputError
-from app.agents.react import AgentTool, EventSink, ToolOutput, build_react_graph
+from app.agents.react import AgentTool, EventSink, ToolOutput, untrusted
+from app.agents.runner import parse_json_object, run_agent
 from app.tools.mcp import McpClient
 from app.tools.models import ToolError
 from app.tools.money import minor_unit_digits
@@ -174,8 +174,10 @@ def make_search_tool(client: McpClient, task: StayTask) -> AgentTool:
         note = f"; {stray} from other places removed" if stray else ""
         if not inside:
             return ToolOutput(
-                f"<tool_data untrusted>\nNo properties found for '{args.query}'{note}. Try a "
-                "broader query or relax a filter (stars, guest score, features).\n</tool_data>"
+                untrusted(
+                    f"No properties found for '{args.query}'{note}. Try a broader query or "
+                    "relax a filter (stars, guest score, features)."
+                )
             )
 
         shown = pick_for_display(inside)
@@ -195,8 +197,7 @@ def make_search_tool(client: McpClient, task: StayTask) -> AgentTool:
             f"{task.adults} adult(s), {args.rooms} room(s): {len(inside)} found{note}, "
             f"showing {len(shown)} (cheapest and best rated)"
         )
-        text = "<tool_data untrusted>\n" + header + "\n" + "\n".join(lines) + "\n</tool_data>"
-        return ToolOutput(text, new_evidence)
+        return ToolOutput(untrusted(header + "\n" + "\n".join(lines)), new_evidence)
 
     return AgentTool(
         name="search_stays",
@@ -250,10 +251,7 @@ def system_prompt(task: StayTask, max_searches: int) -> str:
 
 
 def _parse_final(text: str, evidence: dict) -> tuple[list[str], str, str]:
-    match = re.search(r"\{.*\}", text, re.DOTALL)
-    if not match:
-        raise ValueError("no JSON object found")
-    data = json.loads(match.group(0))
+    data = parse_json_object(text)
     selected = data.get("selected")
     if not isinstance(selected, list) or not selected:
         raise ValueError("'selected' must be a non-empty list of property labels")
@@ -282,64 +280,27 @@ async def run_stay_agent(
     max_searches: int = 4,
     on_event: EventSink | None = None,
 ) -> StayResult:
-    trace: list[dict] = []
-
-    def sink(event: dict) -> None:
-        trace.append(event)
-        if on_event:
-            on_event(event)
-
-    graph = build_react_graph(
-        llm, [make_search_tool(client, task)], max_tool_turns=max_searches, on_event=sink
+    run = await run_agent(
+        llm,
+        [make_search_tool(client, task)],
+        agent_name="Stay",
+        system_prompt=system_prompt(task, max_searches),
+        request="Find the best accommodation options for this trip.",
+        max_searches=max_searches,
+        parse_final=_parse_final,
+        no_data_marker="No properties found",
+        no_data_error=lambda: NoStaysError(f"No accommodation found in {task.destination}."),
+        final_event=lambda parsed: {"selected": parsed[0], "recommended": parsed[1]},
+        on_event=on_event,
     )
-    final = await graph.ainvoke(
-        {
-            "messages": [
-                SystemMessage(system_prompt(task, max_searches)),
-                HumanMessage("Find the best accommodation options for this trip."),
-            ],
-            "turns": 0,
-            "evidence": {},
-        }
-    )
-    evidence: dict[str, StayCandidate] = final["evidence"]
-    if not evidence:
-        observations = [e["observation"] for e in trace if e["type"] == "tool"]
-        if not observations:
-            raise AgentOutputError("The model answered without searching for accommodation.")
-        if any("No properties found" in o for o in observations):
-            raise NoStaysError(f"No accommodation found in {task.destination}.")
-        raise ToolError(f"Accommodation search failed: {observations[-1][:300]}")
-
-    try:
-        labels, recommended, rationale = _parse_final(str(final["messages"][-1].content), evidence)
-    except ValueError as first_problem:
-        repair = await llm.ainvoke(
-            [
-                *final["messages"],
-                HumanMessage(
-                    f"That answer was not usable ({first_problem}). Reply again with ONLY the "
-                    f"JSON object, using labels from: {', '.join(sorted(evidence))}."
-                ),
-            ]
-        )
-        sink({"type": "repair", "reason": str(first_problem), "content": str(repair.content)})
-        try:
-            labels, recommended, rationale = _parse_final(str(repair.content), evidence)
-        except ValueError as exc:
-            raise AgentOutputError(f"Stay agent gave no usable answer: {exc}") from exc
-
-    searches = sum(
-        1 for e in trace if e["type"] == "tool" and e["observation"].startswith("<tool_data")
-    )
-    sink({"type": "final", "selected": labels, "recommended": recommended})
+    labels, recommended, rationale = run.parsed
     return StayResult(
-        candidates=[evidence[label] for label in labels],
-        recommended_id=evidence[recommended].offer.id,
+        candidates=[run.evidence[label] for label in labels],
+        recommended_id=run.evidence[recommended].offer.id,
         rationale=rationale,
-        rooms=evidence[recommended].rooms,
-        searches=searches,
-        trace=trace,
+        rooms=run.evidence[recommended].rooms,
+        searches=run.searches,
+        trace=run.trace,
     )
 
 

@@ -21,7 +21,13 @@ from app.tools.mcp import McpError
 from app.tools.models import ToolError
 
 MAX_OBSERVATION_CHARS = 6000
+TOOL_DATA_OPEN = "<tool_data untrusted>"
 EventSink = Callable[[dict], None]
+
+
+def untrusted(text: str) -> str:
+    """Wrap external data so the model treats it as content, never as instructions."""
+    return f"{TOOL_DATA_OPEN}\n{text}\n</tool_data>"
 
 
 @dataclass

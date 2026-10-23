@@ -5,14 +5,14 @@ import re
 from datetime import date
 
 from langchain_core.language_models.chat_models import BaseChatModel
-from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
+from langchain_core.messages import AIMessage
 from pydantic import BaseModel, Field
 
-from app.agents.errors import AgentOutputError
-from app.agents.react import AgentTool, EventSink, ToolOutput, build_react_graph
+from app.agents.react import AgentTool, EventSink, ToolOutput, untrusted
+from app.agents.runner import parse_json_object, run_agent
 from app.tools.kiwi import FlightQuery, search_flights
 from app.tools.mcp import McpClient
-from app.tools.models import FlightOffer, FlightSector, ToolError
+from app.tools.models import FlightOffer, FlightSector
 from app.tools.money import minor_unit_digits
 
 SHOW_CHEAPEST = 4
@@ -128,8 +128,10 @@ def make_search_tool(client: McpClient, task: TransportTask) -> AgentTool:
         offers = await search_flights(client, query)
         if not offers:
             return ToolOutput(
-                "<tool_data untrusted>\nNo flights found for this search. Try relaxing one "
-                "constraint (stops, flight hours, price) or adjusting dates.\n</tool_data>"
+                untrusted(
+                    "No flights found for this search. Try relaxing one constraint (stops, "
+                    "flight hours, price) or adjusting dates."
+                )
             )
         shown = pick_for_display(offers)
         known = {_signature(o): label for label, o in evidence.items()}
@@ -147,8 +149,7 @@ def make_search_tool(client: McpClient, task: TransportTask) -> AgentTool:
             f"{f'..{args.return_date}' if args.return_date else ' (one-way)'}: "
             f"{len(offers)} found, showing {len(shown)} (prices cheapest first, then fastest)"
         )
-        text = "<tool_data untrusted>\n" + header + "\n" + "\n".join(lines) + "\n</tool_data>"
-        return ToolOutput(text, new_evidence)
+        return ToolOutput(untrusted(header + "\n" + "\n".join(lines)), new_evidence)
 
     return AgentTool(
         name="search_flights",
@@ -202,10 +203,7 @@ def system_prompt(task: TransportTask, max_searches: int) -> str:
 
 
 def _parse_final(text: str, evidence: dict) -> tuple[list[str], str]:
-    match = re.search(r"\{.*\}", text, re.DOTALL)
-    if not match:
-        raise ValueError("no JSON object found")
-    data = json.loads(match.group(0))
+    data = parse_json_object(text)
     selected = data.get("selected")
     if not isinstance(selected, list) or not selected:
         raise ValueError("'selected' must be a non-empty list of option labels")
@@ -224,66 +222,27 @@ async def run_transport_agent(
     max_searches: int = 4,
     on_event: EventSink | None = None,
 ) -> TransportResult:
-    trace: list[dict] = []
-
-    def sink(event: dict) -> None:
-        trace.append(event)
-        if on_event:
-            on_event(event)
-
-    graph = build_react_graph(
-        llm, [make_search_tool(client, task)], max_tool_turns=max_searches, on_event=sink
+    run = await run_agent(
+        llm,
+        [make_search_tool(client, task)],
+        agent_name="Transport",
+        system_prompt=system_prompt(task, max_searches),
+        request="Find the best flight options for this trip.",
+        max_searches=max_searches,
+        parse_final=_parse_final,
+        no_data_marker="No flights found",
+        no_data_error=lambda: NoFlightsError(
+            f"No flights found from {task.origin} to {task.destination} on {task.depart_date}."
+        ),
+        final_event=lambda parsed: {"selected": parsed[0]},
+        on_event=on_event,
     )
-    final = await graph.ainvoke(
-        {
-            "messages": [
-                SystemMessage(system_prompt(task, max_searches)),
-                HumanMessage("Find the best flight options for this trip."),
-            ],
-            "turns": 0,
-            "evidence": {},
-        }
-    )
-    evidence: dict[str, FlightOffer] = final["evidence"]
-    if not evidence:
-        observations = [e["observation"] for e in trace if e["type"] == "tool"]
-        if not observations:
-            raise AgentOutputError("The model answered without searching for flights.")
-        if any("No flights found" in o for o in observations):
-            raise NoFlightsError(
-                f"No flights found from {task.origin} to {task.destination} on {task.depart_date}."
-            )
-        raise ToolError(f"Flight search failed: {observations[-1][:300]}")
-
-    answer = str(final["messages"][-1].content)
-    try:
-        labels, rationale = _parse_final(answer, evidence)
-    except ValueError as first_problem:
-        # One repair attempt, then give up loudly.
-        repair = await llm.ainvoke(
-            [
-                *final["messages"],
-                HumanMessage(
-                    f"That answer was not usable ({first_problem}). Reply again with ONLY the "
-                    f"JSON object, using labels from: {', '.join(sorted(evidence))}."
-                ),
-            ]
-        )
-        sink({"type": "repair", "reason": str(first_problem), "content": str(repair.content)})
-        try:
-            labels, rationale = _parse_final(str(repair.content), evidence)
-        except ValueError as exc:
-            raise AgentOutputError(f"Transport agent gave no usable answer: {exc}") from exc
-
-    searches = sum(  # successful searches only; skipped or invalid calls do not count
-        1 for e in trace if e["type"] == "tool" and e["observation"].startswith("<tool_data")
-    )
-    sink({"type": "final", "selected": labels})
+    labels, rationale = run.parsed
     return TransportResult(
-        candidates=[evidence[label] for label in labels],
+        candidates=[run.evidence[label] for label in labels],
         rationale=rationale,
-        searches=searches,
-        trace=trace,
+        searches=run.searches,
+        trace=run.trace,
     )
 
 

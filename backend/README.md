@@ -218,6 +218,9 @@ uv run python -m scripts.kiwi_check --from Sydney --to Osaka --depart 2026-12-10
 uv run python -m scripts.run_transport_agent --from Sydney --to Osaka \
     --depart 2026-12-10 --return 2026-12-14 --adults 2 --constraint "avoid long flights"
 uv run python -m scripts.run_transport_agent --scripted ...   # canned model, real flight data
+uv run python -m scripts.run_stay_agent --to "Kyoto, Japan" --in 2026-12-10 --out 2026-12-14 \
+    --adults 2 --child-age 7 --constraint "travelling with a dog" --constraint "good reviews"
+uv run python -m scripts.run_stay_agent --scripted ...        # canned model, real hotel data
 ```
 
 Data-source adapters (all live, none need an API key) each have a check script:
@@ -234,6 +237,12 @@ Notes: flight and hotel prices are quotes, not bookings; hotel totals cover all 
 whole stay. Weather is a real forecast for the next ~2 weeks and labelled `typical` (average of
 the same dates in the previous 3 years) beyond that. Open-Meteo's free tier is limited per IP per
 day; a 429 is surfaced as an error.
+
+The Stay agent works the same way on trivago data: the model picks the query, the number of rooms
+and filters (stars, guest score, features such as `pet_friendly`); it returns 3-5 distinct
+properties and one recommendation. Dates, party, currency and market are fixed by the trip facts.
+Shared run logic (bounded loop, empty-result classification, one repair attempt) is in
+`app/agents/runner.py`.
 
 The Transport agent is a bounded ReAct loop (`app/agents/react.py`): the model calls
 `search_flights` (real Kiwi MCP data), sees a compact, labelled shortlist, and answers with the
