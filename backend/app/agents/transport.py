@@ -8,6 +8,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from pydantic import BaseModel, Field
 
+from app.agents.errors import AgentOutputError
 from app.agents.react import AgentTool, EventSink, ToolOutput, build_react_graph
 from app.tools.kiwi import FlightQuery, search_flights
 from app.tools.mcp import McpClient
@@ -21,10 +22,6 @@ MAX_SELECTED = 3
 
 class NoFlightsError(RuntimeError):
     """No flight data could be found for the trip."""
-
-
-class AgentOutputError(RuntimeError):
-    """The model did not produce a usable final answer."""
 
 
 class TransportTask(BaseModel):

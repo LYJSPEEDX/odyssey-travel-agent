@@ -1,6 +1,7 @@
 """trivago accommodation search (remote MCP server, no API key). Prices are metasearch quotes,
 not confirmed availability."""
 
+import asyncio
 import re
 from datetime import date
 from typing import Literal
@@ -169,11 +170,20 @@ def parse_offers(payload: dict, nights: int) -> list[StayOffer]:
     return offers
 
 
+TRANSIENT_ATTEMPTS = 3  # the service itself says "try again (max 3 times)"
+
+
 async def search_stays(client: McpClient, query: StayQuery) -> list[StayOffer]:
     """Properties with at least one priced deal. Empty list means the source found nothing."""
     tool, arguments = _arguments(query)
-    result = await client.call_tool(tool, arguments)
-    payload = result.structured or {}
+    for attempt in range(TRANSIENT_ATTEMPTS):
+        result = await client.call_tool(tool, arguments)
+        payload = result.structured or {}
+        # Temporary outage: a plain-text reply with no structured payload and no error flag.
+        if payload or "currently unavailable" not in result.text:
+            break
+        if attempt < TRANSIENT_ATTEMPTS - 1:
+            await asyncio.sleep(1.5 * (attempt + 1))
     if result.is_error:
         raise ToolError(f"trivago search failed: {result.text[:300]}")
     if payload.get("validation_errors"):
