@@ -32,6 +32,9 @@ PLAN = {
 }
 
 
+NORMALIZED_PLAN = {**PLAN, "adults": None, "currency": None}
+
+
 async def http(app, method, path, payload=None, session="test-session-owner"):
     """Exercise the ASGI HTTP stack without a running server or extra dependencies."""
     messages = []
@@ -77,7 +80,7 @@ async def http(app, method, path, payload=None, session="test-session-owner"):
 
 class ValidationTests(unittest.TestCase):
     def test_round_trip(self):
-        self.assertEqual(TripRequest(**PLAN).model_dump(mode="json"), PLAN)
+        self.assertEqual(TripRequest(**PLAN).model_dump(mode="json"), NORMALIZED_PLAN)
 
     def test_flexible_dates(self):
         plan = {**PLAN, "flexibleDates": True, "startDate": None, "endDate": None}
@@ -150,7 +153,7 @@ class DatabaseApiTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(headers[b"location"].decode(), f"/trips/{trip['id']}")
         self.assertEqual(trip["status"], "PENDING")
         self.assertEqual(trip["latest_run"]["status"], "QUEUED")
-        self.assertEqual(trip["request"], PLAN)
+        self.assertEqual(trip["request"], NORMALIZED_PLAN)
         self.assertIsNone(trip["itinerary"])
         return trip
 

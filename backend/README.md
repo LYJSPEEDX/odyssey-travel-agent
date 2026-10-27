@@ -247,3 +247,32 @@ Shared run logic (bounded loop, empty-result classification, one repair attempt)
 The Transport agent is a bounded ReAct loop (`app/agents/react.py`): the model calls
 `search_flights` (real Kiwi MCP data), sees a compact, labelled shortlist, and answers with the
 chosen labels. Party size and currency come from the trip facts, not from the model.
+
+
+## Explicit planning facts and task conversion
+
+Request schema: [docs/schema](../docs/schema/README.md).
+
+`TripRequest` remains the public planning input. Only two fields are added:
+
+- `adults`: explicit integer adult count, 1-20; required before task conversion.
+- `currency`: three-letter search/display currency; required before task conversion.
+  Codes are trimmed and uppercased; upstream currency support is not inferred.
+
+The existing `notes` object contains travel preferences keyed by form step, for
+example `{"5": "Quiet places and slow travel"}`. No separate preferences field is
+accepted. The converter forwards these preferences to all three specialists.
+The original `companion`, free-text `budget`, and `constraints` remain unchanged.
+
+Older requests remain valid for storage. Serialized responses include `adults`
+and `currency` with null defaults. Generation never infers counts or currencies
+from text: `TaskConversionError` reports missing facts, flexible dates, and trips
+without an overnight stay. This MVP converter supports adult-only parties.
+
+Use `from app.task_mapping import build_agent_tasks`, then
+`tasks = build_agent_tasks(request)` to obtain `tasks.transport`, `tasks.stay`, and
+`tasks.destination`. The converter performs no network calls or budget filtering.
+The hotel pricing market retains StayTask's existing `AU` default; it is not a
+request field. endDate means departure from the destination for the MVP. Initial
+stay and destination windows must be aligned with the selected flight's actual
+arrival by the orchestration layer. No database migration is required.

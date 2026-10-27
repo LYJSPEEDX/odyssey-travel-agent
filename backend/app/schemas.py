@@ -10,7 +10,15 @@ TextAnswer = Annotated[str, StringConstraints(strip_whitespace=True, min_length=
 ShortAnswer = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=200)]
 
 
+CurrencyCode = Annotated[
+    str,
+    StringConstraints(strict=True, strip_whitespace=True, to_upper=True, pattern=r"^[A-Za-z]{3}$"),
+]
+
+
 class TripRequest(BaseModel):
+    """Keep the submitted form and explicit facts used to build agent tasks."""
+
     model_config = ConfigDict(extra="forbid")
 
     departure: ShortAnswer
@@ -20,12 +28,17 @@ class TripRequest(BaseModel):
     endDate: date | None = None
     companion: TextAnswer
     budget: TextAnswer
+
+    # Optional additions preserve older stored requests; generation checks required facts.
+    adults: int | None = Field(default=None, strict=True, ge=1, le=20)
+    currency: CurrencyCode | None = None
     constraints: list[ShortAnswer] = Field(default_factory=list, max_length=50)
-    # Keys are the form step numbers, not array positions or unsent drafts.
+    # Travel preferences keyed by form step; omit unsent drafts.
     notes: dict[Literal["1", "2", "3", "4", "5"], TextAnswer] = Field(default_factory=dict)
 
     @model_validator(mode="after")
     def validate_plan(self) -> Self:
+        """Validate form dates and distinct departure and destination locations."""
         if self.departure.casefold() == self.destination.casefold():
             raise ValueError("Departure and destination must differ")
         if self.flexibleDates:

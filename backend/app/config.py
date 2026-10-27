@@ -23,6 +23,9 @@ class Settings(BaseSettings):
 
     kiwi_mcp_url: str = "https://mcp.kiwi.com"
 
+    google_maps_api_key: str | None = None
+    google_maps_mcp_url: str = "https://mapstools.googleapis.com/mcp"
+
     @property
     def database_url(self) -> URL:
         # URL.create escapes the password, so characters such as '@' are safe.
