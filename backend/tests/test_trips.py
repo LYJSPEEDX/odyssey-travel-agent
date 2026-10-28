@@ -151,13 +151,30 @@ class DatabaseApiTests(unittest.IsolatedAsyncioTestCase):
         await self.engine.dispose()
 
     async def create(self):
-        status, headers, trip = await http(self.app, "POST", "/trips", PLAN)
+        """Generate a deterministic v2 itinerary and persist it in the test transaction."""
+        from unittest.mock import AsyncMock, patch
+        from test_itinerary_v2 import sample
+
+        payload, research, schedule = sample()
+
+        async def fake_research(payload, response, max_tool_turns):
+            """Return deterministic specialist results for the real route."""
+            response.headers["X-Research-Id"] = "test-research"
+            return research
+
+        with patch("app.trips.research_endpoint", new=fake_research), \
+                patch("app.trips.build_chat_model", return_value=object()), \
+                patch("app.trips.run_schedule_agent", new=AsyncMock(return_value=schedule)):
+            status, headers, itinerary = await http(self.app, "POST", "/trips", payload)
         self.assertEqual(status, 201)
-        self.assertEqual(headers[b"location"].decode(), f"/trips/{trip['id']}")
-        self.assertEqual(trip["status"], "PENDING")
-        self.assertEqual(trip["latest_run"]["status"], "QUEUED")
-        self.assertEqual(trip["request"], NORMALIZED_PLAN)
-        self.assertIsNone(trip["itinerary"])
+        self.assertEqual(itinerary["schemaVersion"], "2.0")
+        self.assertEqual(headers[b"location"].decode(), f"/trips/{itinerary['id']}")
+        status, _, trip = await http(self.app, "GET", f"/trips/{itinerary['id']}")
+        self.assertEqual(status, 200)
+        self.assertEqual(trip["status"], "READY")
+        self.assertEqual(trip["latest_run"]["status"], "SUCCEEDED")
+        self.assertEqual(trip["request"], payload)
+        self.assertEqual(trip["itinerary"], itinerary)
         return trip
 
     async def test_create_list_read_run_delete(self):
@@ -174,7 +191,7 @@ class DatabaseApiTests(unittest.IsolatedAsyncioTestCase):
         status, _, _ = await http(self.app, "GET", run_path)
         self.assertEqual(status, 200)
         status, _, _ = await http(self.app, "GET", f"{path}/itinerary")
-        self.assertEqual(status, 409)
+        self.assertEqual(status, 200)
         status, _, _ = await http(self.app, "DELETE", path)
         self.assertEqual(status, 204)
         status, _, _ = await http(self.app, "GET", path)

@@ -1,6 +1,7 @@
-"""Session-scoped persistence endpoints; generation workers will consume queued runs."""
+"""Session-scoped trip generation and persistence endpoints."""
 
 import uuid
+from datetime import datetime, timezone
 from collections.abc import AsyncIterator
 from typing import Annotated
 
@@ -13,20 +14,16 @@ from app.schemas import RunResponse, TripList, TripRequest, TripResponse, TripSu
 import asyncio
 import logging
 
-from pydantic import BaseModel
-
 from app.agents.errors import AgentOutputError
 from app.agents.llm import build_chat_model
 from app.agents.schedule import (
     ScheduleInputError,
-    ScheduleResult,
     build_schedule_task,
     run_schedule_agent,
 )
 from app.config import get_settings
 from app.utils.itinerary_assembler import assemble_itinerary
 from app.agents.research import (
-    ResearchResponse,
     failure,
     redact,
     research as research_endpoint,
@@ -40,13 +37,6 @@ async def database(request: Request) -> AsyncIterator[AsyncSession]:
         yield session
 
 Database = Annotated[AsyncSession, Depends(database)]
-
-class TripPreviewResponse(BaseModel):
-    """Return the research result and the proposed schedule for integration testing."""
-
-    research: ResearchResponse
-    schedule: ScheduleResult
-    itinerary: dict
 
 async def owned_trip(db: AsyncSession, trip_id: uuid.UUID, session_id: str) -> Trip:
     trip = await db.scalar(select(Trip).where(Trip.id == trip_id, Trip.session_id == session_id))
@@ -70,12 +60,12 @@ async def detail(db: AsyncSession, trip: Trip) -> TripResponse:
         latest_run=RunResponse.model_validate(run) if run else None,
     )
 
-@router.post("/preview", response_model=TripPreviewResponse)
-async def preview_trip(
+async def generate_itinerary(
         payload: TripRequest,
         response: Response,
-) -> TripPreviewResponse:
-    """Run research and scheduling without persisting a final itinerary."""
+        *, itinerary_id: str | None = None,
+) -> dict:
+    """Run the research, schedule and assembly pipeline without database writes."""
     research_result = await research_endpoint(
         payload,
         response,
@@ -164,36 +154,44 @@ async def preview_trip(
     )
 
     try:
-        itinerary = assemble_itinerary(research_result, schedule)
-    except ValueError as exc:
-        logger.warning("[research=%s][assembly] invalid input: %s", request_id, redact(str(exc), secrets))
-        raise failure(422, "ASSEMBLY_FAILED", "The itinerary could not be assembled. Check server logs.", request_id) from exc
+        itinerary = assemble_itinerary(research_result, schedule, itinerary_id=itinerary_id)
+    except Exception as exc:
+        logger.error("[research=%s][assembly] failed: %s", request_id, redact(str(exc), secrets))
+        raise failure(500, "ASSEMBLY_FAILED", "The itinerary could not be assembled. Check server logs.", request_id) from exc
 
     logger.info("[research=%s][assembly] completed", request_id)
-    return TripPreviewResponse(
-        research=research_result,
-        schedule=schedule,
-        itinerary=itinerary,
-    )
+    return itinerary
 
 
-@router.post("", response_model=TripResponse, status_code=201)
+@router.post("/preview", response_model=dict)
+async def preview_trip(payload: TripRequest, response: Response) -> dict:
+    """Generate an itinerary without persisting it."""
+    return await generate_itinerary(payload, response)
+
+
+@router.post("", response_model=dict, status_code=201)
 async def create_trip(
     payload: TripRequest, request: Request, response: Response, db: Database
-) -> TripResponse:
-    """Persist a request and queued run atomically. Does not invoke an LLM yet."""
+) -> dict:
+    """Generate and atomically persist a completed itinerary and successful run."""
+    trip_id = uuid.uuid4()
+    started_at = datetime.now(timezone.utc)
+    itinerary = await generate_itinerary(payload, response, itinerary_id=str(trip_id))
+    finished_at = datetime.now(timezone.utc)
     trip = Trip(
+        id=trip_id,
         session_id=request.state.session_id,
         title=f"{payload.departure} → {payload.destination}",
         request=payload.model_dump(mode="json"),
+        itinerary=itinerary,
+        status="READY",
     )
     db.add(trip)
     await db.flush()
-    db.add(Run(trip_id=trip.id))
+    db.add(Run(trip_id=trip_id, status="SUCCEEDED", started_at=started_at, finished_at=finished_at))
     await db.commit()
-    await db.refresh(trip)
-    response.headers["Location"] = f"/trips/{trip.id}"
-    return await detail(db, trip)
+    response.headers["Location"] = f"/trips/{trip_id}"
+    return itinerary
 
 
 @router.get("", response_model=TripList)
@@ -234,7 +232,7 @@ async def get_run(
 
 @router.get("/{trip_id}/itinerary", response_model=dict)
 async def get_itinerary(trip_id: uuid.UUID, request: Request, db: Database) -> dict:
-    """Return the bare v1 document accepted by Android SavedTrip.fromContract."""
+    """Return the saved itinerary document for the owning session."""
     trip = await owned_trip(db, trip_id, request.state.session_id)
     if trip.status != "READY" or trip.itinerary is None:
         raise HTTPException(status_code=409, detail="Itinerary is not ready")

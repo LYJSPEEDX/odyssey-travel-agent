@@ -14,6 +14,7 @@ dependencies = [
     "langgraph>=1.2.16",
     "httpx>=0.28.1",
     "airportsdata>=20260905",
+    "jsonschema[format]>=4.23,<5",
 ]
 
 [project.optional-dependencies]

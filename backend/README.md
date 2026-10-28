@@ -115,11 +115,12 @@ Android's local mock flow; the frontend network client is still to be implemente
 
 | Method | Path | Result |
 |---|---|---|
-| POST | `/trips` | 201: persist a validated request and QUEUED run atomically |
+| POST | `/trips` | 201: synchronously generate, validate and save a v2 itinerary; return the itinerary |
+| POST | `/trips/preview` | 200: generate a v2 itinerary without saving |
 | GET | `/trips?limit=20&offset=0` | 200: this session's summaries, newest first |
 | GET | `/trips/{trip_id}` | 200: request, status, itinerary (nullable), latest run |
 | GET | `/trips/{trip_id}/runs/{run_id}` | 200: execution status and error |
-| GET | `/trips/{trip_id}/itinerary` | 200: bare v1 itinerary; 409 while unavailable |
+| GET | `/trips/{trip_id}/itinerary` | 200: saved itinerary; 409 while unavailable |
 | DELETE | `/trips/{trip_id}` | 204: delete trip and its runs |
 
 Missing trips, trips belonging to another session, and missing runs return 404.
@@ -130,11 +131,11 @@ Detail responses use database status values PENDING/READY/FAILED and include
 (`created_at`, `updated_at`, `latest_run`); request fields use Android-style camelCase.
 The POST response also includes `Location: /trips/{id}`.
 
-**Generation boundary:** no worker or LLM is implemented. POST stores a PENDING trip
-and QUEUED run; it does not schedule background execution or produce an itinerary.
-Do not poll indefinitely expecting completion in this version. Future generation
-code must validate the complete shared v1 schema and semantics before saving an
-itinerary and setting READY; no public endpoint accepts arbitrary READY/status updates.
+**Generation:** POST `/trips` runs research, scheduling and v2 assembly synchronously. It
+validates the result before saving a READY trip and SUCCEEDED run, and returns the bare
+itinerary as JSON. On failure, no trip is saved. Calls can take several minutes.
+Keep the returned `X-Session-Id` and use it with `Location` to read the saved trip.
+Existing v1 itineraries remain stored as v1 and require their existing parser.
 
 ### Request example
 
@@ -146,6 +147,8 @@ itinerary and setting READY; no public endpoint accepts arbitrary READY/status u
   "endDate": "2026-11-03",
   "companion": "Solo",
   "budget": "AUD 200 per person per day",
+  "adults": 1,
+  "currency": "AUD",
   "constraints": ["Less walking"],
   "notes": {"5": "Museums and food"}
 }
@@ -160,25 +163,12 @@ be a numeric whole-trip amount. Constraints map to `getConstraints()`; notes use
 keys `"1"` through `"5"` for nonempty submitted `getNote(step)` values. Do not send
 unsent drafts or UI generation state. Unknown top-level fields are rejected.
 
-### Android integration
+### Client integration
 
-1. Use `http://10.0.2.2:8000` on the emulator or the computer's LAN IP on a phone.
-2. Send POST `/trips` on a background thread. Persist the response's `X-Session-Id`
-   and send that header on subsequent requests. Keep the trip ID and latest run ID.
-3. Once a generation worker exists, read `/trips/{id}` to inspect progress. Stop on
-   FAILED, handle error information in `latest_run.error`, and enforce a timeout.
-4. On READY, fetch `/trips/{id}/itinerary`. This returns the bare document expected
-   by `SavedTrip.fromContract(context, responseJson)`, not the trip metadata envelope.
-5. Save the snapshot with `TripStore.save` off the UI thread; only open
-   `TripDetailActivity` after successful persistence. Backend storage and local
-   storage are separate; deleting a server trip does not erase a local snapshot.
-
-Android still needs INTERNET permission, development HTTP configuration, an API
-client, lifecycle-aware request handling, and errors/retries. Native Android HTTP
-does not require browser CORS configuration. Anonymous session IDs are bearer
-identifiers, not authenticated accounts: retain them privately and use HTTPS when
-hosting the API. POST is not idempotent; automatically retrying a successful but
-interrupted request can create another trip.
+Send POST `/trips` with `adults` and `currency`, allow for the synchronous generation
+time, and read the v2 itinerary from the response body. Persist `X-Session-Id` for
+subsequent reads; `Location` identifies the saved trip. The existing Android v1
+parser does not accept v2 and needs a separate update. POST is not idempotent.
 
 ### Tests
 
@@ -263,9 +253,8 @@ example `{"5": "Quiet places and slow travel"}`. No separate preferences field i
 accepted. The converter forwards these preferences to all three specialists.
 The original `companion`, free-text `budget`, and `constraints` remain unchanged.
 
-Requests may omit `adults` and `currency` for storage. Serialized responses
-include those fields with null defaults. Generation never infers counts or currencies
-from text: `TaskConversionError` reports missing facts and trips without an
+`TripRequest` accepts omitted `adults` and `currency`, but generation requires both.
+Generation never infers counts or currencies from text: `TaskConversionError` reports missing facts and trips without an
 overnight stay. This MVP converter supports adult-only parties.
 
 Use `from app.task_mapping import build_agent_tasks`, then
@@ -293,7 +282,7 @@ to `https://mcp.trivago.com/mcp`. Tool adapters still accept initialized clients
 `POST /research` runs the three real specialist agents synchronously and returns
 `ResearchResult`: request, transport candidates, planning flight ID, hotel dates,
 stay candidates, and destination candidates. It does not persist a trip or produce
-the final v1 itinerary. `/trips` retains its existing persistence behavior.
+a final itinerary. Use `/trips` to run the full generation pipeline and save v2.
 Use the request example in [docs/schema](../docs/schema/README.md), including
 explicit `adults` and `currency`. `?max_tool_turns=4` controls each agent's tool
 rounds (1-8). Nested trace arrays are excluded from the response.
