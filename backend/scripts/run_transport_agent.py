@@ -27,11 +27,12 @@ from app.agents.transport import (
     scripted_reply_for,
 )
 from app.config import get_settings
-from app.tools.mcp import McpClient, McpError
+from app.tools.mcp import McpError
 from app.tools.models import ToolError
 
 
 def print_event(event: dict) -> None:
+    """Print transport model decisions, tool observations, and repair events."""
     kind = event["type"]
     if kind == "model":
         if event["content"].strip():
@@ -45,6 +46,7 @@ def print_event(event: dict) -> None:
 
 
 async def main() -> int:
+    """Parse CLI input and invoke the self-contained transport agent."""
     p = argparse.ArgumentParser()
     p.add_argument("--from", dest="origin", required=True)
     p.add_argument("--to", dest="destination", required=True)
@@ -75,8 +77,7 @@ async def main() -> int:
         return 1
 
     try:
-        async with McpClient(settings.kiwi_mcp_url) as client:
-            result = await run_transport_agent(llm, client, task, on_event=print_event)
+        result = await run_transport_agent(llm, task, settings=settings, on_event=print_event)
     except (NoFlightsError, AgentOutputError, McpError, ToolError) as exc:
         print(f"\nFAIL {type(exc).__name__}: {exc}")
         return 1

@@ -88,7 +88,8 @@ def build_react_graph(
             ]
         ai = await (llm if final_turn else tool_model).ainvoke(messages)
         calls = [] if final_turn else list(ai.tool_calls)
-        emit(type="model", turn=state["turns"], content=str(ai.content), tool_calls=calls)
+        content = str(ai.content) if ai.content else ""
+        emit(type="model", turn=state["turns"], content=content, tool_calls=calls)
         return {"messages": [ai], "turns": state["turns"] + (1 if calls else 0)}
 
     def route(state: ReactState) -> str:

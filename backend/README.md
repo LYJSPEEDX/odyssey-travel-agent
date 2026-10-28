@@ -142,7 +142,6 @@ itinerary and setting READY; no public endpoint accepts arbitrary READY/status u
 {
   "departure": "Sydney",
   "destination": "Kyoto",
-  "flexibleDates": false,
   "startDate": "2026-11-01",
   "endDate": "2026-11-03",
   "companion": "Solo",
@@ -154,8 +153,8 @@ itinerary and setting READY; no public endpoint accepts arbitrary READY/status u
 
 `departure`, `destination`, `companion`, and `budget` map directly to the corresponding
 `TripPlanState` getters. Convert Android's YYYYMMDD date integers to ISO YYYY-MM-DD
-strings; do not send integers or zero dates. When `flexibleDates` is true, omit dates
-or send null. Fixed ranges include both endpoints and must contain 1–60 days.
+strings; do not send integers or zero dates. Both dates are required and non-null.
+Date ranges include both endpoints and must contain 1–60 days.
 Companion and budget accept custom text as the form does; budget is not assumed to
 be a numeric whole-trip amount. Constraints map to `getConstraints()`; notes use
 keys `"1"` through `"5"` for nonempty submitted `getNote(step)` values. Do not send
@@ -264,10 +263,10 @@ example `{"5": "Quiet places and slow travel"}`. No separate preferences field i
 accepted. The converter forwards these preferences to all three specialists.
 The original `companion`, free-text `budget`, and `constraints` remain unchanged.
 
-Older requests remain valid for storage. Serialized responses include `adults`
-and `currency` with null defaults. Generation never infers counts or currencies
-from text: `TaskConversionError` reports missing facts, flexible dates, and trips
-without an overnight stay. This MVP converter supports adult-only parties.
+Requests may omit `adults` and `currency` for storage. Serialized responses
+include those fields with null defaults. Generation never infers counts or currencies
+from text: `TaskConversionError` reports missing facts and trips without an
+overnight stay. This MVP converter supports adult-only parties.
 
 Use `from app.task_mapping import build_agent_tasks`, then
 `tasks = build_agent_tasks(request)` to obtain `tasks.transport`, `tasks.stay`, and
@@ -276,3 +275,39 @@ The hotel pricing market retains StayTask's existing `AU` default; it is not a
 request field. endDate means departure from the destination for the MVP. Initial
 stay and destination windows must be aligned with the selected flight's actual
 arrival by the orchestration layer. No database migration is required.
+
+
+### Agent connection ownership
+
+Each specialist owns its MCP connection for one run. Call
+`await run_transport_agent(llm, task, settings=settings)`,
+`await run_stay_agent(llm, task, settings=settings)`, or
+`await run_destination_agent(llm, task, settings=settings)`.
+The optional settings argument defaults to `get_settings()`; callers do not pass
+an MCP client. Each connection closes on success, failure, or cancellation.
+The accommodation endpoint is configurable with `TRIVAGO_MCP_URL` and defaults
+to `https://mcp.trivago.com/mcp`. Tool adapters still accept initialized clients.
+
+## Research API
+
+`POST /research` runs the three real specialist agents synchronously and returns
+`ResearchResult`: request, transport candidates, planning flight ID, hotel dates,
+stay candidates, and destination candidates. It does not persist a trip or produce
+the final v1 itinerary. `/trips` retains its existing persistence behavior.
+Use the request example in [docs/schema](../docs/schema/README.md), including
+explicit `adults` and `currency`. `?max_tool_turns=4` controls each agent's tool
+rounds (1-8). Nested trace arrays are excluded from the response.
+
+Run the existing FastAPI application and use `/docs` or send JSON to `/research`.
+Uvicorn INFO logs include a research ID, agent names, tool arguments, full tool
+observations, nonempty model content after each tool round, repair events, completion,
+and errors. The response header
+`X-Research-Id` matches the log ID. Configured API keys are redacted.
+`RESEARCH_TIMEOUT_S` defaults to 600 seconds; allow sufficient client timeout.
+The existing application startup still requires PostgreSQL.
+
+Errors use `detail.code`, `detail.message`, and `detail.request_id`: 422 for
+invalid generation input, 503 for missing server configuration, 409 for no usable
+plan, 502 for known model/data-source failures, 504 for the overall timeout,
+and 500 for unexpected failures. Request-shape errors use FastAPI's standard 422
+validation response. This endpoint has no runtime mock or fallback data.

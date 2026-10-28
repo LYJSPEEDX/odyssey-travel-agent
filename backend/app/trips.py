@@ -10,17 +10,43 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import Run, Trip
 from app.schemas import RunResponse, TripList, TripRequest, TripResponse, TripSummary
+import asyncio
+import logging
+
+from pydantic import BaseModel
+
+from app.agents.errors import AgentOutputError
+from app.agents.llm import build_chat_model
+from app.agents.schedule import (
+    ScheduleInputError,
+    ScheduleResult,
+    build_schedule_task,
+    run_schedule_agent,
+)
+from app.config import get_settings
+from app.utils.itinerary_assembler import assemble_itinerary
+from app.agents.research import (
+    ResearchResponse,
+    failure,
+    redact,
+    research as research_endpoint,
+)
 
 router = APIRouter(prefix="/trips", tags=["trips"])
-
+logger = logging.getLogger("uvicorn.error.research")
 
 async def database(request: Request) -> AsyncIterator[AsyncSession]:
     async with request.app.state.session_factory() as session:
         yield session
 
-
 Database = Annotated[AsyncSession, Depends(database)]
 
+class TripPreviewResponse(BaseModel):
+    """Return the research result and the proposed schedule for integration testing."""
+
+    research: ResearchResponse
+    schedule: ScheduleResult
+    itinerary: dict
 
 async def owned_trip(db: AsyncSession, trip_id: uuid.UUID, session_id: str) -> Trip:
     trip = await db.scalar(select(Trip).where(Trip.id == trip_id, Trip.session_id == session_id))
@@ -42,6 +68,112 @@ async def detail(db: AsyncSession, trip: Trip) -> TripResponse:
         request=trip.request,
         itinerary=trip.itinerary,
         latest_run=RunResponse.model_validate(run) if run else None,
+    )
+
+@router.post("/preview", response_model=TripPreviewResponse)
+async def preview_trip(
+        payload: TripRequest,
+        response: Response,
+) -> TripPreviewResponse:
+    """Run research and scheduling without persisting a final itinerary."""
+    research_result = await research_endpoint(
+        payload,
+        response,
+        max_tool_turns=4,
+    )
+
+    request_id = response.headers["X-Research-Id"]
+    settings = get_settings()
+
+    secrets = tuple(
+        value.strip()
+        for value in (
+            settings.google_maps_api_key or "",
+            settings.llm_api_key or "",
+        )
+        if value.strip()
+    )
+
+    try:
+        logger.info(
+            "[research=%s][agent=schedule] started",
+            request_id,
+        )
+
+        schedule_task = build_schedule_task(research_result)
+        llm = build_chat_model(settings)
+
+        async with asyncio.timeout(settings.research_timeout_s):
+            schedule = await run_schedule_agent(llm, schedule_task)
+
+    except TimeoutError as exc:
+        logger.error(
+            "[research=%s][agent=schedule] timed out",
+            request_id,
+        )
+        raise failure(
+            504,
+            "SCHEDULE_TIMEOUT",
+            "Scheduling exceeded the server time limit.",
+            request_id,
+        ) from exc
+
+    except ScheduleInputError as exc:
+        logger.warning(
+            "[research=%s][agent=schedule] invalid input: %s",
+            request_id,
+            redact(str(exc), secrets),
+        )
+        raise failure(
+            409,
+            "INVALID_SCHEDULE_INPUT",
+            "Research results cannot be used for scheduling.",
+            request_id,
+        ) from exc
+
+    except AgentOutputError as exc:
+        logger.error(
+            "[research=%s][agent=schedule] invalid output: %s",
+            request_id,
+            redact(str(exc), secrets),
+        )
+        raise failure(
+            502,
+            "SCHEDULE_FAILED",
+            "The scheduling model returned an invalid result.",
+            request_id,
+        ) from exc
+
+    except Exception as exc:
+        logger.error(
+            "[research=%s][agent=schedule] unexpected error: %s",
+            request_id,
+            redact(str(exc), secrets),
+        )
+        raise failure(
+            500,
+            "SCHEDULE_ERROR",
+            "Scheduling failed unexpectedly. Check server logs.",
+            request_id,
+        ) from exc
+
+    logger.info(
+        "[research=%s][agent=schedule] completed: %d days",
+        request_id,
+        len(schedule.days),
+    )
+
+    try:
+        itinerary = assemble_itinerary(research_result, schedule)
+    except ValueError as exc:
+        logger.warning("[research=%s][assembly] invalid input: %s", request_id, redact(str(exc), secrets))
+        raise failure(422, "ASSEMBLY_FAILED", "The itinerary could not be assembled. Check server logs.", request_id) from exc
+
+    logger.info("[research=%s][assembly] completed", request_id)
+    return TripPreviewResponse(
+        research=research_result,
+        schedule=schedule,
+        itinerary=itinerary,
     )
 
 

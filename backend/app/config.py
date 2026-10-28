@@ -1,5 +1,6 @@
 from functools import lru_cache
 
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy import URL
 
@@ -20,8 +21,10 @@ class Settings(BaseSettings):
     llm_base_url: str | None = None
     llm_temperature: float = 0.2
     llm_timeout_s: float = 120.0
+    research_timeout_s: float = Field(default=600.0, gt=0, le=3600)
 
     kiwi_mcp_url: str = "https://mcp.kiwi.com"
+    trivago_mcp_url: str = "https://mcp.trivago.com/mcp"
 
     google_maps_api_key: str | None = None
     google_maps_mcp_url: str = "https://mapstools.googleapis.com/mcp"

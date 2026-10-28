@@ -23,9 +23,8 @@ class TripRequest(BaseModel):
 
     departure: ShortAnswer
     destination: ShortAnswer
-    flexibleDates: bool = False
-    startDate: date | None = None
-    endDate: date | None = None
+    startDate: date
+    endDate: date
     companion: TextAnswer
     budget: TextAnswer
 
@@ -41,15 +40,9 @@ class TripRequest(BaseModel):
         """Validate form dates and distinct departure and destination locations."""
         if self.departure.casefold() == self.destination.casefold():
             raise ValueError("Departure and destination must differ")
-        if self.flexibleDates:
-            if self.startDate is not None or self.endDate is not None:
-                raise ValueError("Flexible dates must omit startDate and endDate")
-        else:
-            if self.startDate is None or self.endDate is None:
-                raise ValueError("Fixed dates require startDate and endDate")
-            days = (self.endDate - self.startDate).days + 1
-            if not 1 <= days <= 60:
-                raise ValueError("Trip must contain between 1 and 60 days inclusive")
+        days = (self.endDate - self.startDate).days + 1
+        if not 1 <= days <= 60:
+            raise ValueError("Trip must contain between 1 and 60 days inclusive")
         return self
 
 

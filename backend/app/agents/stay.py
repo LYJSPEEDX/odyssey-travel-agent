@@ -11,13 +11,13 @@ from pydantic import BaseModel, Field, ValidationError
 
 from app.agents.react import AgentTool, EventSink, ToolOutput, untrusted
 from app.agents.runner import parse_json_object, run_agent
+from app.config import Settings, get_settings
 from app.tools.mcp import McpClient
 from app.tools.models import ToolError
 from app.tools.money import minor_unit_digits
 from app.tools.stay_models import StayOffer
 from app.tools.trivago import Feature, StayQuery, search_stays
 
-TRIVAGO_URL = "https://mcp.trivago.com/mcp"
 SHOW_CHEAPEST = 3
 SHOW_TOP_RATED = 3
 MIN_REVIEWS_FOR_TOP_RATED = 20
@@ -274,25 +274,32 @@ def _parse_final(text: str, evidence: dict) -> tuple[list[str], str, str]:
 
 async def run_stay_agent(
     llm: BaseChatModel,
-    client: McpClient,
     task: StayTask,
     *,
+    settings: Settings | None = None,
     max_searches: int = 4,
     on_event: EventSink | None = None,
 ) -> StayResult:
-    run = await run_agent(
-        llm,
-        [make_search_tool(client, task)],
-        agent_name="Stay",
-        system_prompt=system_prompt(task, max_searches),
-        request="Find the best accommodation options for this trip.",
-        max_searches=max_searches,
-        parse_final=_parse_final,
-        no_data_marker="No properties found",
-        no_data_error=lambda: NoStaysError(f"No accommodation found in {task.destination}."),
-        final_event=lambda parsed: {"selected": parsed[0], "recommended": parsed[1]},
-        on_event=on_event,
-    )
+    """Own the accommodation MCP connection and run bounded stay research."""
+    settings = settings if settings is not None else get_settings()
+    url = settings.trivago_mcp_url.strip()
+    if not url:
+        raise ToolError("TRIVAGO_MCP_URL is required.")
+
+    async with McpClient(url) as client:
+        run = await run_agent(
+            llm,
+            [make_search_tool(client, task)],
+            agent_name="Stay",
+            system_prompt=system_prompt(task, max_searches),
+            request="Find the best accommodation options for this trip.",
+            max_searches=max_searches,
+            parse_final=_parse_final,
+            no_data_marker="No properties found",
+            no_data_error=lambda: NoStaysError(f"No accommodation found in {task.destination}."),
+            final_event=lambda parsed: {"selected": parsed[0], "recommended": parsed[1]},
+            on_event=on_event,
+        )
     labels, recommended, rationale = run.parsed
     return StayResult(
         candidates=[run.evidence[label] for label in labels],
