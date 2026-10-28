@@ -28,6 +28,10 @@ public class ProfileStoreTest {
             store.save(profile);
             assertTrue(ProfileStore.isComplete(store(path).load()));
             assertEquals("Alex", store.load().getString("name"));
+            // 新目录超过原有 60 个上限，全部选择也必须能保存并重新加载。
+            profile.put("preference_tags", new org.json.JSONArray(PreferenceTags.ALL.keySet()));
+            store.save(profile);
+            assertEquals(96, store(path).load().getJSONArray("preference_tags").length());
             profile.put("name", " ");
             assertThrows(IllegalArgumentException.class, () -> store.save(profile));
             assertEquals("Alex", store.load().getString("name"));

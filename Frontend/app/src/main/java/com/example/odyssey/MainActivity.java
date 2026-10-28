@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements PlannerFormRender
             error = saved.getString("planning_error", "");
         }
         if (session == null) {
-            String residence = "Sydney", preferences = "";
+            String residence = "", preferences = "";
             try {
                 JSONObject profile = new ProfileStore(this).load();
                 if (profile != null) {

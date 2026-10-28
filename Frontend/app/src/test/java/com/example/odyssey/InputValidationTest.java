@@ -25,9 +25,15 @@ public class InputValidationTest {
         for (String value : new String[]{"0", "121", "abc", "", "1.2"})
             assertThrows(IllegalArgumentException.class, () -> InputValidation.age(value));
     }
+    @Test public void optionalBirthdayRejectsImpossibleAndFutureDates() {
+        assertEquals("", InputValidation.birthDate(""));
+        assertEquals("2000-02-29", InputValidation.birthDate("2000-02-29"));
+        for (String date : new String[]{"2001-02-29", "2000-04-31", "3000-01-01", "2000-2-1", "not a date"})
+            assertThrows(date, IllegalArgumentException.class, () -> InputValidation.birthDate(date));
+    }
     @Test public void catalogIsCompleteUniqueAndImmutable() {
-        assertEquals(60, PreferenceTags.ALL.size());
-        assertEquals(60, new java.util.HashSet<>(PreferenceTags.ALL.keySet()).size());
+        assertEquals(96, PreferenceTags.ALL.size());
+        assertEquals(96, new java.util.HashSet<>(PreferenceTags.ALL.keySet()).size());
         assertEquals("Diving", PreferenceTags.ALL.get("DIVING"));
         assertEquals("Snorkeling", PreferenceTags.ALL.get("SNORKELING"));
         assertEquals("Surfing", PreferenceTags.ALL.get("SURFING"));

@@ -1,4 +1,10 @@
 <resources>
+    <item name="registrationBirthDate" type="id" />
+    <item name="registrationNext" type="id" />
+    <item name="registrationPrevious" type="id" />
+    <string name="profile_birth_date">Date of birth</string>
+    <string name="profile_next">Next</string>
+    <string name="profile_back">Back</string>
     <item name="registrationName" type="id" />
     <item name="registrationNationality" type="id" />
     <item name="registrationGender" type="id" />
@@ -9,4 +15,21 @@
     <string name="profile_edit">Edit profile &amp; preferences</string>
     <string name="profile_save">Save profile</string>
     <string name="profile_cancel">Cancel</string>
+    <string name="profile_use_location">Use current location</string>
+    <string name="profile_choose_country">Choose country</string>
+    <string name="profile_choose_region">Choose region</string>
+    <color name="profile_field_text">#211F1D</color>
+    <color name="profile_field_icon">#6C6A65</color>
+    <string name="profile_gender">Gender</string>
+    <!-- 白色字段的弹窗也固定使用深色文字，防止 DayNight 带入不匹配的颜色。 -->
+    <style name="ThemeOverlay.Odyssey.ProfilePicker" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="colorSurface">#FFFFFF</item>
+        <item name="colorSurfaceContainerHigh">#FFFFFF</item>
+        <item name="elevationOverlayEnabled">false</item>
+        <item name="colorOnSurface">#211F1D</item>
+        <item name="colorOnSurfaceVariant">#6C6A65</item>
+        <item name="android:textColorPrimary">#211F1D</item>
+        <item name="android:textColorSecondary">#6C6A65</item>
+        <item name="colorPrimary">#211F1D</item>
+    </style>
 </resources>

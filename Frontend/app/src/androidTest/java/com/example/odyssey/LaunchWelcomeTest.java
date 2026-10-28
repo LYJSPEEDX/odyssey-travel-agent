@@ -40,7 +40,7 @@ public class LaunchWelcomeTest {
         assertNotNull(intent);
         try (ActivityScenario<Activity> scenario = ActivityScenario.launch(intent)) {
             scenario.onActivity(activity -> assertNotNull("Launcher must show native ticket", welcome(activity)));
-            SystemClock.sleep(1800);
+            SystemClock.sleep(3000);
             scenario.onActivity(activity -> {
                 assertNull(welcome(activity));
                 assertTrue(activity.findViewById(R.id.createTripBanner).isShown());
@@ -60,12 +60,12 @@ public class LaunchWelcomeTest {
         Intent intent = context().getPackageManager().getLaunchIntentForPackage(context().getPackageName());
         try (ActivityScenario<Activity> scenario = ActivityScenario.launch(intent)) {
             scenario.moveToState(Lifecycle.State.CREATED);
-            SystemClock.sleep(1800);
+            SystemClock.sleep(3000);
             scenario.moveToState(Lifecycle.State.RESUMED);
             scenario.onActivity(activity -> assertNotNull("Background must not consume timer", welcome(activity)));
             scenario.recreate();
             scenario.onActivity(activity -> assertNotNull("Pending welcome survives rotation", welcome(activity)));
-            SystemClock.sleep(1800);
+            SystemClock.sleep(3000);
             scenario.onActivity(activity -> assertNull(welcome(activity)));
         }
     }
@@ -82,15 +82,15 @@ public class LaunchWelcomeTest {
         }
     }
 
-    @Test public void systemSplashUsesOdysseyInsteadOfTemplateAndroidIcon() throws Exception {
+    @Test public void systemSplashDoesNotDrawASecondTicketAtAnotherSize() throws Exception {
         if (Build.VERSION.SDK_INT < 31) return;
         int launchTheme = context().getPackageManager().getActivityInfo(
                 new ComponentName(context(), HomeActivity.class), 0).getThemeResource();
         Context themed = new ContextThemeWrapper(context(), launchTheme);
         TypedArray attributes = themed.obtainStyledAttributes(new int[]{android.R.attr.windowSplashScreenAnimatedIcon});
         try {
-            int expected = context().getResources().getIdentifier("ic_odyssey_splash", "drawable", context().getPackageName());
-            assertTrue("A branded splash icon must exist", expected != 0);
+            int expected = context().getResources().getIdentifier("launch_empty_icon", "drawable", context().getPackageName());
+            assertTrue("The transparent system placeholder must exist", expected != 0);
             assertEquals(expected, attributes.getResourceId(0, 0));
         } finally {
             attributes.recycle();
@@ -117,12 +117,14 @@ public class LaunchWelcomeTest {
         assertTrue(ticket.getTop() >= 0 && ticket.getBottom() <= height);
         assertEquals(382f / 582f, (float) ticket.getWidth() / ticket.getHeight(), 0.01f);
         checkTextFits(ticket);
-        // 单独绘制票券：圆角外必须透明，不能让白色父背景露在紫色欢迎页上。
+        // 单独绘制票券：圆角外必须透明，不能让白色父背景露在奶白色欢迎页上。
         Bitmap silhouette = Bitmap.createBitmap(ticket.getWidth(), ticket.getHeight(), Bitmap.Config.ARGB_8888);
         ticket.draw(new Canvas(silhouette));
         try {
             assertEquals("Outside the rounded ticket header must be transparent", 0,
                     android.graphics.Color.alpha(silhouette.getPixel(1, 1)));
+            assertEquals("Outside the bottom rounded corner must be transparent", 0,
+                    android.graphics.Color.alpha(silhouette.getPixel(1, ticket.getHeight() - 2)));
             assertEquals("The ticket body must remain white paper", android.graphics.Color.WHITE,
                     silhouette.getPixel(1, ticket.getHeight() * 3 / 4));
         } finally {

@@ -4,6 +4,12 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class PlanningSessionTest {
+    @Test public void withheldLocationDoesNotBecomeAnInventedHomeCity() {
+        PlanningSession session = new PlanningSession("", "");
+        assertEquals("", session.residence);
+        assertTrue(session.step().question.options.stream().noneMatch(option -> "From your profile".equals(option.description)));
+        assertTrue(session.step().question.options.stream().anyMatch(option -> "Sydney".equals(option.title)));
+    }
     @Test public void fixedSlotsAndRefineStayUntilConfirmation() {
         PlanningSession session = new PlanningSession("Melbourne", "Museums");
         assertEquals(8, session.steps.length);

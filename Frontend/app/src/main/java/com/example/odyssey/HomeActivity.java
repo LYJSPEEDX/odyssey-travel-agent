@@ -35,7 +35,7 @@ public class HomeActivity extends AppCompatActivity {
     private boolean profileComplete, profileChecked;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
-        // 系统先读取 Manifest 中的 Launch 主题绘制品牌图标；进入应用后恢复正常浅/深色主题。
+        // 系统窗口只显示奶白底；票券由应用内同一套布局绘制，避免两次尺寸跳变。
         setTheme(R.style.Theme_Odyssey);
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
@@ -69,7 +69,6 @@ public class HomeActivity extends AppCompatActivity {
         });
         // 首页先准备好，再盖上欢迎层；1.5 秒后揭开时不需要重新启动 Activity。
         launchWelcome = new LaunchWelcome(this, savedInstanceState);
-        launchWelcome.onDismiss(this::openProfileIfNeeded);
     }
 
     @Override protected void onNewIntent(Intent intent) {
@@ -91,7 +90,10 @@ public class HomeActivity extends AppCompatActivity {
         checkProfile();
     }
     @Override protected void onPause() {
-        if (launchWelcome != null) launchWelcome.pause(); // 切到后台停止计时。
+        if (launchWelcome != null) {
+            // 首次资料页已接手同一票券；首页不能在返回时重播。
+            if (openingProfile) launchWelcome.dismiss(); else launchWelcome.pause();
+        }
         super.onPause();
     }
     @Override protected void onDestroy() {
@@ -149,7 +151,7 @@ public class HomeActivity extends AppCompatActivity {
         ui.text(getString(R.string.local_only_notice), 12, false);
     }
     private void startPlanner() { startActivity(new Intent(this, MainActivity.class)); }
-    /** 首页保持桌面入口；欢迎层结束后再打开本机资料门槛，防止重复启动。 */
+    /** 首页保持桌面入口；资料检查完成后由正确页面接手欢迎层。 */
     private void checkProfile() {
         if (checkingProfile) return;
         checkingProfile = true;
@@ -168,13 +170,17 @@ public class HomeActivity extends AppCompatActivity {
             });
         });
     }
-    /** 只在前台且欢迎层真正结束后跳转，不持有后台延迟跳转任务。 */
+    /** 只在前台交接，避免后台异步读取触发跳转。 */
     private void openProfileIfNeeded() {
         if (!profileChecked || profileComplete || openingProfile || isFinishing() || isDestroyed()
-                || !getLifecycle().getCurrentState().isAtLeast(androidx.lifecycle.Lifecycle.State.RESUMED)
-                || (launchWelcome != null && launchWelcome.isShowing())) return;
+                || !getLifecycle().getCurrentState().isAtLeast(androidx.lifecycle.Lifecycle.State.RESUMED)) return;
         openingProfile = true;
-        startActivity(new Intent(this, RegistrationActivity.class));
+        Intent profile = new Intent(this, RegistrationActivity.class);
+        if (launchWelcome != null && launchWelcome.isShowing()) {
+            // 不先移除票券露出首页：下一页用同尺寸票券覆盖，接续剩余计时再上滑。
+            profile.putExtra(RegistrationActivity.EXTRA_WELCOME_REMAINING, launchWelcome.remainingMillis());
+            startActivity(profile, android.app.ActivityOptions.makeCustomAnimation(this, 0, 0).toBundle());
+        } else startActivity(profile);
     }
     private void enableTree(View view, boolean enabled) {
         view.setEnabled(enabled);

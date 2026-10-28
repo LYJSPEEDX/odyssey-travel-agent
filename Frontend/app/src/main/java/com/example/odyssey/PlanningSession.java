@@ -52,7 +52,8 @@ final class PlanningSession implements Serializable {
     PlanningSession(String id, String residence, String preferences) {
         this.id = InputValidation.requiredText(id, 100, "Session id");
         String city = InputValidation.optionalText(residence, 200, "Residence");
-        this.residence = city.isEmpty() ? "Sydney" : city;
+        // 未提供所在地时只展示通用示例城市，不把 Sydney 标记成用户资料。
+        this.residence = city;
         this.preferences = InputValidation.optionalText(preferences, 2000, "Preferences");
         for (int i = 0; i < steps.length; i++) steps[i] = new Step();
         rebuildQuestions();
@@ -142,7 +143,7 @@ final class PlanningSession implements Serializable {
                     "Anything we should plan around?", "What pace feels right?", "What would make this trip yours?"}[i];
             q.description = "Local demo · choose an option or describe your preference.";
             if (i == 0) {
-                q.options.add(new Option("home", residence, "From your profile", residence, "Departure"));
+                if (!residence.isEmpty()) q.options.add(new Option("home", residence, "From your profile", residence, "Departure"));
                 for (String city : new String[]{"Sydney", "Melbourne", "Brisbane"})
                     if (!city.equalsIgnoreCase(residence)) q.options.add(new Option(city, city, "Departure city", city, "Departure"));
             } else if (i == 1) {

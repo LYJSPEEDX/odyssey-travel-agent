@@ -35,7 +35,7 @@ final class ProfileStore {
             String raw = new String(bytes.toByteArray(), StandardCharsets.UTF_8);
             ItineraryJson.preflight(raw, ProfileContracts.MAX_JSON_CHARS);
             JSONObject profile = new JSONObject(raw);
-            if (Integer.valueOf(2).equals(profile.opt("schema_version"))) {
+            if (Integer.valueOf(2).equals(profile.opt("schema_version")) || Integer.valueOf(3).equals(profile.opt("schema_version"))) {
                 try { return validated(profile); }
                 catch (IllegalArgumentException exception) { throw new JSONException(exception.getMessage()); }
             }
@@ -53,25 +53,42 @@ final class ProfileStore {
     void save(JSONObject profile) throws IOException, JSONException { write(validated(profile)); }
     static boolean isComplete(JSONObject profile) {
         if (profile == null) return false;
-        try { validated(profile); return true; }
+        try { JSONObject checked = validated(profile); return checked.optInt("schema_version") == 2 || checked.optBoolean("onboarding_complete"); }
         catch (JSONException | IllegalArgumentException exception) { return false; }
     }
-    /** v2 是本机档案；旧版服务契约保持原样，不向旧 schema 塞入新字段。 */
+    /** v3 支持选填生日和完成标记；继续读取旧 v2，旧版服务契约保持原样。 */
     private static JSONObject validated(JSONObject source) throws JSONException {
-        if (source == null || !Integer.valueOf(2).equals(source.opt("schema_version")))
+        if (source == null) throw new IllegalArgumentException("Missing profile");
+        boolean optional = Integer.valueOf(3).equals(source.opt("schema_version"));
+        if (!optional && !Integer.valueOf(2).equals(source.opt("schema_version")))
             throw new IllegalArgumentException("Unsupported profile version");
-        JSONObject profile = new JSONObject().put("schema_version", 2);
+        JSONObject profile = new JSONObject().put("schema_version", optional ? 3 : 2);
         for (String key : new String[]{"name", "gender", "nationality", "residential_location"})
-            profile.put(key, InputValidation.requiredText(source.opt(key), 200, key));
+            profile.put(key, optional ? InputValidation.typedText(source.opt(key), 200, key)
+                    : InputValidation.requiredText(source.opt(key), 200, key));
         String gender = profile.getString("gender");
-        if (!java.util.Arrays.asList("Woman", "Man", "Non-binary", "Self-described", "Prefer not to say").contains(gender))
+        if (!(optional && gender.isEmpty()) && !java.util.Arrays.asList("Woman", "Man", "Non-binary", "Self-described", "Prefer not to say", "Prefer not to tell").contains(gender))
             throw new IllegalArgumentException("Select a gender option");
-        Object age = source.opt("age");
-        if (!(age instanceof Integer)) throw new IllegalArgumentException("Age must be an integer");
-        profile.put("age", InputValidation.age(age.toString()));
+        if (optional) {
+            // 完成状态独立于是否披露个人资料：全空也能完成引导，不会反复弹出注册页。
+            if (!(source.opt("onboarding_complete") instanceof Boolean))
+                throw new IllegalArgumentException("Invalid completion state");
+            profile.put("onboarding_complete", source.getBoolean("onboarding_complete"));
+            profile.put("birth_date", InputValidation.birthDate(source.opt("birth_date")));
+            // 旧年龄仅兼容保存，不凭年龄猜出生日期；用户主动不透露时不保留此值。
+            if (source.has("legacy_age")) {
+                Object legacy = source.get("legacy_age");
+                if (!(legacy instanceof Integer)) throw new IllegalArgumentException("Invalid legacy age");
+                profile.put("legacy_age", InputValidation.age(legacy.toString()));
+            }
+        } else {
+            Object age = source.opt("age");
+            if (!(age instanceof Integer)) throw new IllegalArgumentException("Age must be an integer");
+            profile.put("age", InputValidation.age(age.toString()));
+        }
         profile.put("travel_preferences", InputValidation.optionalText(source.opt("travel_preferences"), 2000, "Preferences"));
         org.json.JSONArray tags = source.optJSONArray("preference_tags");
-        if (tags == null || tags.length() > 60) throw new IllegalArgumentException("Invalid preference tags");
+        if (tags == null || tags.length() > PreferenceTags.ALL.size()) throw new IllegalArgumentException("Invalid preference tags");
         org.json.JSONArray normalized = new org.json.JSONArray();
         java.util.Set<String> seen = new java.util.HashSet<>();
         for (int i = 0; i < tags.length(); i++) {

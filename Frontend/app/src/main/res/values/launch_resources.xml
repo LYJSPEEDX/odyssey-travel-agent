@@ -1,10 +1,12 @@
 <resources>
+    <dimen name="launch_ticket_design_width">382dp</dimen>
     <!-- 启动票券忠实保留参考图颜色，不随首页的深色主题反转。 -->
     <color name="launch_paper">#FFFFFF</color>
+    <color name="launch_background">#F6F2EA</color>
     <color name="launch_ink">#000000</color>
     <color name="launch_lime">#DEFF60</color>
     <color name="launch_coral">#FF705E</color>
-    <string name="launch_accessibility">Odyssey. Your travel agent is here to help. Opening home.</string>
+    <string name="launch_accessibility">Odyssey. Your travel agent is here to help. Getting your journey ready.</string>
     <string name="launch_brand">Odyssey</string>
     <string name="launch_project">A Project for\nCOMP9003</string>
     <string name="launch_tagline">Your travel agent is here to help</string>

@@ -31,5 +31,20 @@ final class InputValidation {
         } catch (NumberFormatException ignored) { }
         throw new IllegalArgumentException("Age must be between 1 and 120");
     }
+    /** 生日允许不透露；输入日期必须真实存在且不能晚于今天。 */
+    static String birthDate(Object value) {
+        String date = optionalText(value, 10, "Date of birth");
+        if (date.isEmpty()) return "";
+        if (!date.matches("[0-9]{4}-[0-9]{2}-[0-9]{2}"))
+            throw new IllegalArgumentException("Choose a complete date of birth");
+        java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US);
+        format.setLenient(false);
+        try {
+            java.util.Date parsed = format.parse(date);
+            if (parsed == null || parsed.after(new java.util.Date()))
+                throw new IllegalArgumentException("Date of birth cannot be in the future");
+        } catch (java.text.ParseException error) { throw new IllegalArgumentException("Choose a valid date of birth"); }
+        return date;
+    }
     private InputValidation() { }
 }

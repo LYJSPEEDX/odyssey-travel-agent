@@ -52,6 +52,7 @@ public class RegistrationFlowTest {
             awaitReady(scenario);
             scenario.onActivity(activity -> {
                 assertEquals("Draft name", ((android.widget.EditText) activity.findViewById(R.id.registrationName)).getText().toString());
+                activity.findViewById(R.id.registrationNext).performClick();
                 findButton(activity.findViewById(R.id.registrationContent), "Save profile").performClick();
             });
             long deadline = android.os.SystemClock.uptimeMillis() + 5000;

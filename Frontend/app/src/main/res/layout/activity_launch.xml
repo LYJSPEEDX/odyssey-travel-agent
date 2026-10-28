@@ -9,7 +9,7 @@
     tools:ignore="Overdraw"
     android:id="@+id/launchWelcome"
     android:layout_width="match_parent" android:layout_height="match_parent"
-    android:background="@color/purple" android:padding="16dp"
+    android:background="@color/launch_background" android:padding="16dp"
     android:clickable="true" android:focusable="true"
     android:importantForAccessibility="yes" android:contentDescription="@string/launch_accessibility">
 
@@ -20,17 +20,17 @@
         android:scaleX="0.5" android:scaleY="0.5"
         android:importantForAccessibility="noHideDescendants"
         app:layout_constraintDimensionRatio="382:582"
-        app:layout_constraintWidth_max="420dp"
+        app:layout_constraintWidth_max="@dimen/launch_ticket_design_width"
         app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent">
 
-        <!-- 白纸只覆盖票身；票头圆角外保持透明，直接透出欢迎页紫色。 -->
+        <!-- 票身底部为圆角，票头外侧透明，透出奶白色背景。 -->
         <View android:layout_width="0dp" android:layout_height="0dp"
             app:layout_constraintWidth_percent="1.000000"
             app:layout_constraintHeight_percent="0.676976"
             app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:background="@color/launch_paper" />
+            android:background="@drawable/bg_launch_ticket_body" />
         <View android:layout_width="0dp" android:layout_height="0dp"
             app:layout_constraintWidth_percent="1.000000"
             app:layout_constraintHeight_percent="0.323024"
