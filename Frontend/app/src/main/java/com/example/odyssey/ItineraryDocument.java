@@ -29,7 +29,7 @@ final class ItineraryDocument {
         // 将文本变为可按键读取的对象树；这一步本身还不知道业务上必需哪些字段。
         JSONObject root = new JSONObject(raw);
         // Schema 是字段规则，不是另一份行程；从打包资源读取。
-        JSONObject schema = ItineraryAssets.schema(context);
+        JSONObject schema = ItineraryAssets.schema(context, root.getString("schemaVersion"));
         // 两个 schema 参数分别是当前规则和完整规则根，后者用于解析 $ref；0 是初始深度。
         ItineraryShape.check(root, schema, schema, 0);
         ItineraryDocument doc = new ItineraryDocument(root);

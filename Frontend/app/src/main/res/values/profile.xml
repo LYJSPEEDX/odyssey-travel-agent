@@ -1,4 +1,6 @@
 <resources>
+    <item name="profileCurrency" type="id" />
+    <string name="profile_currency">Preferred currency</string>
     <item name="registrationBirthDate" type="id" />
     <item name="registrationNext" type="id" />
     <item name="registrationPrevious" type="id" />

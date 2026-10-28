@@ -30,7 +30,7 @@ import java.util.concurrent.Executors;
  * 所有确认/文字提交均先序列化为请求，再由本机 Mock 回包，统一校验后才更新页面。
  * 出发地是 START 前置步骤，不占用七段进度；正式生成仍使用经过验证的旧行程适配器。
  */
-public class MainActivity extends AppCompatActivity implements PlannerFormRenderer.Actions, PlanningSessionRenderer.Actions {
+public class MainActivity extends AppCompatActivity implements PlannerFormRenderer.Actions, PlanningSessionRenderer.Actions, GenerationDemoRenderer.Actions {
     private PlanningSession session;
     private TripPlanState state = new TripPlanState();
     private Calendar calendarMonth = Calendar.getInstance();
@@ -52,9 +52,22 @@ public class MainActivity extends AppCompatActivity implements PlannerFormRender
     private String error = "";
     private JSONObject retryInput;
     private String retryAction;
-    private final Runnable finishMock = () -> {
-        if (state.isGenerating()) { state.finishGeneration(); render(true); saveTrip(); }
-    };
+    private long demoStartedAt;
+    private int demoStage, demoRenderedStage = -1;
+    private boolean demoOffline, demoSummary;
+    // Tick 只读取本机单调时钟；不会伪装成后端事件或在每次重绘时重新计时。
+    private final Runnable demoTick = this::updateDemo;
+    private void updateDemo() {
+        if (!state.isGenerating()) return;
+        long elapsed = Math.max(0, android.os.SystemClock.elapsedRealtime() - demoStartedAt);
+        if (!demoOffline) {
+            int nextStage = GenerationDemo.stage(elapsed);
+            if (elapsed >= GenerationDemo.DURATION_MS) { finishDemo(); return; }
+            if (nextStage != demoRenderedStage) { demoStage = nextStage; demoRenderedStage = nextStage; render(false); }
+        }
+        handler.removeCallbacks(demoTick);
+        handler.postDelayed(demoTick, 1000);
+    }
 
     @Override protected void onCreate(Bundle saved) {
         super.onCreate(saved);
@@ -67,12 +80,17 @@ public class MainActivity extends AppCompatActivity implements PlannerFormRender
             calendarMonth = TripDates.calendar(saved.getInt("calendar_month", TripDates.key(calendarMonth)));
             generationId = saved.getString("generation_id"); saveStatus = saved.getInt("trip_save_status", 0);
             error = saved.getString("planning_error", "");
+            demoStartedAt = saved.getLong("demo_started_at", 0);
+            demoStage = saved.getInt("demo_stage", 0);
+            demoOffline = saved.getBoolean("demo_offline"); demoSummary = saved.getBoolean("demo_summary");
         }
         if (session == null) {
-            String residence = "", preferences = "";
+            String residence = "", preferences = "", profileRequest = "";
             try {
                 JSONObject profile = new ProfileStore(this).load();
                 if (profile != null) {
+                    // 加载已完成资料，构造将来创建会话的 JSON；目前只交给本机 Mock。
+                    if (ProfileStore.isComplete(profile)) profileRequest = ProfilePayload.createSession(profile).toString();
                     residence = InputValidation.optionalText(profile.opt("residential_location"), 200, "Residence");
                     preferences = InputValidation.optionalText(profile.opt("travel_preferences"), 2000, "Preferences");
                     org.json.JSONArray tags = profile.optJSONArray("preference_tags");
@@ -86,7 +104,10 @@ public class MainActivity extends AppCompatActivity implements PlannerFormRender
                 }
             } catch (Exception ignored) { /* 读档失败时只使用可见的本机默认建议，不伪造用户资料。 */ }
             session = new PlanningSession(residence, InputValidation.optionalText(preferences, 2000, "Preferences"));
+            session.profileRequest = profileRequest;
         }
+        // 旧 Bundle 在增加字段后可能反序列化为 null；保持旧草稿仍可恢复。
+        if (session.profileRequest == null) session.profileRequest = "";
         calendarMonth.set(Calendar.DAY_OF_MONTH, 1);
         EdgeToEdge.enable(this); setContentView(R.layout.activity_main);
         scroll = findViewById(R.id.main); input = findViewById(R.id.messageInput); feedback = findViewById(R.id.inputFeedback);
@@ -120,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements PlannerFormRender
         // current=0 是 START，没有亮段；current=1 对应第一轮目的地，亮第一段。
         for (int i = 0; i < ids.length; i++) findViewById(ids[i]).setBackgroundColor(ContextCompat.getColor(this,
                 generation || i < session.current ? R.color.lime : R.color.outline));
-        findViewById(R.id.tripBoard).setVisibility(session.answer(0).isEmpty() ? View.GONE : View.VISIBLE);
+        findViewById(R.id.tripBoard).setVisibility(state.isGenerating() || session.answer(0).isEmpty() ? View.GONE : View.VISIBLE);
         android.widget.ImageView photo = findViewById(R.id.tripBoardPhoto);
         photo.setVisibility(session.answer(1).isEmpty() ? View.GONE : View.VISIBLE);
         if (!session.answer(1).isEmpty()) {
@@ -138,11 +159,13 @@ public class MainActivity extends AppCompatActivity implements PlannerFormRender
         next.setVisibility(generation ? View.INVISIBLE : View.VISIBLE);
         // NEEDS_REVIEW 不允许用浏览箭头静默确认；用户必须点击当前选项或明确确认按钮。
         next.setEnabled(!loading && !session.step().state.equals("NEEDS_REVIEW") && (session.step().state.equals("CONFIRMED") || !session.step().selected.isEmpty()
-                || session.current == 2 && session.dateDraft.isStepComplete(2) || !session.step().draft.isEmpty()));
+                || session.current == 2 && session.dateDraft.isStepComplete(2) || !session.step().draft.isEmpty() || !session.step().chatCandidate.isEmpty()));
         next.setContentDescription(session.current == 7 ? "Generate demo trip" : "Next step");
         findViewById(R.id.backButton).setEnabled(true);
         backCallback.setEnabled(session.current > 0 || generation);
-        if (generation) generationForm.render(); else form.render(session, calendarMonth, loading);
+        if (state.isGenerating()) {
+            new GenerationDemoRenderer(findViewById(R.id.stepContent), state, this).render(demoStage, demoOffline, demoSummary);
+        } else if (generation) generationForm.render(); else form.render(session, calendarMonth, loading);
         findViewById(R.id.composerContainer).setVisibility(generation ? View.GONE : View.VISIBLE);
         input.setEnabled(!loading); findViewById(R.id.sendButton).setEnabled(!loading);
         input.setHint(session.current < 3 ? "Describe a change to refresh suggestions…" : "Describe your answer…");
@@ -151,7 +174,10 @@ public class MainActivity extends AppCompatActivity implements PlannerFormRender
         feedback.setVisibility(feedback.length() == 0 ? View.GONE : View.VISIBLE);
         feedback.setOnClickListener(error.isEmpty() ? null : view -> retry());
         if (top) scroll.post(() -> scroll.smoothScrollTo(0, 0));
-        if (state.isGenerating()) scheduleMock();
+        if (state.isGenerating()) {
+            if (demoStartedAt == 0 || demoStartedAt > android.os.SystemClock.elapsedRealtime()) demoStartedAt = android.os.SystemClock.elapsedRealtime();
+            handler.removeCallbacks(demoTick); handler.postDelayed(demoTick, 1000);
+        }
     }
     @Override public void option(String id) {
         if (loading) return;
@@ -180,7 +206,7 @@ public class MainActivity extends AppCompatActivity implements PlannerFormRender
         if (loading) return;
         saveDraft();
         // 城市/日期文字用于刷新建议，保持原槽位；第 3–7 轮文字是可接受的正式答案。
-        try { dispatch(session.current < 3 ? "REFINE" : "SUBMIT", PlanningJson.textInput(input.getText() == null ? "" : input.getText().toString())); }
+        try { dispatch(session.current < 3 ? "REFINE" : "CHAT", PlanningJson.textInput(input.getText() == null ? "" : input.getText().toString())); }
         catch (Exception exception) { fail(exception); }
     }
     /** 捕获不可变 JSON 快照与票号；模拟异步延迟不会共享可变 session 引用。 */
@@ -203,12 +229,20 @@ public class MainActivity extends AppCompatActivity implements PlannerFormRender
                         // 后续保存失败重试/旋转恢复继续复用此 ID，避免行程库新增重复记录。
                         state = session.toPlan(); generationForm = new PlannerFormRenderer(findViewById(R.id.stepContent), state, calendarMonth, this);
                         generationId = UUID.randomUUID().toString(); saveStatus = 0;
+                        demoStartedAt = android.os.SystemClock.elapsedRealtime(); demoStage = 0; demoRenderedStage = -1;
+                        demoOffline = false; demoSummary = false;
                     }
-                    render(!action.equals("REFINE"));
+                    render(!action.equals("REFINE") && !action.equals("CHAT"));
+                    if (action.equals("CHAT") || action.equals("REFINE")) scroll.post(() -> scroll.fullScroll(View.FOCUS_DOWN));
                 } catch (Exception exception) { loading = false; pending = null; fail(exception); }
             };
             handler.postDelayed(pending, service.delayMillis);
         } catch (Exception exception) { loading = false; fail(exception); }
+    }
+    @Override public void useChatAnswer() {
+        if (loading || session.step().chatCandidate.isEmpty()) return;
+        try { dispatch("SUBMIT", PlanningJson.textInput(session.step().chatCandidate)); }
+        catch (Exception exception) { fail(exception); }
     }
     private void retry() {
         if (retryInput != null) dispatch(retryAction, retryInput); else if (!session.step().draft.isEmpty()) submitMessage(); else confirm();
@@ -218,12 +252,13 @@ public class MainActivity extends AppCompatActivity implements PlannerFormRender
         if (loading) return;
         saveDraft();
         if (!session.step().draft.isEmpty()) { submitMessage(); return; }
+        if (session.current >= 3 && !session.step().chatCandidate.isEmpty() && session.step().selected.isEmpty()) { useChatAnswer(); return; }
         if (session.step().state.equals("CONFIRMED") && session.current < 7) { cancelOperation(); session.browse(1); render(true); }
         else confirm();
     }
     @Override public void back() {
         saveDraft(); cancelOperation(); hideKeyboard();
-        if (state.isGenerating() || state.isGenerated()) { handler.removeCallbacks(finishMock); state.goBack(); session.current = 7; }
+        if (state.isGenerating() || state.isGenerated()) { handler.removeCallbacks(demoTick); demoStartedAt = 0; state.goBack(); session.current = 7; }
         else if (session.current > 0) session.browse(-1);
         else { finish(); return; }
         error = "";
@@ -257,7 +292,17 @@ public class MainActivity extends AppCompatActivity implements PlannerFormRender
     }
     private void hideKeyboard() { input.clearFocus(); new WindowInsetsControllerCompat(getWindow(), input).hide(WindowInsetsCompat.Type.ime()); }
     private void text(int id, String text) { ((TextView) findViewById(id)).setText(text); }
-    private void scheduleMock() { handler.removeCallbacks(finishMock); handler.postDelayed(finishMock, 1200); }
+    @Override public void toggleSummary() { demoSummary = !demoSummary; render(false); }
+    @Override public void toggleConnection() { demoOffline = !demoOffline; render(false); if (!demoOffline) updateDemo(); }
+    @Override public void finishDemo() {
+        if (!state.isGenerating()) return;
+        handler.removeCallbacks(demoTick); demoOffline = false;
+        state.finishGeneration(); render(true); saveTrip();
+    }
+    @Override public void returnHome() {
+        // 在首页上提供返回入口，原规划 Activity 保留在返回栈中；这不是持久后台任务。
+        startActivity(new Intent(this, HomeActivity.class).putExtra(HomeActivity.EXTRA_RETURN_TO_DEMO, true));
+    }
     @Override public int saveStatus() { return saveStatus; }
     @Override public void saveTrip() {
         if (!state.isGenerated()) return;
@@ -289,11 +334,13 @@ public class MainActivity extends AppCompatActivity implements PlannerFormRender
         // onStop 已取消回包并保留草稿；再次可见时必须重画，恢复被 loading 禁用的输入。
         if (input != null) render(false);
     }
-    @Override protected void onStop() { saveDraft(); cancelOperation(); handler.removeCallbacks(finishMock); super.onStop(); }
-    @Override protected void onDestroy() { cancelOperation(); handler.removeCallbacks(finishMock); saveExecutor.shutdown(); super.onDestroy(); }
+    @Override protected void onStop() { saveDraft(); cancelOperation(); handler.removeCallbacks(demoTick); super.onStop(); }
+    @Override protected void onDestroy() { cancelOperation(); handler.removeCallbacks(demoTick); saveExecutor.shutdown(); super.onDestroy(); }
     @Override protected void onSaveInstanceState(Bundle out) {
         saveDraft(); cancelOperation();
         out.putSerializable("planning_session", session); out.putSerializable("trip_state", state);
+        out.putLong("demo_started_at", demoStartedAt); out.putInt("demo_stage", demoStage);
+        out.putBoolean("demo_offline", demoOffline); out.putBoolean("demo_summary", demoSummary);
         out.putString("generation_id", generationId); out.putInt("trip_save_status", saveStatus);
         out.putInt("calendar_month", TripDates.key(calendarMonth)); out.putString("planning_error", error);
         super.onSaveInstanceState(out);

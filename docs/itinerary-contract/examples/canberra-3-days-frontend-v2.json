@@ -1,0 +1,1423 @@
+{
+  "schemaVersion": "2.0",
+  "id": "demo_canberra_3d",
+  "revision": 1,
+  "language": "en",
+  "dataMode": "MOCK",
+  "status": "PARTIAL",
+  "generatedAt": "2026-10-12T10:00:00+11:00",
+  "requestSnapshot": {
+    "originPlaceId": "sydney",
+    "destinationPlaceIds": [
+      "canberra"
+    ],
+    "dateMode": "FIXED",
+    "requestedStartDate": "2026-11-10",
+    "requestedEndDate": "2026-11-12",
+    "returnDateMeaning": "ARRIVE_HOME",
+    "companions": "COUPLE",
+    "travelers": [
+      {
+        "id": "traveler_1",
+        "age": 30,
+        "passportCountry": null,
+        "passportType": null,
+        "residenceCountry": "AU"
+      },
+      {
+        "id": "traveler_2",
+        "age": 30,
+        "passportCountry": null,
+        "passportType": null,
+        "residenceCountry": "AU"
+      }
+    ],
+    "budget": {
+      "scope": "ENTIRE_PARTY_WHOLE_TRIP",
+      "target": {
+        "currency": "AUD",
+        "amountMinor": 180000
+      },
+      "includeIntercityTransport": true
+    },
+    "constraints": [
+      {
+        "id": "constraint_relaxed",
+        "code": "RELAXED",
+        "strength": "SOFT",
+        "description": "Keep time for breaks."
+      }
+    ],
+    "notes": []
+  },
+  "summary": {
+    "title": "Canberra, at your own pace",
+    "subtitle": "A sample plan for two travellers",
+    "startDate": "2026-11-10",
+    "endDate": "2026-11-12",
+    "dayCount": 3,
+    "coverImageId": "cover",
+    "highlights": [
+      "Time to explore",
+      "Flexible breaks"
+    ],
+    "advice": [
+      "All prices, routes, flight times and hotel options are fictional UI examples. Confirm real availability before travel."
+    ]
+  },
+  "places": [
+    {
+      "id": "sydney",
+      "name": "Sydney",
+      "kind": "CITY",
+      "countryCode": "AU",
+      "timeZone": "Australia/Sydney",
+      "address": null,
+      "coordinates": {
+        "latitude": -33.8688,
+        "longitude": 151.2093
+      },
+      "providerPlaceId": null,
+      "imageIds": [],
+      "evidence": {
+        "status": "MOCK",
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    },
+    {
+      "id": "canberra",
+      "name": "Canberra",
+      "kind": "CITY",
+      "countryCode": "AU",
+      "timeZone": "Australia/Sydney",
+      "address": null,
+      "coordinates": {
+        "latitude": -35.2809,
+        "longitude": 149.13
+      },
+      "providerPlaceId": null,
+      "imageIds": [
+        "cover"
+      ],
+      "evidence": {
+        "status": "MOCK",
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    },
+    {
+      "id": "gallery",
+      "name": "Demo gallery stop",
+      "kind": "ATTRACTION",
+      "countryCode": "AU",
+      "timeZone": "Australia/Sydney",
+      "address": null,
+      "coordinates": null,
+      "providerPlaceId": null,
+      "imageIds": [],
+      "evidence": {
+        "status": "MOCK",
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    },
+    {
+      "id": "lakeside",
+      "name": "Demo lakeside stop",
+      "kind": "ATTRACTION",
+      "countryCode": "AU",
+      "timeZone": "Australia/Sydney",
+      "address": null,
+      "coordinates": null,
+      "providerPlaceId": null,
+      "imageIds": [],
+      "evidence": {
+        "status": "MOCK",
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    },
+    {
+      "id": "cafe",
+      "name": "Demo cafe stop",
+      "kind": "RESTAURANT",
+      "countryCode": "AU",
+      "timeZone": "Australia/Sydney",
+      "address": null,
+      "coordinates": null,
+      "providerPlaceId": null,
+      "imageIds": [],
+      "evidence": {
+        "status": "MOCK",
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    },
+    {
+      "id": "hotel_1",
+      "name": "Demo Canberra Stay 1",
+      "kind": "HOTEL",
+      "countryCode": "AU",
+      "timeZone": "Australia/Sydney",
+      "address": null,
+      "coordinates": null,
+      "providerPlaceId": null,
+      "imageIds": [],
+      "evidence": {
+        "status": "MOCK",
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    },
+    {
+      "id": "hotel_2",
+      "name": "Demo Canberra Stay 2",
+      "kind": "HOTEL",
+      "countryCode": "AU",
+      "timeZone": "Australia/Sydney",
+      "address": null,
+      "coordinates": null,
+      "providerPlaceId": null,
+      "imageIds": [],
+      "evidence": {
+        "status": "MOCK",
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    },
+    {
+      "id": "hotel_3",
+      "name": "Demo Canberra Stay 3",
+      "kind": "HOTEL",
+      "countryCode": "AU",
+      "timeZone": "Australia/Sydney",
+      "address": null,
+      "coordinates": null,
+      "providerPlaceId": null,
+      "imageIds": [],
+      "evidence": {
+        "status": "MOCK",
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    }
+  ],
+  "media": [
+    {
+      "id": "cover",
+      "placeId": "canberra",
+      "usage": "COVER",
+      "status": "PENDING",
+      "provider": "NONE",
+      "providerAssetId": null,
+      "assetKey": null,
+      "url": null,
+      "thumbnailUrl": null,
+      "altText": "Canberra city scenery",
+      "attributions": [],
+      "expiresAt": null
+    }
+  ],
+  "transportGroups": [
+    {
+      "id": "outbound",
+      "title": "Drive to Demo Canberra Stay 1",
+      "fromPlaceId": "sydney",
+      "toPlaceId": "hotel_1",
+      "status": "AVAILABLE",
+      "recommendedOptionId": "outbound_recommended",
+      "planningOptionId": "outbound_recommended",
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": "outbound_recommended",
+          "title": "Drive to Demo Canberra Stay 1",
+          "reason": "Used as the working assumption for this sample timeline.",
+          "legs": [
+            {
+              "id": "outbound_drive_leg",
+              "mode": "DRIVE",
+              "fromPlaceId": "sydney",
+              "toPlaceId": "hotel_1",
+              "departure": {
+                "at": "2026-11-10T09:00:00+11:00",
+                "timeZone": "Australia/Sydney"
+              },
+              "arrival": {
+                "at": "2026-11-10T13:00:00+11:00",
+                "timeZone": "Australia/Sydney"
+              },
+              "durationMinutes": 240,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "ESTIMATED",
+              "evidence": {
+                "status": "MOCK",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "vehicleSource": "OWN_CAR",
+                "avoidTolls": false,
+                "restStopPlaceIds": [],
+                "routeInstructions": "Illustrative route including a rest break. Check traffic, tolls and parking."
+              }
+            }
+          ],
+          "costItemIds": [
+            "cost_driving"
+          ]
+        },
+        {
+          "id": "outbound_bus",
+          "title": "Coach alternative",
+          "reason": "Avoid driving. Stops and transfers must be confirmed.",
+          "legs": [
+            {
+              "id": "outbound_bus_leg",
+              "mode": "BUS",
+              "fromPlaceId": "sydney",
+              "toPlaceId": "hotel_1",
+              "departure": {
+                "at": "2026-11-10T09:00:00+11:00",
+                "timeZone": "Australia/Sydney"
+              },
+              "arrival": {
+                "at": "2026-11-10T13:00:00+11:00",
+                "timeZone": "Australia/Sydney"
+              },
+              "durationMinutes": 240,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "ESTIMATED",
+              "evidence": {
+                "status": "MOCK",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "operator": null,
+                "serviceNumber": null,
+                "boardingPoint": "Sydney",
+                "alightingPoint": "Demo Canberra Stay 1",
+                "routeInstructions": "Illustrative transfer. Confirm route, duration and fare."
+              }
+            }
+          ],
+          "costItemIds": [
+            "cost_bus"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "walk_1",
+      "title": "Walk to Demo cafe stop",
+      "fromPlaceId": "hotel_1",
+      "toPlaceId": "cafe",
+      "status": "AVAILABLE",
+      "recommendedOptionId": "walk_1_recommended",
+      "planningOptionId": "walk_1_recommended",
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": "walk_1_recommended",
+          "title": "Walk to Demo cafe stop",
+          "reason": "Used as the working assumption for this sample timeline.",
+          "legs": [
+            {
+              "id": "walk_1_leg",
+              "mode": "WALK",
+              "fromPlaceId": "hotel_1",
+              "toPlaceId": "cafe",
+              "departure": {
+                "at": "2026-11-10T14:30:00+11:00",
+                "timeZone": "Australia/Sydney"
+              },
+              "arrival": {
+                "at": "2026-11-10T14:50:00+11:00",
+                "timeZone": "Australia/Sydney"
+              },
+              "durationMinutes": 20,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "ESTIMATED",
+              "evidence": {
+                "status": "MOCK",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "routeInstructions": "Illustrative walk. Verify the route and accessibility.",
+                "accessibilityNotes": "Not verified."
+              }
+            }
+          ],
+          "costItemIds": []
+        }
+      ]
+    },
+    {
+      "id": "walk_2",
+      "title": "Walk to Demo Canberra Stay 1",
+      "fromPlaceId": "cafe",
+      "toPlaceId": "hotel_1",
+      "status": "AVAILABLE",
+      "recommendedOptionId": "walk_2_recommended",
+      "planningOptionId": "walk_2_recommended",
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": "walk_2_recommended",
+          "title": "Walk to Demo Canberra Stay 1",
+          "reason": "Used as the working assumption for this sample timeline.",
+          "legs": [
+            {
+              "id": "walk_2_leg",
+              "mode": "WALK",
+              "fromPlaceId": "cafe",
+              "toPlaceId": "hotel_1",
+              "departure": {
+                "at": "2026-11-10T16:00:00+11:00",
+                "timeZone": "Australia/Sydney"
+              },
+              "arrival": {
+                "at": "2026-11-10T16:20:00+11:00",
+                "timeZone": "Australia/Sydney"
+              },
+              "durationMinutes": 20,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "ESTIMATED",
+              "evidence": {
+                "status": "MOCK",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "routeInstructions": "Illustrative walk. Verify the route and accessibility.",
+                "accessibilityNotes": "Not verified."
+              }
+            }
+          ],
+          "costItemIds": []
+        }
+      ]
+    },
+    {
+      "id": "walk_3",
+      "title": "Walk to Demo gallery stop",
+      "fromPlaceId": "hotel_1",
+      "toPlaceId": "gallery",
+      "status": "AVAILABLE",
+      "recommendedOptionId": "walk_3_recommended",
+      "planningOptionId": "walk_3_recommended",
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": "walk_3_recommended",
+          "title": "Walk to Demo gallery stop",
+          "reason": "Used as the working assumption for this sample timeline.",
+          "legs": [
+            {
+              "id": "walk_3_leg",
+              "mode": "WALK",
+              "fromPlaceId": "hotel_1",
+              "toPlaceId": "gallery",
+              "departure": {
+                "at": "2026-11-11T09:00:00+11:00",
+                "timeZone": "Australia/Sydney"
+              },
+              "arrival": {
+                "at": "2026-11-11T09:30:00+11:00",
+                "timeZone": "Australia/Sydney"
+              },
+              "durationMinutes": 30,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "ESTIMATED",
+              "evidence": {
+                "status": "MOCK",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "routeInstructions": "Illustrative walk. Verify the route and accessibility.",
+                "accessibilityNotes": "Not verified."
+              }
+            }
+          ],
+          "costItemIds": []
+        }
+      ]
+    },
+    {
+      "id": "walk_4",
+      "title": "Walk to Demo cafe stop",
+      "fromPlaceId": "gallery",
+      "toPlaceId": "cafe",
+      "status": "AVAILABLE",
+      "recommendedOptionId": "walk_4_recommended",
+      "planningOptionId": "walk_4_recommended",
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": "walk_4_recommended",
+          "title": "Walk to Demo cafe stop",
+          "reason": "Used as the working assumption for this sample timeline.",
+          "legs": [
+            {
+              "id": "walk_4_leg",
+              "mode": "WALK",
+              "fromPlaceId": "gallery",
+              "toPlaceId": "cafe",
+              "departure": {
+                "at": "2026-11-11T11:30:00+11:00",
+                "timeZone": "Australia/Sydney"
+              },
+              "arrival": {
+                "at": "2026-11-11T12:00:00+11:00",
+                "timeZone": "Australia/Sydney"
+              },
+              "durationMinutes": 30,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "ESTIMATED",
+              "evidence": {
+                "status": "MOCK",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "routeInstructions": "Illustrative walk. Verify the route and accessibility.",
+                "accessibilityNotes": "Not verified."
+              }
+            }
+          ],
+          "costItemIds": []
+        }
+      ]
+    },
+    {
+      "id": "walk_5",
+      "title": "Walk to Demo lakeside stop",
+      "fromPlaceId": "cafe",
+      "toPlaceId": "lakeside",
+      "status": "AVAILABLE",
+      "recommendedOptionId": "walk_5_recommended",
+      "planningOptionId": "walk_5_recommended",
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": "walk_5_recommended",
+          "title": "Walk to Demo lakeside stop",
+          "reason": "Used as the working assumption for this sample timeline.",
+          "legs": [
+            {
+              "id": "walk_5_leg",
+              "mode": "WALK",
+              "fromPlaceId": "cafe",
+              "toPlaceId": "lakeside",
+              "departure": {
+                "at": "2026-11-11T13:00:00+11:00",
+                "timeZone": "Australia/Sydney"
+              },
+              "arrival": {
+                "at": "2026-11-11T13:20:00+11:00",
+                "timeZone": "Australia/Sydney"
+              },
+              "durationMinutes": 20,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "ESTIMATED",
+              "evidence": {
+                "status": "MOCK",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "routeInstructions": "Illustrative walk. Verify the route and accessibility.",
+                "accessibilityNotes": "Not verified."
+              }
+            }
+          ],
+          "costItemIds": []
+        }
+      ]
+    },
+    {
+      "id": "walk_6",
+      "title": "Walk to Demo Canberra Stay 1",
+      "fromPlaceId": "lakeside",
+      "toPlaceId": "hotel_1",
+      "status": "AVAILABLE",
+      "recommendedOptionId": "walk_6_recommended",
+      "planningOptionId": "walk_6_recommended",
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": "walk_6_recommended",
+          "title": "Walk to Demo Canberra Stay 1",
+          "reason": "Used as the working assumption for this sample timeline.",
+          "legs": [
+            {
+              "id": "walk_6_leg",
+              "mode": "WALK",
+              "fromPlaceId": "lakeside",
+              "toPlaceId": "hotel_1",
+              "departure": {
+                "at": "2026-11-11T15:00:00+11:00",
+                "timeZone": "Australia/Sydney"
+              },
+              "arrival": {
+                "at": "2026-11-11T15:30:00+11:00",
+                "timeZone": "Australia/Sydney"
+              },
+              "durationMinutes": 30,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "ESTIMATED",
+              "evidence": {
+                "status": "MOCK",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "routeInstructions": "Illustrative walk. Verify the route and accessibility.",
+                "accessibilityNotes": "Not verified."
+              }
+            }
+          ],
+          "costItemIds": []
+        }
+      ]
+    },
+    {
+      "id": "return",
+      "title": "Drive to Sydney",
+      "fromPlaceId": "hotel_1",
+      "toPlaceId": "sydney",
+      "status": "AVAILABLE",
+      "recommendedOptionId": "return_recommended",
+      "planningOptionId": "return_recommended",
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": "return_recommended",
+          "title": "Drive to Sydney",
+          "reason": "Used as the working assumption for this sample timeline.",
+          "legs": [
+            {
+              "id": "return_drive_leg",
+              "mode": "DRIVE",
+              "fromPlaceId": "hotel_1",
+              "toPlaceId": "sydney",
+              "departure": {
+                "at": "2026-11-12T10:00:00+11:00",
+                "timeZone": "Australia/Sydney"
+              },
+              "arrival": {
+                "at": "2026-11-12T14:00:00+11:00",
+                "timeZone": "Australia/Sydney"
+              },
+              "durationMinutes": 240,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "ESTIMATED",
+              "evidence": {
+                "status": "MOCK",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "vehicleSource": "OWN_CAR",
+                "avoidTolls": false,
+                "restStopPlaceIds": [],
+                "routeInstructions": "Illustrative route including a rest break. Check traffic, tolls and parking."
+              }
+            }
+          ],
+          "costItemIds": [
+            "cost_driving"
+          ]
+        },
+        {
+          "id": "return_bus",
+          "title": "Coach alternative",
+          "reason": "Avoid driving. Stops and transfers must be confirmed.",
+          "legs": [
+            {
+              "id": "return_bus_leg",
+              "mode": "BUS",
+              "fromPlaceId": "hotel_1",
+              "toPlaceId": "sydney",
+              "departure": {
+                "at": "2026-11-12T10:00:00+11:00",
+                "timeZone": "Australia/Sydney"
+              },
+              "arrival": {
+                "at": "2026-11-12T14:00:00+11:00",
+                "timeZone": "Australia/Sydney"
+              },
+              "durationMinutes": 240,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "ESTIMATED",
+              "evidence": {
+                "status": "MOCK",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "operator": null,
+                "serviceNumber": null,
+                "boardingPoint": "Demo Canberra Stay 1",
+                "alightingPoint": "Sydney",
+                "routeInstructions": "Illustrative transfer. Confirm route, duration and fare."
+              }
+            }
+          ],
+          "costItemIds": [
+            "cost_bus"
+          ]
+        }
+      ]
+    }
+  ],
+  "stayGroups": [
+    {
+      "id": "stay_main",
+      "title": "Canberra stay",
+      "checkInDate": "2026-11-10",
+      "checkOutDate": "2026-11-12",
+      "nights": 2,
+      "status": "AVAILABLE",
+      "recommendedOptionId": "stay_option_1",
+      "planningOptionId": "stay_option_1",
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": "stay_option_1",
+          "placeId": "hotel_1",
+          "title": "Demo Canberra Stay 1",
+          "reason": "Central base for the sample route.",
+          "roomType": "Double room",
+          "roomCount": 1,
+          "guestCapacity": 2,
+          "amenities": [
+            "Example amenity: Wi-Fi"
+          ],
+          "availability": "UNKNOWN",
+          "cancellationSummary": null,
+          "costItemIds": [
+            "cost_hotel_1"
+          ],
+          "evidence": {
+            "status": "MOCK",
+            "sourceIds": [],
+            "checkedAt": null
+          }
+        },
+        {
+          "id": "stay_option_2",
+          "placeId": "hotel_2",
+          "title": "Demo Canberra Stay 2",
+          "reason": "Alternative with a lower example price.",
+          "roomType": "Double room",
+          "roomCount": 1,
+          "guestCapacity": 2,
+          "amenities": [
+            "Example amenity: Wi-Fi"
+          ],
+          "availability": "UNKNOWN",
+          "cancellationSummary": null,
+          "costItemIds": [
+            "cost_hotel_2"
+          ],
+          "evidence": {
+            "status": "MOCK",
+            "sourceIds": [],
+            "checkedAt": null
+          }
+        },
+        {
+          "id": "stay_option_3",
+          "placeId": "hotel_3",
+          "title": "Demo Canberra Stay 3",
+          "reason": "Alternative with extra example space.",
+          "roomType": "Double room",
+          "roomCount": 1,
+          "guestCapacity": 2,
+          "amenities": [
+            "Example amenity: Wi-Fi"
+          ],
+          "availability": "UNKNOWN",
+          "cancellationSummary": null,
+          "costItemIds": [
+            "cost_hotel_3"
+          ],
+          "evidence": {
+            "status": "MOCK",
+            "sourceIds": [],
+            "checkedAt": null
+          }
+        }
+      ]
+    }
+  ],
+  "days": [
+    {
+      "id": "day_1",
+      "dayNumber": 1,
+      "date": "2026-11-10",
+      "timeZone": "Australia/Sydney",
+      "title": "Arrive and settle in",
+      "summary": "A flexible day with time between activities.",
+      "walkingDistanceMeters": null,
+      "events": [
+        {
+          "id": "event_outbound",
+          "type": "TRANSPORT",
+          "title": "Drive to Demo Canberra Stay 1",
+          "description": "Estimated journey; not a confirmed booking.",
+          "imageIds": [],
+          "transportGroupId": "outbound"
+        },
+        {
+          "id": "check_in",
+          "type": "STAY",
+          "title": "Check in",
+          "description": "Sample suggestion. Opening hours, suitability and availability are unverified.",
+          "imageIds": [],
+          "start": {
+            "at": "2026-11-10T14:00:00+11:00",
+            "timeZone": "Australia/Sydney"
+          },
+          "end": {
+            "at": "2026-11-10T14:30:00+11:00",
+            "timeZone": "Australia/Sydney"
+          },
+          "timingStatus": "ESTIMATED",
+          "evidence": {
+            "status": "MOCK",
+            "sourceIds": [],
+            "checkedAt": null
+          },
+          "stayGroupId": "stay_main",
+          "action": "CHECK_IN"
+        },
+        {
+          "id": "event_walk_1",
+          "type": "TRANSPORT",
+          "title": "Walk to Demo cafe stop",
+          "description": "Estimated journey; not a confirmed booking.",
+          "imageIds": [],
+          "transportGroupId": "walk_1"
+        },
+        {
+          "id": "meal_1",
+          "type": "MEAL",
+          "title": "Late lunch",
+          "description": "Sample suggestion. Opening hours, suitability and availability are unverified.",
+          "imageIds": [],
+          "start": {
+            "at": "2026-11-10T15:00:00+11:00",
+            "timeZone": "Australia/Sydney"
+          },
+          "end": {
+            "at": "2026-11-10T16:00:00+11:00",
+            "timeZone": "Australia/Sydney"
+          },
+          "timingStatus": "ESTIMATED",
+          "evidence": {
+            "status": "MOCK",
+            "sourceIds": [],
+            "checkedAt": null
+          },
+          "placeId": "cafe",
+          "costItemIds": [
+            "cost_food"
+          ],
+          "details": {
+            "mealType": "LUNCH",
+            "cuisine": "Local options",
+            "dietaryStatus": "UNVERIFIED",
+            "reservationStatus": "UNKNOWN"
+          }
+        },
+        {
+          "id": "event_walk_2",
+          "type": "TRANSPORT",
+          "title": "Walk to Demo Canberra Stay 1",
+          "description": "Estimated journey; not a confirmed booking.",
+          "imageIds": [],
+          "transportGroupId": "walk_2"
+        },
+        {
+          "id": "rest_1",
+          "type": "FREE_TIME",
+          "title": "Rest and settle in",
+          "description": "Sample suggestion. Opening hours, suitability and availability are unverified.",
+          "imageIds": [],
+          "start": {
+            "at": "2026-11-10T16:30:00+11:00",
+            "timeZone": "Australia/Sydney"
+          },
+          "end": {
+            "at": "2026-11-10T18:00:00+11:00",
+            "timeZone": "Australia/Sydney"
+          },
+          "timingStatus": "ESTIMATED",
+          "evidence": {
+            "status": "MOCK",
+            "sourceIds": [],
+            "checkedAt": null
+          },
+          "placeId": "hotel_1",
+          "costItemIds": []
+        }
+      ],
+      "continuingEventIds": []
+    },
+    {
+      "id": "day_2",
+      "dayNumber": 2,
+      "date": "2026-11-11",
+      "timeZone": "Australia/Sydney",
+      "title": "Explore at your own pace",
+      "summary": "A flexible day with time between activities.",
+      "walkingDistanceMeters": null,
+      "events": [
+        {
+          "id": "event_walk_3",
+          "type": "TRANSPORT",
+          "title": "Walk to Demo gallery stop",
+          "description": "Estimated journey; not a confirmed booking.",
+          "imageIds": [],
+          "transportGroupId": "walk_3"
+        },
+        {
+          "id": "activity_1",
+          "type": "ACTIVITY",
+          "title": "Explore the gallery",
+          "description": "Sample suggestion. Opening hours, suitability and availability are unverified.",
+          "imageIds": [],
+          "start": {
+            "at": "2026-11-11T09:30:00+11:00",
+            "timeZone": "Australia/Sydney"
+          },
+          "end": {
+            "at": "2026-11-11T11:30:00+11:00",
+            "timeZone": "Australia/Sydney"
+          },
+          "timingStatus": "ESTIMATED",
+          "evidence": {
+            "status": "MOCK",
+            "sourceIds": [],
+            "checkedAt": null
+          },
+          "placeId": "gallery",
+          "costItemIds": [
+            "cost_gallery"
+          ],
+          "details": {
+            "category": "CULTURE",
+            "reservationStatus": "UNKNOWN",
+            "openingHoursNote": null
+          }
+        },
+        {
+          "id": "event_walk_4",
+          "type": "TRANSPORT",
+          "title": "Walk to Demo cafe stop",
+          "description": "Estimated journey; not a confirmed booking.",
+          "imageIds": [],
+          "transportGroupId": "walk_4"
+        },
+        {
+          "id": "meal_2",
+          "type": "MEAL",
+          "title": "Lunch break",
+          "description": "Sample suggestion. Opening hours, suitability and availability are unverified.",
+          "imageIds": [],
+          "start": {
+            "at": "2026-11-11T12:00:00+11:00",
+            "timeZone": "Australia/Sydney"
+          },
+          "end": {
+            "at": "2026-11-11T13:00:00+11:00",
+            "timeZone": "Australia/Sydney"
+          },
+          "timingStatus": "ESTIMATED",
+          "evidence": {
+            "status": "MOCK",
+            "sourceIds": [],
+            "checkedAt": null
+          },
+          "placeId": "cafe",
+          "costItemIds": [
+            "cost_food"
+          ],
+          "details": {
+            "mealType": "LUNCH",
+            "cuisine": "Local options",
+            "dietaryStatus": "UNVERIFIED",
+            "reservationStatus": "UNKNOWN"
+          }
+        },
+        {
+          "id": "event_walk_5",
+          "type": "TRANSPORT",
+          "title": "Walk to Demo lakeside stop",
+          "description": "Estimated journey; not a confirmed booking.",
+          "imageIds": [],
+          "transportGroupId": "walk_5"
+        },
+        {
+          "id": "activity_2",
+          "type": "ACTIVITY",
+          "title": "Lakeside time",
+          "description": "Sample suggestion. Opening hours, suitability and availability are unverified.",
+          "imageIds": [],
+          "start": {
+            "at": "2026-11-11T13:30:00+11:00",
+            "timeZone": "Australia/Sydney"
+          },
+          "end": {
+            "at": "2026-11-11T15:00:00+11:00",
+            "timeZone": "Australia/Sydney"
+          },
+          "timingStatus": "ESTIMATED",
+          "evidence": {
+            "status": "MOCK",
+            "sourceIds": [],
+            "checkedAt": null
+          },
+          "placeId": "lakeside",
+          "costItemIds": [],
+          "details": {
+            "category": "CULTURE",
+            "reservationStatus": "UNKNOWN",
+            "openingHoursNote": null
+          }
+        },
+        {
+          "id": "event_walk_6",
+          "type": "TRANSPORT",
+          "title": "Walk to Demo Canberra Stay 1",
+          "description": "Estimated journey; not a confirmed booking.",
+          "imageIds": [],
+          "transportGroupId": "walk_6"
+        }
+      ],
+      "continuingEventIds": []
+    },
+    {
+      "id": "day_3",
+      "dayNumber": 3,
+      "date": "2026-11-12",
+      "timeZone": "Australia/Sydney",
+      "title": "Return home",
+      "summary": "A flexible day with time between activities.",
+      "walkingDistanceMeters": null,
+      "events": [
+        {
+          "id": "check_out",
+          "type": "STAY",
+          "title": "Check out",
+          "description": "Sample suggestion. Opening hours, suitability and availability are unverified.",
+          "imageIds": [],
+          "start": {
+            "at": "2026-11-12T09:00:00+11:00",
+            "timeZone": "Australia/Sydney"
+          },
+          "end": {
+            "at": "2026-11-12T09:30:00+11:00",
+            "timeZone": "Australia/Sydney"
+          },
+          "timingStatus": "ESTIMATED",
+          "evidence": {
+            "status": "MOCK",
+            "sourceIds": [],
+            "checkedAt": null
+          },
+          "stayGroupId": "stay_main",
+          "action": "CHECK_OUT"
+        },
+        {
+          "id": "event_return",
+          "type": "TRANSPORT",
+          "title": "Drive to Sydney",
+          "description": "Estimated journey; not a confirmed booking.",
+          "imageIds": [],
+          "transportGroupId": "return"
+        },
+        {
+          "id": "rest_home",
+          "type": "FREE_TIME",
+          "title": "Arrive home",
+          "description": "Sample suggestion. Opening hours, suitability and availability are unverified.",
+          "imageIds": [],
+          "start": {
+            "at": "2026-11-12T14:00:00+11:00",
+            "timeZone": "Australia/Sydney"
+          },
+          "end": {
+            "at": "2026-11-12T15:00:00+11:00",
+            "timeZone": "Australia/Sydney"
+          },
+          "timingStatus": "ESTIMATED",
+          "evidence": {
+            "status": "MOCK",
+            "sourceIds": [],
+            "checkedAt": null
+          },
+          "placeId": "sydney",
+          "costItemIds": []
+        }
+      ],
+      "continuingEventIds": []
+    }
+  ],
+  "money": {
+    "displayCurrency": "AUD",
+    "currencies": [
+      {
+        "code": "AUD",
+        "minorUnitDigits": 2
+      }
+    ],
+    "exchangeRates": [],
+    "exchangeAdvice": [
+      {
+        "title": "No currency conversion planned",
+        "description": "This example uses AUD throughout.",
+        "placeId": null,
+        "evidence": {
+          "status": "MOCK",
+          "sourceIds": [],
+          "checkedAt": null
+        }
+      }
+    ]
+  },
+  "entryRequirements": [
+    {
+      "id": "entry_au",
+      "travelerIds": [
+        "traveler_1",
+        "traveler_2"
+      ],
+      "countryCode": "AU",
+      "role": "DESTINATION",
+      "status": "NOT_APPLICABLE",
+      "summary": "No international border crossing is included in this domestic itinerary. Existing immigration status is not assessed.",
+      "requiredInputFields": [],
+      "documents": [],
+      "evidence": {
+        "status": "MOCK",
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    }
+  ],
+  "budget": {
+    "scope": "ENTIRE_PARTY_WHOLE_TRIP",
+    "lineItems": [
+      {
+        "id": "cost_hotel_1",
+        "category": "ACCOMMODATION",
+        "label": "Example room for 2 nights",
+        "unit": "ROOM_NIGHT",
+        "quantity": 2,
+        "unitPrice": {
+          "currency": "AUD",
+          "lowMinor": 16200,
+          "expectedMinor": 18000,
+          "highMinor": 19800
+        },
+        "originalTotal": {
+          "currency": "AUD",
+          "lowMinor": 32400,
+          "expectedMinor": 36000,
+          "highMinor": 39600
+        },
+        "displayTotal": {
+          "currency": "AUD",
+          "lowMinor": 32400,
+          "expectedMinor": 36000,
+          "highMinor": 39600
+        },
+        "exchangeRateId": null,
+        "taxesAndFees": "UNKNOWN",
+        "evidence": {
+          "status": "MOCK",
+          "sourceIds": [],
+          "checkedAt": null
+        }
+      },
+      {
+        "id": "cost_hotel_2",
+        "category": "ACCOMMODATION",
+        "label": "Example room for 2 nights",
+        "unit": "ROOM_NIGHT",
+        "quantity": 2,
+        "unitPrice": {
+          "currency": "AUD",
+          "lowMinor": 13500,
+          "expectedMinor": 15000,
+          "highMinor": 16500
+        },
+        "originalTotal": {
+          "currency": "AUD",
+          "lowMinor": 27000,
+          "expectedMinor": 30000,
+          "highMinor": 33000
+        },
+        "displayTotal": {
+          "currency": "AUD",
+          "lowMinor": 27000,
+          "expectedMinor": 30000,
+          "highMinor": 33000
+        },
+        "exchangeRateId": null,
+        "taxesAndFees": "UNKNOWN",
+        "evidence": {
+          "status": "MOCK",
+          "sourceIds": [],
+          "checkedAt": null
+        }
+      },
+      {
+        "id": "cost_hotel_3",
+        "category": "ACCOMMODATION",
+        "label": "Example room for 2 nights",
+        "unit": "ROOM_NIGHT",
+        "quantity": 2,
+        "unitPrice": {
+          "currency": "AUD",
+          "lowMinor": 20700,
+          "expectedMinor": 23000,
+          "highMinor": 25300
+        },
+        "originalTotal": {
+          "currency": "AUD",
+          "lowMinor": 41400,
+          "expectedMinor": 46000,
+          "highMinor": 50600
+        },
+        "displayTotal": {
+          "currency": "AUD",
+          "lowMinor": 41400,
+          "expectedMinor": 46000,
+          "highMinor": 50600
+        },
+        "exchangeRateId": null,
+        "taxesAndFees": "UNKNOWN",
+        "evidence": {
+          "status": "MOCK",
+          "sourceIds": [],
+          "checkedAt": null
+        }
+      },
+      {
+        "id": "cost_food",
+        "category": "FOOD",
+        "label": "Meal allowance for two people over three days",
+        "unit": "PERSON_DAY",
+        "quantity": 6,
+        "unitPrice": {
+          "currency": "AUD",
+          "lowMinor": 5400,
+          "expectedMinor": 6000,
+          "highMinor": 6600
+        },
+        "originalTotal": {
+          "currency": "AUD",
+          "lowMinor": 32400,
+          "expectedMinor": 36000,
+          "highMinor": 39600
+        },
+        "displayTotal": {
+          "currency": "AUD",
+          "lowMinor": 32400,
+          "expectedMinor": 36000,
+          "highMinor": 39600
+        },
+        "exchangeRateId": null,
+        "taxesAndFees": "UNKNOWN",
+        "evidence": {
+          "status": "MOCK",
+          "sourceIds": [],
+          "checkedAt": null
+        }
+      },
+      {
+        "id": "cost_driving",
+        "category": "INTERCITY_TRANSPORT",
+        "label": "Round-trip vehicle allowance: fuel, tolls and parking",
+        "unit": "VEHICLE",
+        "quantity": 1,
+        "unitPrice": {
+          "currency": "AUD",
+          "lowMinor": 16200,
+          "expectedMinor": 18000,
+          "highMinor": 19800
+        },
+        "originalTotal": {
+          "currency": "AUD",
+          "lowMinor": 16200,
+          "expectedMinor": 18000,
+          "highMinor": 19800
+        },
+        "displayTotal": {
+          "currency": "AUD",
+          "lowMinor": 16200,
+          "expectedMinor": 18000,
+          "highMinor": 19800
+        },
+        "exchangeRateId": null,
+        "taxesAndFees": "UNKNOWN",
+        "evidence": {
+          "status": "MOCK",
+          "sourceIds": [],
+          "checkedAt": null
+        }
+      },
+      {
+        "id": "cost_bus",
+        "category": "INTERCITY_TRANSPORT",
+        "label": "Example return coach fare for two",
+        "unit": "PERSON",
+        "quantity": 2,
+        "unitPrice": {
+          "currency": "AUD",
+          "lowMinor": 9900,
+          "expectedMinor": 11000,
+          "highMinor": 12100
+        },
+        "originalTotal": {
+          "currency": "AUD",
+          "lowMinor": 19800,
+          "expectedMinor": 22000,
+          "highMinor": 24200
+        },
+        "displayTotal": {
+          "currency": "AUD",
+          "lowMinor": 19800,
+          "expectedMinor": 22000,
+          "highMinor": 24200
+        },
+        "exchangeRateId": null,
+        "taxesAndFees": "UNKNOWN",
+        "evidence": {
+          "status": "MOCK",
+          "sourceIds": [],
+          "checkedAt": null
+        }
+      },
+      {
+        "id": "cost_gallery",
+        "category": "ACTIVITIES",
+        "label": "Example gallery admission",
+        "unit": "PERSON",
+        "quantity": 2,
+        "unitPrice": {
+          "currency": "AUD",
+          "lowMinor": 1350,
+          "expectedMinor": 1500,
+          "highMinor": 1650
+        },
+        "originalTotal": {
+          "currency": "AUD",
+          "lowMinor": 2700,
+          "expectedMinor": 3000,
+          "highMinor": 3300
+        },
+        "displayTotal": {
+          "currency": "AUD",
+          "lowMinor": 2700,
+          "expectedMinor": 3000,
+          "highMinor": 3300
+        },
+        "exchangeRateId": null,
+        "taxesAndFees": "UNKNOWN",
+        "evidence": {
+          "status": "MOCK",
+          "sourceIds": [],
+          "checkedAt": null
+        }
+      }
+    ],
+    "tripCostItemIds": [
+      "cost_food"
+    ],
+    "activeCostItemIds": [
+      "cost_food",
+      "cost_driving",
+      "cost_hotel_1",
+      "cost_gallery"
+    ],
+    "completeness": "PARTIAL",
+    "subtotal": {
+      "currency": "AUD",
+      "lowMinor": 83700,
+      "expectedMinor": 93000,
+      "highMinor": 102300
+    },
+    "contingency": {
+      "currency": "AUD",
+      "lowMinor": 9000,
+      "expectedMinor": 10000,
+      "highMinor": 11000
+    },
+    "total": {
+      "currency": "AUD",
+      "lowMinor": 92700,
+      "expectedMinor": 103000,
+      "highMinor": 113300
+    },
+    "excludedCategories": [
+      "Travel insurance",
+      "Shopping",
+      "Unverified mandatory fees"
+    ],
+    "notes": [
+      "Amounts are fictional estimates for the entire party, not per person.",
+      "Alternative options are excluded from the active total."
+    ]
+  },
+  "quality": {
+    "sources": [],
+    "assumptions": [
+      "This fixture is for UI development, not a real travel recommendation.",
+      "Hotel names and transport schedules are fictional; no booking is confirmed.",
+      "The coach alternatives use simplified pickup/drop-off placeholders; actual terminals and access legs remain unverified.",
+      "The vehicle allowance and coach fare each cover both directions. Selecting a mix requires repricing."
+    ],
+    "notices": [
+      {
+        "code": "DEMO_DATA",
+        "severity": "WARNING",
+        "message": "Sample itinerary · Not a live quote",
+        "relatedIds": []
+      },
+      {
+        "code": "INCOMPLETE_PRICES",
+        "severity": "WARNING",
+        "message": "Some costs and mandatory fees are not included.",
+        "relatedIds": []
+      }
+    ],
+    "constraintChecks": [
+      {
+        "constraintId": "constraint_relaxed",
+        "status": "UNVERIFIED",
+        "explanation": "The draft includes free time. Route feasibility and walking distances still need checking.",
+        "relatedIds": []
+      }
+    ]
+  },
+  "contractId": "odyssey.frontend.itinerary"
+}

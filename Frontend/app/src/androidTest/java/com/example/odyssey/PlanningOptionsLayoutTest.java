@@ -35,7 +35,7 @@ public class PlanningOptionsLayoutTest {
                     LinearLayout root = new LinearLayout(context); root.setOrientation(LinearLayout.VERTICAL);
                     PlanningSession session = new PlanningSession("Sydney", ""); session.current = 3; session.toggle("friends");
                     PlanningSessionRenderer renderer = new PlanningSessionRenderer(root, new PlanningSessionRenderer.Actions() {
-                        public void option(String id) { } public void confirm() { } public void date(int value) { } public void redraw() { }
+                        public void option(String id) { } public void confirm() { } public void date(int value) { } public void redraw() { } public void useChatAnswer() { }
                     });
                     renderer.render(session, Calendar.getInstance(), false); layout(root, width);
                     TextView friends = (TextView) PlannerFlowTest.findText(root, "Friends");

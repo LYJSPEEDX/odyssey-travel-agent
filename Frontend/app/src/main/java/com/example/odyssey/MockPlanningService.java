@@ -22,13 +22,22 @@ final class MockPlanningService {
                 || !s.step().question.id.equals(PlanningJson.string(request, "questionId", 150)))
             throw new IllegalArgumentException("Outdated question; retry");
         int index = s.current;
-        String action = PlanningJson.choice(request, "action", "REFINE", "CONFIRM", "SUBMIT");
+        String action = PlanningJson.choice(request, "action", "REFINE", "CONFIRM", "SUBMIT", "CHAT");
         JSONObject input = request.getJSONObject("input");
         String type = PlanningJson.choice(input, "type", "TEXT", "OPTIONS", "DATE_RANGE");
         List<String> keywords = new ArrayList<>();
-        if (action.equals("REFINE")) {
+        boolean clarify = (action.equals("CHAT") || action.equals("REFINE") || action.equals("SUBMIT"))
+                && type.equals("TEXT") && !MockInputAssessment.acceptable(index, PlanningJson.string(input, "text", 500));
+        if (clarify) {
+            // 本地规则只模拟 AI 不确定时的交互，不代表真实地名验证。
+            s.clarify(PlanningJson.string(input, "text", 500), MockInputAssessment.clarification(index));
+        } else if (action.equals("CHAT")) {
+            if (!type.equals("TEXT")) throw new IllegalArgumentException("Chat needs text");
+            s.chat(PlanningJson.string(input, "text", 500));
+        } else if (action.equals("REFINE")) {
             if (!type.equals("TEXT")) throw new IllegalArgumentException("Refine needs text");
-            s.refine(PlanningSession.IDS[index], PlanningJson.string(input, "text", 500));
+            String message = PlanningJson.string(input, "text", 500);
+            s.refine(PlanningSession.IDS[index], message); s.recordRefinement(message);
         } else {
             String answer;
             if (type.equals("TEXT")) {
@@ -65,9 +74,9 @@ final class MockPlanningService {
             if (index == 1) { s.steps[4].question = null; s.rebuildQuestions(); }
         }
         // canGenerate 表示资料完整，不表示用户本次要求生成；重确认早期槽位仍只向前浏览。
-        String navigation = action.equals("REFINE") ? "STAY" : index == 7 && s.canGenerate() ? "GENERATE" : "NEXT";
+        String navigation = (clarify || action.equals("REFINE") || action.equals("CHAT")) ? "STAY" : index == 7 && s.canGenerate() ? "GENERATE" : "NEXT";
         JSONObject result = new JSONObject().put("stepId", PlanningSession.IDS[index])
-                .put("status", action.equals("REFINE") ? "UPDATED" : "ACCEPTED").put("keywords", new JSONArray(keywords))
+                .put("status", clarify ? "CLARIFY" : (action.equals("REFINE") || action.equals("CHAT")) ? "UPDATED" : "ACCEPTED").put("keywords", new JSONArray(keywords))
                 .put("navigation", navigation).put("nextStepId", navigation.equals("NEXT") ? PlanningSession.IDS[s.current] : JSONObject.NULL);
         return new JSONObject().put("schemaVersion", 1).put("requestId", PlanningJson.string(request, "requestId", 100))
                 .put("result", result).put("session", PlanningJson.snapshot(s)).toString();

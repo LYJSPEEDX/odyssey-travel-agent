@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "1.0",
+  "profile": {
+    "uid": "b8220c8f-f87a-4d12-b9ed-253d8be4c7de",
+    "displayName": null,
+    "gender": null,
+    "birthDate": null,
+    "legacyAgeYears": null,
+    "nationality": null,
+    "residentialLocation": null,
+    "residenceCountryCode": null,
+    "displayCurrency": "USD",
+    "currencySource": "DEFAULT",
+    "travelTagIds": [],
+    "travelPreferences": null
+  }
+}

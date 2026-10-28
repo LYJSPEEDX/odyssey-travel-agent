@@ -22,7 +22,7 @@ import java.util.concurrent.Executors;
 
 /** 用户主动点击时获取一次近似位置；只返回地名，不保存坐标。 */
 final class CurrentLocation {
-    interface Listener { void status(String text); void found(String name); }
+    interface Listener { void status(String text); void found(String name, String countryCode); }
     private final AppCompatActivity activity;
     private final Listener listener;
     private final Handler handler = new Handler(Looper.getMainLooper());
@@ -67,25 +67,26 @@ final class CurrentLocation {
                 if (ticket != generation || activity.isDestroyed()) return;
                 if (location == null) { cancel(); listener.status("Location is unavailable. Please choose a country and region."); return; }
                 geocoding.execute(() -> {
-                    String result = "";
+                    String result = ""; String countryCode = "";
                     try {
                         // 反向地理编码可能访问系统定位服务，放在后台线程，失败时继续手动选择。
                         List<Address> addresses = new Geocoder(activity.getApplicationContext(), Locale.ENGLISH)
                                 .getFromLocation(location.getLatitude(), location.getLongitude(), 1);
                         if (addresses != null && !addresses.isEmpty()) {
                             Address address = addresses.get(0);
+                            countryCode = address.getCountryCode() == null ? "" : address.getCountryCode();
                             List<String> parts = new ArrayList<>();
                             for (String part : new String[]{address.getLocality(), address.getAdminArea(), address.getCountryName()})
                                 if (part != null && !part.trim().isEmpty() && !parts.contains(part.trim())) parts.add(part.trim());
                             result = String.join(", ", parts);
                         }
                     } catch (Exception ignored) { /* 系统不保证提供反向地理编码。 */ }
-                    String resolved = result;
+                    String resolved = result; String resolvedCountry = countryCode;
                     handler.post(() -> {
                         if (ticket != generation || activity.isDestroyed()) return;
                         cancel();
                         if (resolved.isEmpty()) listener.status("Could not find a place name. Please choose a country and region.");
-                        else listener.found(resolved);
+                        else listener.found(resolved, resolvedCountry);
                     });
                 });
             });

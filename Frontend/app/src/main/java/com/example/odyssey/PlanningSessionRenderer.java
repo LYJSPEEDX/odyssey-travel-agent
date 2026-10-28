@@ -18,6 +18,7 @@ final class PlanningSessionRenderer {
         void confirm();
         void date(int value);
         void redraw();
+        void useChatAnswer();
     }
     private final LinearLayout content;
     private final Actions actions;
@@ -63,7 +64,19 @@ final class PlanningSessionRenderer {
         if (session.current < 2) button(session.current == 0 ? "Confirm departure" : "Confirm destination",
                 actions::confirm, !loading && !step.selected.isEmpty());
         if (session.current == 3 || session.current == 5) button("Continue", actions::confirm, !loading && !step.selected.isEmpty());
-        if (loading) paragraph("Updating your local demo…");
+        paragraph("Chat about this step · Demo");
+        if (step.messages.isEmpty()) paragraph("Ask a question or describe what you need.");
+        for (PlanningSession.Message message : step.messages) {
+            TextView bubble = paragraphView((message.role.equals("USER") ? "You · " : "AI demo · ") + message.text, 14);
+            bubble.setPadding(dp(12), dp(10), dp(12), dp(10));
+            if (message.role.equals("ASSISTANT")) bubble.setTextColor(color(R.color.on_accent));
+            bubble.setBackgroundResource(message.role.equals("USER") ? R.drawable.bg_user_chat : R.drawable.bg_chat_bubble);
+            LinearLayout.LayoutParams row = new LinearLayout.LayoutParams(-1, -2); row.setMargins(0, dp(4), 0, dp(4));
+            content.addView(bubble, row);
+        }
+        if (session.current >= 3 && !step.chatCandidate.isEmpty())
+            button("Use as answer", actions::useChatAnswer, !loading);
+        if (loading) paragraph("AI demo is replying…");
     }
     private void button(String title, Runnable action, boolean enabled) {
         MaterialButton button = new MaterialButton(content.getContext()); button.setText(title); button.setEnabled(enabled);

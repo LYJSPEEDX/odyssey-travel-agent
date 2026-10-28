@@ -21,6 +21,7 @@ import java.util.List;
  */
 public class HomeActivity extends AppCompatActivity {
     static final String EXTRA_OPEN_MY = "open_my";
+    static final String EXTRA_RETURN_TO_DEMO = "return_to_demo";
     private BottomNavigationView navigation;
     private NestedScrollView scroll;
     private HomeUi ui;
@@ -112,6 +113,9 @@ public class HomeActivity extends AppCompatActivity {
     private void home() {
         // 品牌栏保持轻量；主要视觉焦点留给下方照片，而不是重复的彩色面板。
         ui.text(getString(R.string.editorial_wordmark), 28, true);
+        if (getIntent().getBooleanExtra(EXTRA_RETURN_TO_DEMO, false)) {
+            ui.card("A demo trip is in progress", "Return to see the simulated updates.", R.color.mint, this::finish);
+        }
         View banner = LayoutInflater.from(this).inflate(R.layout.home_banner, ui.content, false);
         banner.setOnClickListener(view -> startPlanner());
         ui.content.addView(banner);

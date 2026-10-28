@@ -41,6 +41,7 @@ public class OptionalProfileFlowTest {
                 a.findViewById(R.id.registrationNext).performClick();
                 assertFalse(a.findViewById(R.id.registrationName).isShown());
                 assertTrue(a.findViewById(R.id.registrationLocation).isShown());
+                assertEquals("USD · Default", ((EditText) a.findViewById(R.id.profileCurrency)).getText().toString());
                 a.findViewById(R.id.registrationNext).performClick();
             });
             ProfileStore store = new ProfileStore(context());

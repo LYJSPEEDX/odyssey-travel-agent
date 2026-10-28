@@ -1,0 +1,3209 @@
+{
+  "schemaVersion": "2.0",
+  "id": "demo_new_york_10d",
+  "revision": 1,
+  "language": "en",
+  "dataMode": "MOCK",
+  "status": "PARTIAL",
+  "generatedAt": "2026-10-12T10:00:00+11:00",
+  "requestSnapshot": {
+    "originPlaceId": "sydney",
+    "destinationPlaceIds": [
+      "new_york"
+    ],
+    "dateMode": "FIXED",
+    "requestedStartDate": "2026-11-10",
+    "requestedEndDate": "2026-11-19",
+    "returnDateMeaning": "ARRIVE_HOME",
+    "companions": "COUPLE",
+    "travelers": [
+      {
+        "id": "traveler_1",
+        "age": 30,
+        "passportCountry": null,
+        "passportType": null,
+        "residenceCountry": "AU"
+      },
+      {
+        "id": "traveler_2",
+        "age": 30,
+        "passportCountry": null,
+        "passportType": null,
+        "residenceCountry": "AU"
+      }
+    ],
+    "budget": {
+      "scope": "ENTIRE_PARTY_WHOLE_TRIP",
+      "target": {
+        "currency": "AUD",
+        "amountMinor": 1200000
+      },
+      "includeIntercityTransport": true
+    },
+    "constraints": [
+      {
+        "id": "constraint_relaxed",
+        "code": "RELAXED",
+        "strength": "SOFT",
+        "description": "Keep time for breaks."
+      }
+    ],
+    "notes": []
+  },
+  "summary": {
+    "title": "New York, a new perspective",
+    "subtitle": "A sample plan for two travellers",
+    "startDate": "2026-11-10",
+    "endDate": "2026-11-19",
+    "dayCount": 10,
+    "coverImageId": "cover",
+    "highlights": [
+      "Time to explore",
+      "Flexible breaks"
+    ],
+    "advice": [
+      "All prices, routes, flight times and hotel options are fictional UI examples. Confirm real availability before travel."
+    ]
+  },
+  "places": [
+    {
+      "id": "sydney",
+      "name": "Sydney",
+      "kind": "CITY",
+      "countryCode": "AU",
+      "timeZone": "Australia/Sydney",
+      "address": null,
+      "coordinates": {
+        "latitude": -33.8688,
+        "longitude": 151.2093
+      },
+      "providerPlaceId": null,
+      "imageIds": [],
+      "evidence": {
+        "status": "MOCK",
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    },
+    {
+      "id": "new_york",
+      "name": "New York",
+      "kind": "CITY",
+      "countryCode": "US",
+      "timeZone": "America/New_York",
+      "address": null,
+      "coordinates": {
+        "latitude": 40.7128,
+        "longitude": -74.006
+      },
+      "providerPlaceId": null,
+      "imageIds": [
+        "cover"
+      ],
+      "evidence": {
+        "status": "MOCK",
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    },
+    {
+      "id": "syd_airport",
+      "name": "Sydney Airport",
+      "kind": "AIRPORT",
+      "countryCode": "AU",
+      "timeZone": "Australia/Sydney",
+      "address": null,
+      "coordinates": null,
+      "providerPlaceId": null,
+      "imageIds": [],
+      "evidence": {
+        "status": "MOCK",
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    },
+    {
+      "id": "jfk_airport",
+      "name": "John F. Kennedy International Airport",
+      "kind": "AIRPORT",
+      "countryCode": "US",
+      "timeZone": "America/New_York",
+      "address": null,
+      "coordinates": null,
+      "providerPlaceId": null,
+      "imageIds": [],
+      "evidence": {
+        "status": "MOCK",
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    },
+    {
+      "id": "lax_airport",
+      "name": "Los Angeles International Airport",
+      "kind": "AIRPORT",
+      "countryCode": "US",
+      "timeZone": "America/Los_Angeles",
+      "address": null,
+      "coordinates": null,
+      "providerPlaceId": null,
+      "imageIds": [],
+      "evidence": {
+        "status": "MOCK",
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    },
+    {
+      "id": "dining_area",
+      "name": "Demo neighbourhood dining area",
+      "kind": "AREA",
+      "countryCode": "US",
+      "timeZone": "America/New_York",
+      "address": null,
+      "coordinates": null,
+      "providerPlaceId": null,
+      "imageIds": [],
+      "evidence": {
+        "status": "MOCK",
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    },
+    {
+      "id": "attraction_2",
+      "name": "Demo stop: Park and museum day",
+      "kind": "ATTRACTION",
+      "countryCode": "US",
+      "timeZone": "America/New_York",
+      "address": null,
+      "coordinates": null,
+      "providerPlaceId": null,
+      "imageIds": [],
+      "evidence": {
+        "status": "MOCK",
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    },
+    {
+      "id": "attraction_3",
+      "name": "Demo stop: Art and design day",
+      "kind": "ATTRACTION",
+      "countryCode": "US",
+      "timeZone": "America/New_York",
+      "address": null,
+      "coordinates": null,
+      "providerPlaceId": null,
+      "imageIds": [],
+      "evidence": {
+        "status": "MOCK",
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    },
+    {
+      "id": "attraction_4",
+      "name": "Demo stop: Markets and local streets",
+      "kind": "ATTRACTION",
+      "countryCode": "US",
+      "timeZone": "America/New_York",
+      "address": null,
+      "coordinates": null,
+      "providerPlaceId": null,
+      "imageIds": [],
+      "evidence": {
+        "status": "MOCK",
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    },
+    {
+      "id": "attraction_5",
+      "name": "Demo stop: Waterfront day",
+      "kind": "ATTRACTION",
+      "countryCode": "US",
+      "timeZone": "America/New_York",
+      "address": null,
+      "coordinates": null,
+      "providerPlaceId": null,
+      "imageIds": [],
+      "evidence": {
+        "status": "MOCK",
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    },
+    {
+      "id": "attraction_6",
+      "name": "Demo stop: History and culture day",
+      "kind": "ATTRACTION",
+      "countryCode": "US",
+      "timeZone": "America/New_York",
+      "address": null,
+      "coordinates": null,
+      "providerPlaceId": null,
+      "imageIds": [],
+      "evidence": {
+        "status": "MOCK",
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    },
+    {
+      "id": "attraction_7",
+      "name": "Demo stop: A flexible favourite",
+      "kind": "ATTRACTION",
+      "countryCode": "US",
+      "timeZone": "America/New_York",
+      "address": null,
+      "coordinates": null,
+      "providerPlaceId": null,
+      "imageIds": [],
+      "evidence": {
+        "status": "MOCK",
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    },
+    {
+      "id": "hotel_1",
+      "name": "Demo New York Stay 1",
+      "kind": "HOTEL",
+      "countryCode": "US",
+      "timeZone": "America/New_York",
+      "address": null,
+      "coordinates": null,
+      "providerPlaceId": null,
+      "imageIds": [],
+      "evidence": {
+        "status": "MOCK",
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    },
+    {
+      "id": "hotel_2",
+      "name": "Demo New York Stay 2",
+      "kind": "HOTEL",
+      "countryCode": "US",
+      "timeZone": "America/New_York",
+      "address": null,
+      "coordinates": null,
+      "providerPlaceId": null,
+      "imageIds": [],
+      "evidence": {
+        "status": "MOCK",
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    },
+    {
+      "id": "hotel_3",
+      "name": "Demo New York Stay 3",
+      "kind": "HOTEL",
+      "countryCode": "US",
+      "timeZone": "America/New_York",
+      "address": null,
+      "coordinates": null,
+      "providerPlaceId": null,
+      "imageIds": [],
+      "evidence": {
+        "status": "MOCK",
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    }
+  ],
+  "media": [
+    {
+      "id": "cover",
+      "placeId": "new_york",
+      "usage": "COVER",
+      "status": "PENDING",
+      "provider": "NONE",
+      "providerAssetId": null,
+      "assetKey": null,
+      "url": null,
+      "thumbnailUrl": null,
+      "altText": "New York city scenery",
+      "attributions": [],
+      "expiresAt": null
+    }
+  ],
+  "transportGroups": [
+    {
+      "id": "flight_out",
+      "title": "Fly to New York",
+      "fromPlaceId": "syd_airport",
+      "toPlaceId": "jfk_airport",
+      "status": "AVAILABLE",
+      "recommendedOptionId": "flight_out_recommended",
+      "planningOptionId": "flight_out_recommended",
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": "flight_out_recommended",
+          "title": "Fly to New York",
+          "reason": "Used as the working assumption for this sample timeline.",
+          "legs": [
+            {
+              "id": "flight_out_leg_1",
+              "mode": "FLIGHT",
+              "fromPlaceId": "syd_airport",
+              "toPlaceId": "lax_airport",
+              "departure": {
+                "at": "2026-11-10T10:00:00+11:00",
+                "timeZone": "Australia/Sydney"
+              },
+              "arrival": {
+                "at": "2026-11-10T06:00:00-08:00",
+                "timeZone": "America/Los_Angeles"
+              },
+              "durationMinutes": 900,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "ESTIMATED",
+              "evidence": {
+                "status": "MOCK",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "marketingAirline": null,
+                "operatingAirline": null,
+                "flightNumber": null,
+                "departureAirportCode": "SYD",
+                "arrivalAirportCode": "LAX",
+                "departureTerminal": null,
+                "arrivalTerminal": null,
+                "checkedBaggageKgPerPerson": null,
+                "isSelfTransfer": false
+              }
+            },
+            {
+              "id": "flight_out_leg_2",
+              "mode": "FLIGHT",
+              "fromPlaceId": "lax_airport",
+              "toPlaceId": "jfk_airport",
+              "departure": {
+                "at": "2026-11-10T09:00:00-08:00",
+                "timeZone": "America/Los_Angeles"
+              },
+              "arrival": {
+                "at": "2026-11-10T17:00:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "durationMinutes": 300,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "ESTIMATED",
+              "evidence": {
+                "status": "MOCK",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "marketingAirline": null,
+                "operatingAirline": null,
+                "flightNumber": null,
+                "departureAirportCode": "LAX",
+                "arrivalAirportCode": "JFK",
+                "departureTerminal": null,
+                "arrivalTerminal": null,
+                "checkedBaggageKgPerPerson": null,
+                "isSelfTransfer": false
+              }
+            }
+          ],
+          "costItemIds": [
+            "cost_return_flights"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "home_to_airport",
+      "title": "Transfer to Sydney Airport",
+      "fromPlaceId": "sydney",
+      "toPlaceId": "syd_airport",
+      "status": "AVAILABLE",
+      "recommendedOptionId": "home_to_airport_recommended",
+      "planningOptionId": "home_to_airport_recommended",
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": "home_to_airport_recommended",
+          "title": "Transfer to Sydney Airport",
+          "reason": "Used as the working assumption for this sample timeline.",
+          "legs": [
+            {
+              "id": "home_to_airport_leg",
+              "mode": "TAXI",
+              "fromPlaceId": "sydney",
+              "toPlaceId": "syd_airport",
+              "departure": {
+                "at": "2026-11-10T06:00:00+11:00",
+                "timeZone": "Australia/Sydney"
+              },
+              "arrival": {
+                "at": "2026-11-10T07:00:00+11:00",
+                "timeZone": "Australia/Sydney"
+              },
+              "durationMinutes": 60,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "ESTIMATED",
+              "evidence": {
+                "status": "MOCK",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "operator": null,
+                "serviceNumber": null,
+                "boardingPoint": "Sydney",
+                "alightingPoint": "Sydney Airport",
+                "routeInstructions": "Illustrative transfer. Confirm route, duration and fare."
+              }
+            }
+          ],
+          "costItemIds": [
+            "cost_local_transport"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "airport_to_hotel",
+      "title": "Transfer to Demo New York Stay 1",
+      "fromPlaceId": "jfk_airport",
+      "toPlaceId": "hotel_1",
+      "status": "AVAILABLE",
+      "recommendedOptionId": "airport_to_hotel_recommended",
+      "planningOptionId": "airport_to_hotel_recommended",
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": "airport_to_hotel_recommended",
+          "title": "Transfer to Demo New York Stay 1",
+          "reason": "Used as the working assumption for this sample timeline.",
+          "legs": [
+            {
+              "id": "airport_to_hotel_leg",
+              "mode": "TAXI",
+              "fromPlaceId": "jfk_airport",
+              "toPlaceId": "hotel_1",
+              "departure": {
+                "at": "2026-11-10T19:00:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "arrival": {
+                "at": "2026-11-10T20:00:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "durationMinutes": 60,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "ESTIMATED",
+              "evidence": {
+                "status": "MOCK",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "operator": null,
+                "serviceNumber": null,
+                "boardingPoint": "John F. Kennedy International Airport",
+                "alightingPoint": "Demo New York Stay 1",
+                "routeInstructions": "Illustrative transfer. Confirm route, duration and fare."
+              }
+            }
+          ],
+          "costItemIds": [
+            "cost_local_transport"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "out_2",
+      "title": "Transfer to Demo stop: Park and museum day",
+      "fromPlaceId": "hotel_1",
+      "toPlaceId": "attraction_2",
+      "status": "AVAILABLE",
+      "recommendedOptionId": "out_2_recommended",
+      "planningOptionId": "out_2_recommended",
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": "out_2_recommended",
+          "title": "Transfer to Demo stop: Park and museum day",
+          "reason": "Used as the working assumption for this sample timeline.",
+          "legs": [
+            {
+              "id": "out_2_leg",
+              "mode": "TAXI",
+              "fromPlaceId": "hotel_1",
+              "toPlaceId": "attraction_2",
+              "departure": {
+                "at": "2026-11-11T09:30:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "arrival": {
+                "at": "2026-11-11T10:00:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "durationMinutes": 30,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "ESTIMATED",
+              "evidence": {
+                "status": "MOCK",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "operator": null,
+                "serviceNumber": null,
+                "boardingPoint": "Demo New York Stay 1",
+                "alightingPoint": "Demo stop: Park and museum day",
+                "routeInstructions": "Illustrative transfer. Confirm route, duration and fare."
+              }
+            }
+          ],
+          "costItemIds": [
+            "cost_local_transport"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "walk_2",
+      "title": "Walk to lunch",
+      "fromPlaceId": "attraction_2",
+      "toPlaceId": "dining_area",
+      "status": "AVAILABLE",
+      "recommendedOptionId": "walk_2_recommended",
+      "planningOptionId": "walk_2_recommended",
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": "walk_2_recommended",
+          "title": "Walk to lunch",
+          "reason": "Used as the working assumption for this sample timeline.",
+          "legs": [
+            {
+              "id": "walk_2_leg",
+              "mode": "WALK",
+              "fromPlaceId": "attraction_2",
+              "toPlaceId": "dining_area",
+              "departure": {
+                "at": "2026-11-11T12:00:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "arrival": {
+                "at": "2026-11-11T12:20:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "durationMinutes": 20,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "ESTIMATED",
+              "evidence": {
+                "status": "MOCK",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "routeInstructions": "Illustrative walk. Verify the route and accessibility.",
+                "accessibilityNotes": "Not verified."
+              }
+            }
+          ],
+          "costItemIds": []
+        }
+      ]
+    },
+    {
+      "id": "back_2",
+      "title": "Transfer to Demo New York Stay 1",
+      "fromPlaceId": "dining_area",
+      "toPlaceId": "hotel_1",
+      "status": "AVAILABLE",
+      "recommendedOptionId": "back_2_recommended",
+      "planningOptionId": "back_2_recommended",
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": "back_2_recommended",
+          "title": "Transfer to Demo New York Stay 1",
+          "reason": "Used as the working assumption for this sample timeline.",
+          "legs": [
+            {
+              "id": "back_2_leg",
+              "mode": "TAXI",
+              "fromPlaceId": "dining_area",
+              "toPlaceId": "hotel_1",
+              "departure": {
+                "at": "2026-11-11T15:00:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "arrival": {
+                "at": "2026-11-11T15:30:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "durationMinutes": 30,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "ESTIMATED",
+              "evidence": {
+                "status": "MOCK",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "operator": null,
+                "serviceNumber": null,
+                "boardingPoint": "Demo neighbourhood dining area",
+                "alightingPoint": "Demo New York Stay 1",
+                "routeInstructions": "Illustrative transfer. Confirm route, duration and fare."
+              }
+            }
+          ],
+          "costItemIds": [
+            "cost_local_transport"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "out_3",
+      "title": "Transfer to Demo stop: Art and design day",
+      "fromPlaceId": "hotel_1",
+      "toPlaceId": "attraction_3",
+      "status": "AVAILABLE",
+      "recommendedOptionId": "out_3_recommended",
+      "planningOptionId": "out_3_recommended",
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": "out_3_recommended",
+          "title": "Transfer to Demo stop: Art and design day",
+          "reason": "Used as the working assumption for this sample timeline.",
+          "legs": [
+            {
+              "id": "out_3_leg",
+              "mode": "TAXI",
+              "fromPlaceId": "hotel_1",
+              "toPlaceId": "attraction_3",
+              "departure": {
+                "at": "2026-11-12T09:30:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "arrival": {
+                "at": "2026-11-12T10:00:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "durationMinutes": 30,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "ESTIMATED",
+              "evidence": {
+                "status": "MOCK",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "operator": null,
+                "serviceNumber": null,
+                "boardingPoint": "Demo New York Stay 1",
+                "alightingPoint": "Demo stop: Art and design day",
+                "routeInstructions": "Illustrative transfer. Confirm route, duration and fare."
+              }
+            }
+          ],
+          "costItemIds": [
+            "cost_local_transport"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "walk_3",
+      "title": "Walk to lunch",
+      "fromPlaceId": "attraction_3",
+      "toPlaceId": "dining_area",
+      "status": "AVAILABLE",
+      "recommendedOptionId": "walk_3_recommended",
+      "planningOptionId": "walk_3_recommended",
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": "walk_3_recommended",
+          "title": "Walk to lunch",
+          "reason": "Used as the working assumption for this sample timeline.",
+          "legs": [
+            {
+              "id": "walk_3_leg",
+              "mode": "WALK",
+              "fromPlaceId": "attraction_3",
+              "toPlaceId": "dining_area",
+              "departure": {
+                "at": "2026-11-12T12:00:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "arrival": {
+                "at": "2026-11-12T12:20:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "durationMinutes": 20,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "ESTIMATED",
+              "evidence": {
+                "status": "MOCK",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "routeInstructions": "Illustrative walk. Verify the route and accessibility.",
+                "accessibilityNotes": "Not verified."
+              }
+            }
+          ],
+          "costItemIds": []
+        }
+      ]
+    },
+    {
+      "id": "back_3",
+      "title": "Transfer to Demo New York Stay 1",
+      "fromPlaceId": "dining_area",
+      "toPlaceId": "hotel_1",
+      "status": "AVAILABLE",
+      "recommendedOptionId": "back_3_recommended",
+      "planningOptionId": "back_3_recommended",
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": "back_3_recommended",
+          "title": "Transfer to Demo New York Stay 1",
+          "reason": "Used as the working assumption for this sample timeline.",
+          "legs": [
+            {
+              "id": "back_3_leg",
+              "mode": "TAXI",
+              "fromPlaceId": "dining_area",
+              "toPlaceId": "hotel_1",
+              "departure": {
+                "at": "2026-11-12T15:00:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "arrival": {
+                "at": "2026-11-12T15:30:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "durationMinutes": 30,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "ESTIMATED",
+              "evidence": {
+                "status": "MOCK",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "operator": null,
+                "serviceNumber": null,
+                "boardingPoint": "Demo neighbourhood dining area",
+                "alightingPoint": "Demo New York Stay 1",
+                "routeInstructions": "Illustrative transfer. Confirm route, duration and fare."
+              }
+            }
+          ],
+          "costItemIds": [
+            "cost_local_transport"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "out_4",
+      "title": "Transfer to Demo stop: Markets and local streets",
+      "fromPlaceId": "hotel_1",
+      "toPlaceId": "attraction_4",
+      "status": "AVAILABLE",
+      "recommendedOptionId": "out_4_recommended",
+      "planningOptionId": "out_4_recommended",
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": "out_4_recommended",
+          "title": "Transfer to Demo stop: Markets and local streets",
+          "reason": "Used as the working assumption for this sample timeline.",
+          "legs": [
+            {
+              "id": "out_4_leg",
+              "mode": "TAXI",
+              "fromPlaceId": "hotel_1",
+              "toPlaceId": "attraction_4",
+              "departure": {
+                "at": "2026-11-13T09:30:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "arrival": {
+                "at": "2026-11-13T10:00:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "durationMinutes": 30,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "ESTIMATED",
+              "evidence": {
+                "status": "MOCK",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "operator": null,
+                "serviceNumber": null,
+                "boardingPoint": "Demo New York Stay 1",
+                "alightingPoint": "Demo stop: Markets and local streets",
+                "routeInstructions": "Illustrative transfer. Confirm route, duration and fare."
+              }
+            }
+          ],
+          "costItemIds": [
+            "cost_local_transport"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "walk_4",
+      "title": "Walk to lunch",
+      "fromPlaceId": "attraction_4",
+      "toPlaceId": "dining_area",
+      "status": "AVAILABLE",
+      "recommendedOptionId": "walk_4_recommended",
+      "planningOptionId": "walk_4_recommended",
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": "walk_4_recommended",
+          "title": "Walk to lunch",
+          "reason": "Used as the working assumption for this sample timeline.",
+          "legs": [
+            {
+              "id": "walk_4_leg",
+              "mode": "WALK",
+              "fromPlaceId": "attraction_4",
+              "toPlaceId": "dining_area",
+              "departure": {
+                "at": "2026-11-13T12:00:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "arrival": {
+                "at": "2026-11-13T12:20:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "durationMinutes": 20,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "ESTIMATED",
+              "evidence": {
+                "status": "MOCK",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "routeInstructions": "Illustrative walk. Verify the route and accessibility.",
+                "accessibilityNotes": "Not verified."
+              }
+            }
+          ],
+          "costItemIds": []
+        }
+      ]
+    },
+    {
+      "id": "back_4",
+      "title": "Transfer to Demo New York Stay 1",
+      "fromPlaceId": "dining_area",
+      "toPlaceId": "hotel_1",
+      "status": "AVAILABLE",
+      "recommendedOptionId": "back_4_recommended",
+      "planningOptionId": "back_4_recommended",
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": "back_4_recommended",
+          "title": "Transfer to Demo New York Stay 1",
+          "reason": "Used as the working assumption for this sample timeline.",
+          "legs": [
+            {
+              "id": "back_4_leg",
+              "mode": "TAXI",
+              "fromPlaceId": "dining_area",
+              "toPlaceId": "hotel_1",
+              "departure": {
+                "at": "2026-11-13T15:00:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "arrival": {
+                "at": "2026-11-13T15:30:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "durationMinutes": 30,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "ESTIMATED",
+              "evidence": {
+                "status": "MOCK",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "operator": null,
+                "serviceNumber": null,
+                "boardingPoint": "Demo neighbourhood dining area",
+                "alightingPoint": "Demo New York Stay 1",
+                "routeInstructions": "Illustrative transfer. Confirm route, duration and fare."
+              }
+            }
+          ],
+          "costItemIds": [
+            "cost_local_transport"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "out_5",
+      "title": "Transfer to Demo stop: Waterfront day",
+      "fromPlaceId": "hotel_1",
+      "toPlaceId": "attraction_5",
+      "status": "AVAILABLE",
+      "recommendedOptionId": "out_5_recommended",
+      "planningOptionId": "out_5_recommended",
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": "out_5_recommended",
+          "title": "Transfer to Demo stop: Waterfront day",
+          "reason": "Used as the working assumption for this sample timeline.",
+          "legs": [
+            {
+              "id": "out_5_leg",
+              "mode": "TAXI",
+              "fromPlaceId": "hotel_1",
+              "toPlaceId": "attraction_5",
+              "departure": {
+                "at": "2026-11-14T09:30:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "arrival": {
+                "at": "2026-11-14T10:00:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "durationMinutes": 30,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "ESTIMATED",
+              "evidence": {
+                "status": "MOCK",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "operator": null,
+                "serviceNumber": null,
+                "boardingPoint": "Demo New York Stay 1",
+                "alightingPoint": "Demo stop: Waterfront day",
+                "routeInstructions": "Illustrative transfer. Confirm route, duration and fare."
+              }
+            }
+          ],
+          "costItemIds": [
+            "cost_local_transport"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "walk_5",
+      "title": "Walk to lunch",
+      "fromPlaceId": "attraction_5",
+      "toPlaceId": "dining_area",
+      "status": "AVAILABLE",
+      "recommendedOptionId": "walk_5_recommended",
+      "planningOptionId": "walk_5_recommended",
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": "walk_5_recommended",
+          "title": "Walk to lunch",
+          "reason": "Used as the working assumption for this sample timeline.",
+          "legs": [
+            {
+              "id": "walk_5_leg",
+              "mode": "WALK",
+              "fromPlaceId": "attraction_5",
+              "toPlaceId": "dining_area",
+              "departure": {
+                "at": "2026-11-14T12:00:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "arrival": {
+                "at": "2026-11-14T12:20:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "durationMinutes": 20,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "ESTIMATED",
+              "evidence": {
+                "status": "MOCK",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "routeInstructions": "Illustrative walk. Verify the route and accessibility.",
+                "accessibilityNotes": "Not verified."
+              }
+            }
+          ],
+          "costItemIds": []
+        }
+      ]
+    },
+    {
+      "id": "back_5",
+      "title": "Transfer to Demo New York Stay 1",
+      "fromPlaceId": "dining_area",
+      "toPlaceId": "hotel_1",
+      "status": "AVAILABLE",
+      "recommendedOptionId": "back_5_recommended",
+      "planningOptionId": "back_5_recommended",
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": "back_5_recommended",
+          "title": "Transfer to Demo New York Stay 1",
+          "reason": "Used as the working assumption for this sample timeline.",
+          "legs": [
+            {
+              "id": "back_5_leg",
+              "mode": "TAXI",
+              "fromPlaceId": "dining_area",
+              "toPlaceId": "hotel_1",
+              "departure": {
+                "at": "2026-11-14T15:00:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "arrival": {
+                "at": "2026-11-14T15:30:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "durationMinutes": 30,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "ESTIMATED",
+              "evidence": {
+                "status": "MOCK",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "operator": null,
+                "serviceNumber": null,
+                "boardingPoint": "Demo neighbourhood dining area",
+                "alightingPoint": "Demo New York Stay 1",
+                "routeInstructions": "Illustrative transfer. Confirm route, duration and fare."
+              }
+            }
+          ],
+          "costItemIds": [
+            "cost_local_transport"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "out_6",
+      "title": "Transfer to Demo stop: History and culture day",
+      "fromPlaceId": "hotel_1",
+      "toPlaceId": "attraction_6",
+      "status": "AVAILABLE",
+      "recommendedOptionId": "out_6_recommended",
+      "planningOptionId": "out_6_recommended",
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": "out_6_recommended",
+          "title": "Transfer to Demo stop: History and culture day",
+          "reason": "Used as the working assumption for this sample timeline.",
+          "legs": [
+            {
+              "id": "out_6_leg",
+              "mode": "TAXI",
+              "fromPlaceId": "hotel_1",
+              "toPlaceId": "attraction_6",
+              "departure": {
+                "at": "2026-11-15T09:30:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "arrival": {
+                "at": "2026-11-15T10:00:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "durationMinutes": 30,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "ESTIMATED",
+              "evidence": {
+                "status": "MOCK",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "operator": null,
+                "serviceNumber": null,
+                "boardingPoint": "Demo New York Stay 1",
+                "alightingPoint": "Demo stop: History and culture day",
+                "routeInstructions": "Illustrative transfer. Confirm route, duration and fare."
+              }
+            }
+          ],
+          "costItemIds": [
+            "cost_local_transport"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "walk_6",
+      "title": "Walk to lunch",
+      "fromPlaceId": "attraction_6",
+      "toPlaceId": "dining_area",
+      "status": "AVAILABLE",
+      "recommendedOptionId": "walk_6_recommended",
+      "planningOptionId": "walk_6_recommended",
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": "walk_6_recommended",
+          "title": "Walk to lunch",
+          "reason": "Used as the working assumption for this sample timeline.",
+          "legs": [
+            {
+              "id": "walk_6_leg",
+              "mode": "WALK",
+              "fromPlaceId": "attraction_6",
+              "toPlaceId": "dining_area",
+              "departure": {
+                "at": "2026-11-15T12:00:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "arrival": {
+                "at": "2026-11-15T12:20:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "durationMinutes": 20,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "ESTIMATED",
+              "evidence": {
+                "status": "MOCK",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "routeInstructions": "Illustrative walk. Verify the route and accessibility.",
+                "accessibilityNotes": "Not verified."
+              }
+            }
+          ],
+          "costItemIds": []
+        }
+      ]
+    },
+    {
+      "id": "back_6",
+      "title": "Transfer to Demo New York Stay 1",
+      "fromPlaceId": "dining_area",
+      "toPlaceId": "hotel_1",
+      "status": "AVAILABLE",
+      "recommendedOptionId": "back_6_recommended",
+      "planningOptionId": "back_6_recommended",
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": "back_6_recommended",
+          "title": "Transfer to Demo New York Stay 1",
+          "reason": "Used as the working assumption for this sample timeline.",
+          "legs": [
+            {
+              "id": "back_6_leg",
+              "mode": "TAXI",
+              "fromPlaceId": "dining_area",
+              "toPlaceId": "hotel_1",
+              "departure": {
+                "at": "2026-11-15T15:00:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "arrival": {
+                "at": "2026-11-15T15:30:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "durationMinutes": 30,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "ESTIMATED",
+              "evidence": {
+                "status": "MOCK",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "operator": null,
+                "serviceNumber": null,
+                "boardingPoint": "Demo neighbourhood dining area",
+                "alightingPoint": "Demo New York Stay 1",
+                "routeInstructions": "Illustrative transfer. Confirm route, duration and fare."
+              }
+            }
+          ],
+          "costItemIds": [
+            "cost_local_transport"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "out_7",
+      "title": "Transfer to Demo stop: A flexible favourite",
+      "fromPlaceId": "hotel_1",
+      "toPlaceId": "attraction_7",
+      "status": "AVAILABLE",
+      "recommendedOptionId": "out_7_recommended",
+      "planningOptionId": "out_7_recommended",
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": "out_7_recommended",
+          "title": "Transfer to Demo stop: A flexible favourite",
+          "reason": "Used as the working assumption for this sample timeline.",
+          "legs": [
+            {
+              "id": "out_7_leg",
+              "mode": "TAXI",
+              "fromPlaceId": "hotel_1",
+              "toPlaceId": "attraction_7",
+              "departure": {
+                "at": "2026-11-16T09:30:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "arrival": {
+                "at": "2026-11-16T10:00:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "durationMinutes": 30,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "ESTIMATED",
+              "evidence": {
+                "status": "MOCK",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "operator": null,
+                "serviceNumber": null,
+                "boardingPoint": "Demo New York Stay 1",
+                "alightingPoint": "Demo stop: A flexible favourite",
+                "routeInstructions": "Illustrative transfer. Confirm route, duration and fare."
+              }
+            }
+          ],
+          "costItemIds": [
+            "cost_local_transport"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "walk_7",
+      "title": "Walk to lunch",
+      "fromPlaceId": "attraction_7",
+      "toPlaceId": "dining_area",
+      "status": "AVAILABLE",
+      "recommendedOptionId": "walk_7_recommended",
+      "planningOptionId": "walk_7_recommended",
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": "walk_7_recommended",
+          "title": "Walk to lunch",
+          "reason": "Used as the working assumption for this sample timeline.",
+          "legs": [
+            {
+              "id": "walk_7_leg",
+              "mode": "WALK",
+              "fromPlaceId": "attraction_7",
+              "toPlaceId": "dining_area",
+              "departure": {
+                "at": "2026-11-16T12:00:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "arrival": {
+                "at": "2026-11-16T12:20:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "durationMinutes": 20,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "ESTIMATED",
+              "evidence": {
+                "status": "MOCK",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "routeInstructions": "Illustrative walk. Verify the route and accessibility.",
+                "accessibilityNotes": "Not verified."
+              }
+            }
+          ],
+          "costItemIds": []
+        }
+      ]
+    },
+    {
+      "id": "back_7",
+      "title": "Transfer to Demo New York Stay 1",
+      "fromPlaceId": "dining_area",
+      "toPlaceId": "hotel_1",
+      "status": "AVAILABLE",
+      "recommendedOptionId": "back_7_recommended",
+      "planningOptionId": "back_7_recommended",
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": "back_7_recommended",
+          "title": "Transfer to Demo New York Stay 1",
+          "reason": "Used as the working assumption for this sample timeline.",
+          "legs": [
+            {
+              "id": "back_7_leg",
+              "mode": "TAXI",
+              "fromPlaceId": "dining_area",
+              "toPlaceId": "hotel_1",
+              "departure": {
+                "at": "2026-11-16T15:00:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "arrival": {
+                "at": "2026-11-16T15:30:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "durationMinutes": 30,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "ESTIMATED",
+              "evidence": {
+                "status": "MOCK",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "operator": null,
+                "serviceNumber": null,
+                "boardingPoint": "Demo neighbourhood dining area",
+                "alightingPoint": "Demo New York Stay 1",
+                "routeInstructions": "Illustrative transfer. Confirm route, duration and fare."
+              }
+            }
+          ],
+          "costItemIds": [
+            "cost_local_transport"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "flight_return",
+      "title": "Fly home via Los Angeles",
+      "fromPlaceId": "jfk_airport",
+      "toPlaceId": "syd_airport",
+      "status": "AVAILABLE",
+      "recommendedOptionId": "flight_return_recommended",
+      "planningOptionId": "flight_return_recommended",
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": "flight_return_recommended",
+          "title": "Fly home via Los Angeles",
+          "reason": "Used as the working assumption for this sample timeline.",
+          "legs": [
+            {
+              "id": "flight_return_leg_1",
+              "mode": "FLIGHT",
+              "fromPlaceId": "jfk_airport",
+              "toPlaceId": "lax_airport",
+              "departure": {
+                "at": "2026-11-17T18:00:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "arrival": {
+                "at": "2026-11-17T21:00:00-08:00",
+                "timeZone": "America/Los_Angeles"
+              },
+              "durationMinutes": 360,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "ESTIMATED",
+              "evidence": {
+                "status": "MOCK",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "marketingAirline": null,
+                "operatingAirline": null,
+                "flightNumber": null,
+                "departureAirportCode": "JFK",
+                "arrivalAirportCode": "LAX",
+                "departureTerminal": null,
+                "arrivalTerminal": null,
+                "checkedBaggageKgPerPerson": null,
+                "isSelfTransfer": false
+              }
+            },
+            {
+              "id": "flight_return_leg_2",
+              "mode": "FLIGHT",
+              "fromPlaceId": "lax_airport",
+              "toPlaceId": "syd_airport",
+              "departure": {
+                "at": "2026-11-17T23:00:00-08:00",
+                "timeZone": "America/Los_Angeles"
+              },
+              "arrival": {
+                "at": "2026-11-19T09:00:00+11:00",
+                "timeZone": "Australia/Sydney"
+              },
+              "durationMinutes": 900,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "ESTIMATED",
+              "evidence": {
+                "status": "MOCK",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "marketingAirline": null,
+                "operatingAirline": null,
+                "flightNumber": null,
+                "departureAirportCode": "LAX",
+                "arrivalAirportCode": "SYD",
+                "departureTerminal": null,
+                "arrivalTerminal": null,
+                "checkedBaggageKgPerPerson": null,
+                "isSelfTransfer": false
+              }
+            }
+          ],
+          "costItemIds": [
+            "cost_return_flights"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotel_to_airport",
+      "title": "Transfer to John F. Kennedy International Airport",
+      "fromPlaceId": "hotel_1",
+      "toPlaceId": "jfk_airport",
+      "status": "AVAILABLE",
+      "recommendedOptionId": "hotel_to_airport_recommended",
+      "planningOptionId": "hotel_to_airport_recommended",
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": "hotel_to_airport_recommended",
+          "title": "Transfer to John F. Kennedy International Airport",
+          "reason": "Used as the working assumption for this sample timeline.",
+          "legs": [
+            {
+              "id": "hotel_to_airport_leg",
+              "mode": "TAXI",
+              "fromPlaceId": "hotel_1",
+              "toPlaceId": "jfk_airport",
+              "departure": {
+                "at": "2026-11-17T13:30:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "arrival": {
+                "at": "2026-11-17T14:30:00-05:00",
+                "timeZone": "America/New_York"
+              },
+              "durationMinutes": 60,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "ESTIMATED",
+              "evidence": {
+                "status": "MOCK",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "operator": null,
+                "serviceNumber": null,
+                "boardingPoint": "Demo New York Stay 1",
+                "alightingPoint": "John F. Kennedy International Airport",
+                "routeInstructions": "Illustrative transfer. Confirm route, duration and fare."
+              }
+            }
+          ],
+          "costItemIds": [
+            "cost_local_transport"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "airport_to_home",
+      "title": "Transfer to Sydney",
+      "fromPlaceId": "syd_airport",
+      "toPlaceId": "sydney",
+      "status": "AVAILABLE",
+      "recommendedOptionId": "airport_to_home_recommended",
+      "planningOptionId": "airport_to_home_recommended",
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": "airport_to_home_recommended",
+          "title": "Transfer to Sydney",
+          "reason": "Used as the working assumption for this sample timeline.",
+          "legs": [
+            {
+              "id": "airport_to_home_leg",
+              "mode": "TAXI",
+              "fromPlaceId": "syd_airport",
+              "toPlaceId": "sydney",
+              "departure": {
+                "at": "2026-11-19T11:00:00+11:00",
+                "timeZone": "Australia/Sydney"
+              },
+              "arrival": {
+                "at": "2026-11-19T12:00:00+11:00",
+                "timeZone": "Australia/Sydney"
+              },
+              "durationMinutes": 60,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "ESTIMATED",
+              "evidence": {
+                "status": "MOCK",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "operator": null,
+                "serviceNumber": null,
+                "boardingPoint": "Sydney Airport",
+                "alightingPoint": "Sydney",
+                "routeInstructions": "Illustrative transfer. Confirm route, duration and fare."
+              }
+            }
+          ],
+          "costItemIds": [
+            "cost_local_transport"
+          ]
+        }
+      ]
+    }
+  ],
+  "stayGroups": [
+    {
+      "id": "stay_main",
+      "title": "New York stay",
+      "checkInDate": "2026-11-10",
+      "checkOutDate": "2026-11-17",
+      "nights": 7,
+      "status": "AVAILABLE",
+      "recommendedOptionId": "stay_option_1",
+      "planningOptionId": "stay_option_1",
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": "stay_option_1",
+          "placeId": "hotel_1",
+          "title": "Demo New York Stay 1",
+          "reason": "Central base for the sample route.",
+          "roomType": "Double room",
+          "roomCount": 1,
+          "guestCapacity": 2,
+          "amenities": [
+            "Example amenity: Wi-Fi"
+          ],
+          "availability": "UNKNOWN",
+          "cancellationSummary": null,
+          "costItemIds": [
+            "cost_hotel_1"
+          ],
+          "evidence": {
+            "status": "MOCK",
+            "sourceIds": [],
+            "checkedAt": null
+          }
+        },
+        {
+          "id": "stay_option_2",
+          "placeId": "hotel_2",
+          "title": "Demo New York Stay 2",
+          "reason": "Alternative with a lower example price.",
+          "roomType": "Double room",
+          "roomCount": 1,
+          "guestCapacity": 2,
+          "amenities": [
+            "Example amenity: Wi-Fi"
+          ],
+          "availability": "UNKNOWN",
+          "cancellationSummary": null,
+          "costItemIds": [
+            "cost_hotel_2"
+          ],
+          "evidence": {
+            "status": "MOCK",
+            "sourceIds": [],
+            "checkedAt": null
+          }
+        },
+        {
+          "id": "stay_option_3",
+          "placeId": "hotel_3",
+          "title": "Demo New York Stay 3",
+          "reason": "Alternative with extra example space.",
+          "roomType": "Double room",
+          "roomCount": 1,
+          "guestCapacity": 2,
+          "amenities": [
+            "Example amenity: Wi-Fi"
+          ],
+          "availability": "UNKNOWN",
+          "cancellationSummary": null,
+          "costItemIds": [
+            "cost_hotel_3"
+          ],
+          "evidence": {
+            "status": "MOCK",
+            "sourceIds": [],
+            "checkedAt": null
+          }
+        }
+      ]
+    }
+  ],
+  "days": [
+    {
+      "id": "day_1",
+      "dayNumber": 1,
+      "date": "2026-11-10",
+      "timeZone": "America/New_York",
+      "title": "Arrive and settle in",
+      "summary": "A flexible day with time between activities.",
+      "walkingDistanceMeters": null,
+      "events": [
+        {
+          "id": "event_home_to_airport",
+          "type": "TRANSPORT",
+          "title": "Transfer to Sydney Airport",
+          "description": "Estimated journey; not a confirmed booking.",
+          "imageIds": [],
+          "transportGroupId": "home_to_airport"
+        },
+        {
+          "id": "event_flight_out",
+          "type": "TRANSPORT",
+          "title": "Fly to New York",
+          "description": "Estimated journey; not a confirmed booking.",
+          "imageIds": [],
+          "transportGroupId": "flight_out"
+        },
+        {
+          "id": "event_airport_to_hotel",
+          "type": "TRANSPORT",
+          "title": "Transfer to Demo New York Stay 1",
+          "description": "Estimated journey; not a confirmed booking.",
+          "imageIds": [],
+          "transportGroupId": "airport_to_hotel"
+        },
+        {
+          "id": "check_in",
+          "type": "STAY",
+          "title": "Check in and rest",
+          "description": "Sample suggestion. Opening hours, suitability and availability are unverified.",
+          "imageIds": [],
+          "start": {
+            "at": "2026-11-10T20:00:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "end": {
+            "at": "2026-11-10T20:30:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "timingStatus": "ESTIMATED",
+          "evidence": {
+            "status": "MOCK",
+            "sourceIds": [],
+            "checkedAt": null
+          },
+          "stayGroupId": "stay_main",
+          "action": "CHECK_IN"
+        },
+        {
+          "id": "arrival_rest",
+          "type": "FREE_TIME",
+          "title": "Rest after the journey",
+          "description": "Sample suggestion. Opening hours, suitability and availability are unverified.",
+          "imageIds": [],
+          "start": {
+            "at": "2026-11-10T20:30:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "end": {
+            "at": "2026-11-10T22:00:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "timingStatus": "ESTIMATED",
+          "evidence": {
+            "status": "MOCK",
+            "sourceIds": [],
+            "checkedAt": null
+          },
+          "placeId": "hotel_1",
+          "costItemIds": []
+        }
+      ],
+      "continuingEventIds": []
+    },
+    {
+      "id": "day_2",
+      "dayNumber": 2,
+      "date": "2026-11-11",
+      "timeZone": "America/New_York",
+      "title": "Explore at your own pace",
+      "summary": "A flexible day with time between activities.",
+      "walkingDistanceMeters": null,
+      "events": [
+        {
+          "id": "event_out_2",
+          "type": "TRANSPORT",
+          "title": "Transfer to Demo stop: Park and museum day",
+          "description": "Estimated journey; not a confirmed booking.",
+          "imageIds": [],
+          "transportGroupId": "out_2"
+        },
+        {
+          "id": "visit_2",
+          "type": "ACTIVITY",
+          "title": "Park and museum day",
+          "description": "Sample suggestion. Opening hours, suitability and availability are unverified.",
+          "imageIds": [],
+          "start": {
+            "at": "2026-11-11T10:00:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "end": {
+            "at": "2026-11-11T12:00:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "timingStatus": "ESTIMATED",
+          "evidence": {
+            "status": "MOCK",
+            "sourceIds": [],
+            "checkedAt": null
+          },
+          "placeId": "attraction_2",
+          "costItemIds": [
+            "cost_visit_2"
+          ],
+          "details": {
+            "category": "CULTURE",
+            "reservationStatus": "UNKNOWN",
+            "openingHoursNote": null
+          }
+        },
+        {
+          "id": "event_walk_2",
+          "type": "TRANSPORT",
+          "title": "Walk to lunch",
+          "description": "Estimated journey; not a confirmed booking.",
+          "imageIds": [],
+          "transportGroupId": "walk_2"
+        },
+        {
+          "id": "meal_2",
+          "type": "MEAL",
+          "title": "Lunch in the neighbourhood",
+          "description": "Sample suggestion. Opening hours, suitability and availability are unverified.",
+          "imageIds": [],
+          "start": {
+            "at": "2026-11-11T12:30:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "end": {
+            "at": "2026-11-11T13:30:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "timingStatus": "ESTIMATED",
+          "evidence": {
+            "status": "MOCK",
+            "sourceIds": [],
+            "checkedAt": null
+          },
+          "placeId": "dining_area",
+          "costItemIds": [
+            "cost_meals"
+          ],
+          "details": {
+            "mealType": "LUNCH",
+            "cuisine": "Local options",
+            "dietaryStatus": "UNVERIFIED",
+            "reservationStatus": "UNKNOWN"
+          }
+        },
+        {
+          "id": "free_2",
+          "type": "FREE_TIME",
+          "title": "Explore or take a break",
+          "description": "Sample suggestion. Opening hours, suitability and availability are unverified.",
+          "imageIds": [],
+          "start": {
+            "at": "2026-11-11T13:30:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "end": {
+            "at": "2026-11-11T15:00:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "timingStatus": "ESTIMATED",
+          "evidence": {
+            "status": "MOCK",
+            "sourceIds": [],
+            "checkedAt": null
+          },
+          "placeId": "dining_area",
+          "costItemIds": []
+        },
+        {
+          "id": "event_back_2",
+          "type": "TRANSPORT",
+          "title": "Transfer to Demo New York Stay 1",
+          "description": "Estimated journey; not a confirmed booking.",
+          "imageIds": [],
+          "transportGroupId": "back_2"
+        }
+      ],
+      "continuingEventIds": []
+    },
+    {
+      "id": "day_3",
+      "dayNumber": 3,
+      "date": "2026-11-12",
+      "timeZone": "America/New_York",
+      "title": "Explore at your own pace",
+      "summary": "A flexible day with time between activities.",
+      "walkingDistanceMeters": null,
+      "events": [
+        {
+          "id": "event_out_3",
+          "type": "TRANSPORT",
+          "title": "Transfer to Demo stop: Art and design day",
+          "description": "Estimated journey; not a confirmed booking.",
+          "imageIds": [],
+          "transportGroupId": "out_3"
+        },
+        {
+          "id": "visit_3",
+          "type": "ACTIVITY",
+          "title": "Art and design day",
+          "description": "Sample suggestion. Opening hours, suitability and availability are unverified.",
+          "imageIds": [],
+          "start": {
+            "at": "2026-11-12T10:00:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "end": {
+            "at": "2026-11-12T12:00:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "timingStatus": "ESTIMATED",
+          "evidence": {
+            "status": "MOCK",
+            "sourceIds": [],
+            "checkedAt": null
+          },
+          "placeId": "attraction_3",
+          "costItemIds": [
+            "cost_visit_3"
+          ],
+          "details": {
+            "category": "CULTURE",
+            "reservationStatus": "UNKNOWN",
+            "openingHoursNote": null
+          }
+        },
+        {
+          "id": "event_walk_3",
+          "type": "TRANSPORT",
+          "title": "Walk to lunch",
+          "description": "Estimated journey; not a confirmed booking.",
+          "imageIds": [],
+          "transportGroupId": "walk_3"
+        },
+        {
+          "id": "meal_3",
+          "type": "MEAL",
+          "title": "Lunch in the neighbourhood",
+          "description": "Sample suggestion. Opening hours, suitability and availability are unverified.",
+          "imageIds": [],
+          "start": {
+            "at": "2026-11-12T12:30:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "end": {
+            "at": "2026-11-12T13:30:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "timingStatus": "ESTIMATED",
+          "evidence": {
+            "status": "MOCK",
+            "sourceIds": [],
+            "checkedAt": null
+          },
+          "placeId": "dining_area",
+          "costItemIds": [
+            "cost_meals"
+          ],
+          "details": {
+            "mealType": "LUNCH",
+            "cuisine": "Local options",
+            "dietaryStatus": "UNVERIFIED",
+            "reservationStatus": "UNKNOWN"
+          }
+        },
+        {
+          "id": "free_3",
+          "type": "FREE_TIME",
+          "title": "Explore or take a break",
+          "description": "Sample suggestion. Opening hours, suitability and availability are unverified.",
+          "imageIds": [],
+          "start": {
+            "at": "2026-11-12T13:30:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "end": {
+            "at": "2026-11-12T15:00:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "timingStatus": "ESTIMATED",
+          "evidence": {
+            "status": "MOCK",
+            "sourceIds": [],
+            "checkedAt": null
+          },
+          "placeId": "dining_area",
+          "costItemIds": []
+        },
+        {
+          "id": "event_back_3",
+          "type": "TRANSPORT",
+          "title": "Transfer to Demo New York Stay 1",
+          "description": "Estimated journey; not a confirmed booking.",
+          "imageIds": [],
+          "transportGroupId": "back_3"
+        }
+      ],
+      "continuingEventIds": []
+    },
+    {
+      "id": "day_4",
+      "dayNumber": 4,
+      "date": "2026-11-13",
+      "timeZone": "America/New_York",
+      "title": "Explore at your own pace",
+      "summary": "A flexible day with time between activities.",
+      "walkingDistanceMeters": null,
+      "events": [
+        {
+          "id": "event_out_4",
+          "type": "TRANSPORT",
+          "title": "Transfer to Demo stop: Markets and local streets",
+          "description": "Estimated journey; not a confirmed booking.",
+          "imageIds": [],
+          "transportGroupId": "out_4"
+        },
+        {
+          "id": "visit_4",
+          "type": "ACTIVITY",
+          "title": "Markets and local streets",
+          "description": "Sample suggestion. Opening hours, suitability and availability are unverified.",
+          "imageIds": [],
+          "start": {
+            "at": "2026-11-13T10:00:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "end": {
+            "at": "2026-11-13T12:00:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "timingStatus": "ESTIMATED",
+          "evidence": {
+            "status": "MOCK",
+            "sourceIds": [],
+            "checkedAt": null
+          },
+          "placeId": "attraction_4",
+          "costItemIds": [
+            "cost_visit_4"
+          ],
+          "details": {
+            "category": "CULTURE",
+            "reservationStatus": "UNKNOWN",
+            "openingHoursNote": null
+          }
+        },
+        {
+          "id": "event_walk_4",
+          "type": "TRANSPORT",
+          "title": "Walk to lunch",
+          "description": "Estimated journey; not a confirmed booking.",
+          "imageIds": [],
+          "transportGroupId": "walk_4"
+        },
+        {
+          "id": "meal_4",
+          "type": "MEAL",
+          "title": "Lunch in the neighbourhood",
+          "description": "Sample suggestion. Opening hours, suitability and availability are unverified.",
+          "imageIds": [],
+          "start": {
+            "at": "2026-11-13T12:30:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "end": {
+            "at": "2026-11-13T13:30:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "timingStatus": "ESTIMATED",
+          "evidence": {
+            "status": "MOCK",
+            "sourceIds": [],
+            "checkedAt": null
+          },
+          "placeId": "dining_area",
+          "costItemIds": [
+            "cost_meals"
+          ],
+          "details": {
+            "mealType": "LUNCH",
+            "cuisine": "Local options",
+            "dietaryStatus": "UNVERIFIED",
+            "reservationStatus": "UNKNOWN"
+          }
+        },
+        {
+          "id": "free_4",
+          "type": "FREE_TIME",
+          "title": "Explore or take a break",
+          "description": "Sample suggestion. Opening hours, suitability and availability are unverified.",
+          "imageIds": [],
+          "start": {
+            "at": "2026-11-13T13:30:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "end": {
+            "at": "2026-11-13T15:00:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "timingStatus": "ESTIMATED",
+          "evidence": {
+            "status": "MOCK",
+            "sourceIds": [],
+            "checkedAt": null
+          },
+          "placeId": "dining_area",
+          "costItemIds": []
+        },
+        {
+          "id": "event_back_4",
+          "type": "TRANSPORT",
+          "title": "Transfer to Demo New York Stay 1",
+          "description": "Estimated journey; not a confirmed booking.",
+          "imageIds": [],
+          "transportGroupId": "back_4"
+        }
+      ],
+      "continuingEventIds": []
+    },
+    {
+      "id": "day_5",
+      "dayNumber": 5,
+      "date": "2026-11-14",
+      "timeZone": "America/New_York",
+      "title": "Explore at your own pace",
+      "summary": "A flexible day with time between activities.",
+      "walkingDistanceMeters": null,
+      "events": [
+        {
+          "id": "event_out_5",
+          "type": "TRANSPORT",
+          "title": "Transfer to Demo stop: Waterfront day",
+          "description": "Estimated journey; not a confirmed booking.",
+          "imageIds": [],
+          "transportGroupId": "out_5"
+        },
+        {
+          "id": "visit_5",
+          "type": "ACTIVITY",
+          "title": "Waterfront day",
+          "description": "Sample suggestion. Opening hours, suitability and availability are unverified.",
+          "imageIds": [],
+          "start": {
+            "at": "2026-11-14T10:00:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "end": {
+            "at": "2026-11-14T12:00:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "timingStatus": "ESTIMATED",
+          "evidence": {
+            "status": "MOCK",
+            "sourceIds": [],
+            "checkedAt": null
+          },
+          "placeId": "attraction_5",
+          "costItemIds": [
+            "cost_visit_5"
+          ],
+          "details": {
+            "category": "CULTURE",
+            "reservationStatus": "UNKNOWN",
+            "openingHoursNote": null
+          }
+        },
+        {
+          "id": "event_walk_5",
+          "type": "TRANSPORT",
+          "title": "Walk to lunch",
+          "description": "Estimated journey; not a confirmed booking.",
+          "imageIds": [],
+          "transportGroupId": "walk_5"
+        },
+        {
+          "id": "meal_5",
+          "type": "MEAL",
+          "title": "Lunch in the neighbourhood",
+          "description": "Sample suggestion. Opening hours, suitability and availability are unverified.",
+          "imageIds": [],
+          "start": {
+            "at": "2026-11-14T12:30:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "end": {
+            "at": "2026-11-14T13:30:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "timingStatus": "ESTIMATED",
+          "evidence": {
+            "status": "MOCK",
+            "sourceIds": [],
+            "checkedAt": null
+          },
+          "placeId": "dining_area",
+          "costItemIds": [
+            "cost_meals"
+          ],
+          "details": {
+            "mealType": "LUNCH",
+            "cuisine": "Local options",
+            "dietaryStatus": "UNVERIFIED",
+            "reservationStatus": "UNKNOWN"
+          }
+        },
+        {
+          "id": "free_5",
+          "type": "FREE_TIME",
+          "title": "Explore or take a break",
+          "description": "Sample suggestion. Opening hours, suitability and availability are unverified.",
+          "imageIds": [],
+          "start": {
+            "at": "2026-11-14T13:30:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "end": {
+            "at": "2026-11-14T15:00:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "timingStatus": "ESTIMATED",
+          "evidence": {
+            "status": "MOCK",
+            "sourceIds": [],
+            "checkedAt": null
+          },
+          "placeId": "dining_area",
+          "costItemIds": []
+        },
+        {
+          "id": "event_back_5",
+          "type": "TRANSPORT",
+          "title": "Transfer to Demo New York Stay 1",
+          "description": "Estimated journey; not a confirmed booking.",
+          "imageIds": [],
+          "transportGroupId": "back_5"
+        }
+      ],
+      "continuingEventIds": []
+    },
+    {
+      "id": "day_6",
+      "dayNumber": 6,
+      "date": "2026-11-15",
+      "timeZone": "America/New_York",
+      "title": "Explore at your own pace",
+      "summary": "A flexible day with time between activities.",
+      "walkingDistanceMeters": null,
+      "events": [
+        {
+          "id": "event_out_6",
+          "type": "TRANSPORT",
+          "title": "Transfer to Demo stop: History and culture day",
+          "description": "Estimated journey; not a confirmed booking.",
+          "imageIds": [],
+          "transportGroupId": "out_6"
+        },
+        {
+          "id": "visit_6",
+          "type": "ACTIVITY",
+          "title": "History and culture day",
+          "description": "Sample suggestion. Opening hours, suitability and availability are unverified.",
+          "imageIds": [],
+          "start": {
+            "at": "2026-11-15T10:00:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "end": {
+            "at": "2026-11-15T12:00:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "timingStatus": "ESTIMATED",
+          "evidence": {
+            "status": "MOCK",
+            "sourceIds": [],
+            "checkedAt": null
+          },
+          "placeId": "attraction_6",
+          "costItemIds": [
+            "cost_visit_6"
+          ],
+          "details": {
+            "category": "CULTURE",
+            "reservationStatus": "UNKNOWN",
+            "openingHoursNote": null
+          }
+        },
+        {
+          "id": "event_walk_6",
+          "type": "TRANSPORT",
+          "title": "Walk to lunch",
+          "description": "Estimated journey; not a confirmed booking.",
+          "imageIds": [],
+          "transportGroupId": "walk_6"
+        },
+        {
+          "id": "meal_6",
+          "type": "MEAL",
+          "title": "Lunch in the neighbourhood",
+          "description": "Sample suggestion. Opening hours, suitability and availability are unverified.",
+          "imageIds": [],
+          "start": {
+            "at": "2026-11-15T12:30:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "end": {
+            "at": "2026-11-15T13:30:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "timingStatus": "ESTIMATED",
+          "evidence": {
+            "status": "MOCK",
+            "sourceIds": [],
+            "checkedAt": null
+          },
+          "placeId": "dining_area",
+          "costItemIds": [
+            "cost_meals"
+          ],
+          "details": {
+            "mealType": "LUNCH",
+            "cuisine": "Local options",
+            "dietaryStatus": "UNVERIFIED",
+            "reservationStatus": "UNKNOWN"
+          }
+        },
+        {
+          "id": "free_6",
+          "type": "FREE_TIME",
+          "title": "Explore or take a break",
+          "description": "Sample suggestion. Opening hours, suitability and availability are unverified.",
+          "imageIds": [],
+          "start": {
+            "at": "2026-11-15T13:30:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "end": {
+            "at": "2026-11-15T15:00:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "timingStatus": "ESTIMATED",
+          "evidence": {
+            "status": "MOCK",
+            "sourceIds": [],
+            "checkedAt": null
+          },
+          "placeId": "dining_area",
+          "costItemIds": []
+        },
+        {
+          "id": "event_back_6",
+          "type": "TRANSPORT",
+          "title": "Transfer to Demo New York Stay 1",
+          "description": "Estimated journey; not a confirmed booking.",
+          "imageIds": [],
+          "transportGroupId": "back_6"
+        }
+      ],
+      "continuingEventIds": []
+    },
+    {
+      "id": "day_7",
+      "dayNumber": 7,
+      "date": "2026-11-16",
+      "timeZone": "America/New_York",
+      "title": "Explore at your own pace",
+      "summary": "A flexible day with time between activities.",
+      "walkingDistanceMeters": null,
+      "events": [
+        {
+          "id": "event_out_7",
+          "type": "TRANSPORT",
+          "title": "Transfer to Demo stop: A flexible favourite",
+          "description": "Estimated journey; not a confirmed booking.",
+          "imageIds": [],
+          "transportGroupId": "out_7"
+        },
+        {
+          "id": "visit_7",
+          "type": "ACTIVITY",
+          "title": "A flexible favourite",
+          "description": "Sample suggestion. Opening hours, suitability and availability are unverified.",
+          "imageIds": [],
+          "start": {
+            "at": "2026-11-16T10:00:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "end": {
+            "at": "2026-11-16T12:00:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "timingStatus": "ESTIMATED",
+          "evidence": {
+            "status": "MOCK",
+            "sourceIds": [],
+            "checkedAt": null
+          },
+          "placeId": "attraction_7",
+          "costItemIds": [
+            "cost_visit_7"
+          ],
+          "details": {
+            "category": "CULTURE",
+            "reservationStatus": "UNKNOWN",
+            "openingHoursNote": null
+          }
+        },
+        {
+          "id": "event_walk_7",
+          "type": "TRANSPORT",
+          "title": "Walk to lunch",
+          "description": "Estimated journey; not a confirmed booking.",
+          "imageIds": [],
+          "transportGroupId": "walk_7"
+        },
+        {
+          "id": "meal_7",
+          "type": "MEAL",
+          "title": "Lunch in the neighbourhood",
+          "description": "Sample suggestion. Opening hours, suitability and availability are unverified.",
+          "imageIds": [],
+          "start": {
+            "at": "2026-11-16T12:30:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "end": {
+            "at": "2026-11-16T13:30:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "timingStatus": "ESTIMATED",
+          "evidence": {
+            "status": "MOCK",
+            "sourceIds": [],
+            "checkedAt": null
+          },
+          "placeId": "dining_area",
+          "costItemIds": [
+            "cost_meals"
+          ],
+          "details": {
+            "mealType": "LUNCH",
+            "cuisine": "Local options",
+            "dietaryStatus": "UNVERIFIED",
+            "reservationStatus": "UNKNOWN"
+          }
+        },
+        {
+          "id": "free_7",
+          "type": "FREE_TIME",
+          "title": "Explore or take a break",
+          "description": "Sample suggestion. Opening hours, suitability and availability are unverified.",
+          "imageIds": [],
+          "start": {
+            "at": "2026-11-16T13:30:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "end": {
+            "at": "2026-11-16T15:00:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "timingStatus": "ESTIMATED",
+          "evidence": {
+            "status": "MOCK",
+            "sourceIds": [],
+            "checkedAt": null
+          },
+          "placeId": "dining_area",
+          "costItemIds": []
+        },
+        {
+          "id": "event_back_7",
+          "type": "TRANSPORT",
+          "title": "Transfer to Demo New York Stay 1",
+          "description": "Estimated journey; not a confirmed booking.",
+          "imageIds": [],
+          "transportGroupId": "back_7"
+        }
+      ],
+      "continuingEventIds": []
+    },
+    {
+      "id": "day_8",
+      "dayNumber": 8,
+      "date": "2026-11-17",
+      "timeZone": "America/New_York",
+      "title": "Explore at your own pace",
+      "summary": "A flexible day with time between activities.",
+      "walkingDistanceMeters": null,
+      "events": [
+        {
+          "id": "check_out",
+          "type": "STAY",
+          "title": "Check out",
+          "description": "Sample suggestion. Opening hours, suitability and availability are unverified.",
+          "imageIds": [],
+          "start": {
+            "at": "2026-11-17T10:00:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "end": {
+            "at": "2026-11-17T10:30:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "timingStatus": "ESTIMATED",
+          "evidence": {
+            "status": "MOCK",
+            "sourceIds": [],
+            "checkedAt": null
+          },
+          "stayGroupId": "stay_main",
+          "action": "CHECK_OUT"
+        },
+        {
+          "id": "departure_break",
+          "type": "FREE_TIME",
+          "title": "Free time before departure",
+          "description": "Sample suggestion. Opening hours, suitability and availability are unverified.",
+          "imageIds": [],
+          "start": {
+            "at": "2026-11-17T10:30:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "end": {
+            "at": "2026-11-17T13:30:00-05:00",
+            "timeZone": "America/New_York"
+          },
+          "timingStatus": "ESTIMATED",
+          "evidence": {
+            "status": "MOCK",
+            "sourceIds": [],
+            "checkedAt": null
+          },
+          "placeId": "hotel_1",
+          "costItemIds": []
+        },
+        {
+          "id": "event_hotel_to_airport",
+          "type": "TRANSPORT",
+          "title": "Transfer to John F. Kennedy International Airport",
+          "description": "Estimated journey; not a confirmed booking.",
+          "imageIds": [],
+          "transportGroupId": "hotel_to_airport"
+        },
+        {
+          "id": "event_flight_return",
+          "type": "TRANSPORT",
+          "title": "Fly home via Los Angeles",
+          "description": "Estimated journey; not a confirmed booking.",
+          "imageIds": [],
+          "transportGroupId": "flight_return"
+        }
+      ],
+      "continuingEventIds": []
+    },
+    {
+      "id": "day_9",
+      "dayNumber": 9,
+      "date": "2026-11-18",
+      "timeZone": "America/New_York",
+      "title": "In transit",
+      "summary": "Continue the overnight journey. Times are shown in each airport's local time.",
+      "walkingDistanceMeters": null,
+      "events": [],
+      "continuingEventIds": [
+        "event_flight_return"
+      ]
+    },
+    {
+      "id": "day_10",
+      "dayNumber": 10,
+      "date": "2026-11-19",
+      "timeZone": "Australia/Sydney",
+      "title": "Return home",
+      "summary": "A flexible day with time between activities.",
+      "walkingDistanceMeters": null,
+      "events": [
+        {
+          "id": "event_airport_to_home",
+          "type": "TRANSPORT",
+          "title": "Transfer to Sydney",
+          "description": "Estimated journey; not a confirmed booking.",
+          "imageIds": [],
+          "transportGroupId": "airport_to_home"
+        },
+        {
+          "id": "home_rest",
+          "type": "FREE_TIME",
+          "title": "Arrive home and recover",
+          "description": "Sample suggestion. Opening hours, suitability and availability are unverified.",
+          "imageIds": [],
+          "start": {
+            "at": "2026-11-19T12:00:00+11:00",
+            "timeZone": "Australia/Sydney"
+          },
+          "end": {
+            "at": "2026-11-19T16:00:00+11:00",
+            "timeZone": "Australia/Sydney"
+          },
+          "timingStatus": "ESTIMATED",
+          "evidence": {
+            "status": "MOCK",
+            "sourceIds": [],
+            "checkedAt": null
+          },
+          "placeId": "sydney",
+          "costItemIds": []
+        }
+      ],
+      "continuingEventIds": [
+        "event_flight_return"
+      ]
+    }
+  ],
+  "money": {
+    "displayCurrency": "AUD",
+    "currencies": [
+      {
+        "code": "AUD",
+        "minorUnitDigits": 2
+      },
+      {
+        "code": "USD",
+        "minorUnitDigits": 2
+      }
+    ],
+    "exchangeRates": [
+      {
+        "id": "fx_usd_aud",
+        "baseCurrency": "USD",
+        "quoteCurrency": "AUD",
+        "quotePerBase": "1.5",
+        "asOf": null,
+        "evidence": {
+          "status": "MOCK",
+          "sourceIds": [],
+          "checkedAt": null
+        }
+      }
+    ],
+    "exchangeAdvice": [
+      {
+        "title": "Compare the final cost",
+        "description": "Compare bank, ATM and exchange-provider fees before choosing. This sample does not recommend a verified exchange counter or a live rate.",
+        "placeId": null,
+        "evidence": {
+          "status": "MOCK",
+          "sourceIds": [],
+          "checkedAt": null
+        }
+      }
+    ]
+  },
+  "entryRequirements": [
+    {
+      "id": "entry_us",
+      "travelerIds": [
+        "traveler_1",
+        "traveler_2"
+      ],
+      "countryCode": "US",
+      "role": "DESTINATION",
+      "status": "NEEDS_INPUT",
+      "summary": "Entry requirements cannot be assessed without traveller document details. The Los Angeles connection is part of the US entry assessment.",
+      "requiredInputFields": [
+        "passportCountry",
+        "passportType",
+        "residenceCountry",
+        "relevantVisasOrPermits"
+      ],
+      "documents": [],
+      "evidence": {
+        "status": "MOCK",
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    },
+    {
+      "id": "entry_au_return",
+      "travelerIds": [
+        "traveler_1",
+        "traveler_2"
+      ],
+      "countryCode": "AU",
+      "role": "DESTINATION",
+      "status": "NEEDS_INPUT",
+      "summary": "Return-entry eligibility is not assessed. Residence in Australia does not establish citizenship or entry permission.",
+      "requiredInputFields": [
+        "passportCountry",
+        "relevantVisasOrPermits"
+      ],
+      "documents": [],
+      "evidence": {
+        "status": "MOCK",
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    }
+  ],
+  "budget": {
+    "scope": "ENTIRE_PARTY_WHOLE_TRIP",
+    "lineItems": [
+      {
+        "id": "cost_hotel_1",
+        "category": "ACCOMMODATION",
+        "label": "Example room for 7 nights",
+        "unit": "ROOM_NIGHT",
+        "quantity": 7,
+        "unitPrice": {
+          "currency": "USD",
+          "lowMinor": 22500,
+          "expectedMinor": 25000,
+          "highMinor": 27500
+        },
+        "originalTotal": {
+          "currency": "USD",
+          "lowMinor": 157500,
+          "expectedMinor": 175000,
+          "highMinor": 192500
+        },
+        "displayTotal": {
+          "currency": "AUD",
+          "lowMinor": 236250,
+          "expectedMinor": 262500,
+          "highMinor": 288750
+        },
+        "exchangeRateId": "fx_usd_aud",
+        "taxesAndFees": "UNKNOWN",
+        "evidence": {
+          "status": "MOCK",
+          "sourceIds": [],
+          "checkedAt": null
+        }
+      },
+      {
+        "id": "cost_hotel_2",
+        "category": "ACCOMMODATION",
+        "label": "Example room for 7 nights",
+        "unit": "ROOM_NIGHT",
+        "quantity": 7,
+        "unitPrice": {
+          "currency": "USD",
+          "lowMinor": 19800,
+          "expectedMinor": 22000,
+          "highMinor": 24200
+        },
+        "originalTotal": {
+          "currency": "USD",
+          "lowMinor": 138600,
+          "expectedMinor": 154000,
+          "highMinor": 169400
+        },
+        "displayTotal": {
+          "currency": "AUD",
+          "lowMinor": 207900,
+          "expectedMinor": 231000,
+          "highMinor": 254100
+        },
+        "exchangeRateId": "fx_usd_aud",
+        "taxesAndFees": "UNKNOWN",
+        "evidence": {
+          "status": "MOCK",
+          "sourceIds": [],
+          "checkedAt": null
+        }
+      },
+      {
+        "id": "cost_hotel_3",
+        "category": "ACCOMMODATION",
+        "label": "Example room for 7 nights",
+        "unit": "ROOM_NIGHT",
+        "quantity": 7,
+        "unitPrice": {
+          "currency": "USD",
+          "lowMinor": 27000,
+          "expectedMinor": 30000,
+          "highMinor": 33000
+        },
+        "originalTotal": {
+          "currency": "USD",
+          "lowMinor": 189000,
+          "expectedMinor": 210000,
+          "highMinor": 231000
+        },
+        "displayTotal": {
+          "currency": "AUD",
+          "lowMinor": 283500,
+          "expectedMinor": 315000,
+          "highMinor": 346500
+        },
+        "exchangeRateId": "fx_usd_aud",
+        "taxesAndFees": "UNKNOWN",
+        "evidence": {
+          "status": "MOCK",
+          "sourceIds": [],
+          "checkedAt": null
+        }
+      },
+      {
+        "id": "cost_return_flights",
+        "category": "INTERCITY_TRANSPORT",
+        "label": "Example return airfare for two",
+        "unit": "PERSON",
+        "quantity": 2,
+        "unitPrice": {
+          "currency": "AUD",
+          "lowMinor": 162000,
+          "expectedMinor": 180000,
+          "highMinor": 198000
+        },
+        "originalTotal": {
+          "currency": "AUD",
+          "lowMinor": 324000,
+          "expectedMinor": 360000,
+          "highMinor": 396000
+        },
+        "displayTotal": {
+          "currency": "AUD",
+          "lowMinor": 324000,
+          "expectedMinor": 360000,
+          "highMinor": 396000
+        },
+        "exchangeRateId": null,
+        "taxesAndFees": "UNKNOWN",
+        "evidence": {
+          "status": "MOCK",
+          "sourceIds": [],
+          "checkedAt": null
+        }
+      },
+      {
+        "id": "cost_local_transport",
+        "category": "LOCAL_TRANSPORT",
+        "label": "Example airport transfers and local transit allowance",
+        "unit": "PARTY",
+        "quantity": 1,
+        "unitPrice": {
+          "currency": "USD",
+          "lowMinor": 27000,
+          "expectedMinor": 30000,
+          "highMinor": 33000
+        },
+        "originalTotal": {
+          "currency": "USD",
+          "lowMinor": 27000,
+          "expectedMinor": 30000,
+          "highMinor": 33000
+        },
+        "displayTotal": {
+          "currency": "AUD",
+          "lowMinor": 40500,
+          "expectedMinor": 45000,
+          "highMinor": 49500
+        },
+        "exchangeRateId": "fx_usd_aud",
+        "taxesAndFees": "UNKNOWN",
+        "evidence": {
+          "status": "MOCK",
+          "sourceIds": [],
+          "checkedAt": null
+        }
+      },
+      {
+        "id": "cost_meals",
+        "category": "FOOD",
+        "label": "Meal allowance for two over ten travel days",
+        "unit": "PERSON_DAY",
+        "quantity": 20,
+        "unitPrice": {
+          "currency": "USD",
+          "lowMinor": 5850,
+          "expectedMinor": 6500,
+          "highMinor": 7150
+        },
+        "originalTotal": {
+          "currency": "USD",
+          "lowMinor": 117000,
+          "expectedMinor": 130000,
+          "highMinor": 143000
+        },
+        "displayTotal": {
+          "currency": "AUD",
+          "lowMinor": 175500,
+          "expectedMinor": 195000,
+          "highMinor": 214500
+        },
+        "exchangeRateId": "fx_usd_aud",
+        "taxesAndFees": "UNKNOWN",
+        "evidence": {
+          "status": "MOCK",
+          "sourceIds": [],
+          "checkedAt": null
+        }
+      },
+      {
+        "id": "cost_visit_2",
+        "category": "ACTIVITIES",
+        "label": "Example admission for day 2",
+        "unit": "PERSON",
+        "quantity": 2,
+        "unitPrice": {
+          "currency": "USD",
+          "lowMinor": 1800,
+          "expectedMinor": 2000,
+          "highMinor": 2200
+        },
+        "originalTotal": {
+          "currency": "USD",
+          "lowMinor": 3600,
+          "expectedMinor": 4000,
+          "highMinor": 4400
+        },
+        "displayTotal": {
+          "currency": "AUD",
+          "lowMinor": 5400,
+          "expectedMinor": 6000,
+          "highMinor": 6600
+        },
+        "exchangeRateId": "fx_usd_aud",
+        "taxesAndFees": "UNKNOWN",
+        "evidence": {
+          "status": "MOCK",
+          "sourceIds": [],
+          "checkedAt": null
+        }
+      },
+      {
+        "id": "cost_visit_3",
+        "category": "ACTIVITIES",
+        "label": "Example admission for day 3",
+        "unit": "PERSON",
+        "quantity": 2,
+        "unitPrice": {
+          "currency": "USD",
+          "lowMinor": 1800,
+          "expectedMinor": 2000,
+          "highMinor": 2200
+        },
+        "originalTotal": {
+          "currency": "USD",
+          "lowMinor": 3600,
+          "expectedMinor": 4000,
+          "highMinor": 4400
+        },
+        "displayTotal": {
+          "currency": "AUD",
+          "lowMinor": 5400,
+          "expectedMinor": 6000,
+          "highMinor": 6600
+        },
+        "exchangeRateId": "fx_usd_aud",
+        "taxesAndFees": "UNKNOWN",
+        "evidence": {
+          "status": "MOCK",
+          "sourceIds": [],
+          "checkedAt": null
+        }
+      },
+      {
+        "id": "cost_visit_4",
+        "category": "ACTIVITIES",
+        "label": "Example admission for day 4",
+        "unit": "PERSON",
+        "quantity": 2,
+        "unitPrice": {
+          "currency": "USD",
+          "lowMinor": 1800,
+          "expectedMinor": 2000,
+          "highMinor": 2200
+        },
+        "originalTotal": {
+          "currency": "USD",
+          "lowMinor": 3600,
+          "expectedMinor": 4000,
+          "highMinor": 4400
+        },
+        "displayTotal": {
+          "currency": "AUD",
+          "lowMinor": 5400,
+          "expectedMinor": 6000,
+          "highMinor": 6600
+        },
+        "exchangeRateId": "fx_usd_aud",
+        "taxesAndFees": "UNKNOWN",
+        "evidence": {
+          "status": "MOCK",
+          "sourceIds": [],
+          "checkedAt": null
+        }
+      },
+      {
+        "id": "cost_visit_5",
+        "category": "ACTIVITIES",
+        "label": "Example admission for day 5",
+        "unit": "PERSON",
+        "quantity": 2,
+        "unitPrice": {
+          "currency": "USD",
+          "lowMinor": 1800,
+          "expectedMinor": 2000,
+          "highMinor": 2200
+        },
+        "originalTotal": {
+          "currency": "USD",
+          "lowMinor": 3600,
+          "expectedMinor": 4000,
+          "highMinor": 4400
+        },
+        "displayTotal": {
+          "currency": "AUD",
+          "lowMinor": 5400,
+          "expectedMinor": 6000,
+          "highMinor": 6600
+        },
+        "exchangeRateId": "fx_usd_aud",
+        "taxesAndFees": "UNKNOWN",
+        "evidence": {
+          "status": "MOCK",
+          "sourceIds": [],
+          "checkedAt": null
+        }
+      },
+      {
+        "id": "cost_visit_6",
+        "category": "ACTIVITIES",
+        "label": "Example admission for day 6",
+        "unit": "PERSON",
+        "quantity": 2,
+        "unitPrice": {
+          "currency": "USD",
+          "lowMinor": 1800,
+          "expectedMinor": 2000,
+          "highMinor": 2200
+        },
+        "originalTotal": {
+          "currency": "USD",
+          "lowMinor": 3600,
+          "expectedMinor": 4000,
+          "highMinor": 4400
+        },
+        "displayTotal": {
+          "currency": "AUD",
+          "lowMinor": 5400,
+          "expectedMinor": 6000,
+          "highMinor": 6600
+        },
+        "exchangeRateId": "fx_usd_aud",
+        "taxesAndFees": "UNKNOWN",
+        "evidence": {
+          "status": "MOCK",
+          "sourceIds": [],
+          "checkedAt": null
+        }
+      },
+      {
+        "id": "cost_visit_7",
+        "category": "ACTIVITIES",
+        "label": "Example admission for day 7",
+        "unit": "PERSON",
+        "quantity": 2,
+        "unitPrice": {
+          "currency": "USD",
+          "lowMinor": 1800,
+          "expectedMinor": 2000,
+          "highMinor": 2200
+        },
+        "originalTotal": {
+          "currency": "USD",
+          "lowMinor": 3600,
+          "expectedMinor": 4000,
+          "highMinor": 4400
+        },
+        "displayTotal": {
+          "currency": "AUD",
+          "lowMinor": 5400,
+          "expectedMinor": 6000,
+          "highMinor": 6600
+        },
+        "exchangeRateId": "fx_usd_aud",
+        "taxesAndFees": "UNKNOWN",
+        "evidence": {
+          "status": "MOCK",
+          "sourceIds": [],
+          "checkedAt": null
+        }
+      }
+    ],
+    "tripCostItemIds": [
+      "cost_meals"
+    ],
+    "activeCostItemIds": [
+      "cost_meals",
+      "cost_return_flights",
+      "cost_local_transport",
+      "cost_hotel_1",
+      "cost_visit_2",
+      "cost_visit_3",
+      "cost_visit_4",
+      "cost_visit_5",
+      "cost_visit_6",
+      "cost_visit_7"
+    ],
+    "completeness": "PARTIAL",
+    "subtotal": {
+      "currency": "AUD",
+      "lowMinor": 808650,
+      "expectedMinor": 898500,
+      "highMinor": 988350
+    },
+    "contingency": {
+      "currency": "AUD",
+      "lowMinor": 9000,
+      "expectedMinor": 10000,
+      "highMinor": 11000
+    },
+    "total": {
+      "currency": "AUD",
+      "lowMinor": 817650,
+      "expectedMinor": 908500,
+      "highMinor": 999350
+    },
+    "excludedCategories": [
+      "Travel insurance",
+      "Shopping",
+      "Unverified mandatory fees"
+    ],
+    "notes": [
+      "Amounts are fictional estimates for the entire party, not per person.",
+      "Alternative options are excluded from the active total."
+    ]
+  },
+  "quality": {
+    "sources": [],
+    "assumptions": [
+      "This fixture is for UI development, not a real travel recommendation.",
+      "Hotel names and transport schedules are fictional; no booking is confirmed.",
+      "The ten days include outbound travel and arrival home, not ten full days in New York.",
+      "Flight legs and layovers are invented to test time zones, connections and cross-day UI; no real airline or flight is claimed.",
+      "The exchange rate of 1 USD = 1.5 AUD is a fixture constant, not a current quote.",
+      "The local transport allowance includes all displayed transfers; repeated references are counted once.",
+      "Breakfast and dinner are flexible; the meal allowance covers them even when not individually scheduled.",
+      "Luggage storage after checkout is an unverified assumption."
+    ],
+    "notices": [
+      {
+        "code": "DEMO_DATA",
+        "severity": "WARNING",
+        "message": "Sample itinerary · Not a live quote",
+        "relatedIds": []
+      },
+      {
+        "code": "INCOMPLETE_PRICES",
+        "severity": "WARNING",
+        "message": "Some costs and mandatory fees are not included.",
+        "relatedIds": []
+      },
+      {
+        "code": "ENTRY_DETAILS_MISSING",
+        "severity": "WARNING",
+        "message": "Provide passport and relevant visa details before relying on entry advice.",
+        "relatedIds": [
+          "entry_us",
+          "entry_au_return"
+        ]
+      }
+    ],
+    "constraintChecks": [
+      {
+        "constraintId": "constraint_relaxed",
+        "status": "UNVERIFIED",
+        "explanation": "The draft includes free time. Route feasibility and walking distances still need checking.",
+        "relatedIds": []
+      }
+    ]
+  },
+  "contractId": "odyssey.frontend.itinerary"
+}

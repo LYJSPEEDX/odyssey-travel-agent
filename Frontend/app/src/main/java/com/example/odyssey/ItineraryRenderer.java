@@ -374,6 +374,8 @@ final class ItineraryRenderer {
         for (int i = 0; i < advice.length(); i++) exchange.append("\n\n").append(advice.getJSONObject(i).getString("title"))
                 .append("\n").append(advice.getJSONObject(i).getString("description"));
         disclosure("Currency & exchange", exchange.toString());
+        ui.card("Currency converter", "Convert using rates included in this itinerary", R.color.surface,
+                () -> CurrencyConverter.show(ui.context, money));
         JSONArray entries = doc.root.getJSONArray("entryRequirements");
         StringBuilder entry = new StringBuilder("Entry requirements depend on each traveler and transit route. Verify with official sources.");
         if (entries.length() == 0) entry.append("\nNo verified requirements supplied.");

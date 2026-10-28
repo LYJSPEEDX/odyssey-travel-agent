@@ -24,6 +24,7 @@ final class ProfileStore {
     }
     private JSONObject read() throws IOException, JSONException {
         if (!file.getBaseFile().exists() && !new File(file.getBaseFile() + ".bak").exists()) return null;
+        String raw;
         try (java.io.InputStream input = file.openRead();
              java.io.ByteArrayOutputStream bytes = new java.io.ByteArrayOutputStream()) {
             byte[] buffer = new byte[4096];
@@ -32,16 +33,25 @@ final class ProfileStore {
                 if (bytes.size() + count > ProfileContracts.MAX_JSON_CHARS) throw new IOException("Profile too large");
                 bytes.write(buffer, 0, count);
             }
-            String raw = new String(bytes.toByteArray(), StandardCharsets.UTF_8);
-            ItineraryJson.preflight(raw, ProfileContracts.MAX_JSON_CHARS);
-            JSONObject profile = new JSONObject(raw);
-            if (Integer.valueOf(2).equals(profile.opt("schema_version")) || Integer.valueOf(3).equals(profile.opt("schema_version"))) {
-                try { return validated(profile); }
-                catch (IllegalArgumentException exception) { throw new JSONException(exception.getMessage()); }
-            }
-            ProfileContracts.check(profile, schema, "profile");
-            return profile;
+            raw = new String(bytes.toByteArray(), StandardCharsets.UTF_8);
         }
+        ItineraryJson.preflight(raw, ProfileContracts.MAX_JSON_CHARS);
+        JSONObject profile = new JSONObject(raw);
+        if (Integer.valueOf(2).equals(profile.opt("schema_version")) || Integer.valueOf(3).equals(profile.opt("schema_version"))) {
+            try {
+                JSONObject normalized = validated(profile);
+                if (isComplete(normalized) && !normalized.has("uid")) {
+                    // 旧的已完成资料在首次读取时补 UID，直接给原对象加字段以保留所有旧数据。
+                    String id = java.util.UUID.randomUUID().toString();
+                    profile.put("uid", id);
+                    writeAtomic(profile.toString(2).getBytes(StandardCharsets.UTF_8));
+                    normalized.put("uid", id);
+                }
+                return normalized;
+            } catch (IllegalArgumentException exception) { throw new JSONException(exception.getMessage()); }
+        }
+        ProfileContracts.check(profile, schema, "profile");
+        return profile;
     }
     void save(int age, String location, String preferences) throws IOException, JSONException {
         location = InputValidation.text(location); preferences = InputValidation.text(preferences);
@@ -50,7 +60,16 @@ final class ProfileStore {
         ProfileContracts.check(profile, schema, "profile");
         write(profile);
     }
-    void save(JSONObject profile) throws IOException, JSONException { write(validated(profile)); }
+    void save(JSONObject profile) throws IOException, JSONException {
+        JSONObject normalized = validated(profile); // 先验证，错误输入不会触碰已有资料。
+        synchronized (IO_LOCK) {
+            JSONObject existing = read();
+            // 编辑以磁盘已有 UID 为准；首次完成才生成随机 UID。读取异常不会覆盖旧文件。
+            if (existing != null && existing.has("uid")) normalized.put("uid", InputValidation.uid(existing.get("uid")));
+            else if (isComplete(normalized)) normalized.put("uid", java.util.UUID.randomUUID().toString());
+            writeAtomic(normalized.toString(2).getBytes(StandardCharsets.UTF_8));
+        }
+    }
     static boolean isComplete(JSONObject profile) {
         if (profile == null) return false;
         try { JSONObject checked = validated(profile); return checked.optInt("schema_version") == 2 || checked.optBoolean("onboarding_complete"); }
@@ -63,6 +82,7 @@ final class ProfileStore {
         if (!optional && !Integer.valueOf(2).equals(source.opt("schema_version")))
             throw new IllegalArgumentException("Unsupported profile version");
         JSONObject profile = new JSONObject().put("schema_version", optional ? 3 : 2);
+        if (source.has("uid")) profile.put("uid", InputValidation.uid(source.opt("uid")));
         for (String key : new String[]{"name", "gender", "nationality", "residential_location"})
             profile.put(key, optional ? InputValidation.typedText(source.opt(key), 200, key)
                     : InputValidation.requiredText(source.opt(key), 200, key));
@@ -75,6 +95,8 @@ final class ProfileStore {
                 throw new IllegalArgumentException("Invalid completion state");
             profile.put("onboarding_complete", source.getBoolean("onboarding_complete"));
             profile.put("birth_date", InputValidation.birthDate(source.opt("birth_date")));
+            profile.put("residence_country_code", InputValidation.countryCode(source.opt("residence_country_code")));
+            profile.put("currency_override", InputValidation.currencyCode(source.opt("currency_override")));
             // 旧年龄仅兼容保存，不凭年龄猜出生日期；用户主动不透露时不保留此值。
             if (source.has("legacy_age")) {
                 Object legacy = source.get("legacy_age");

@@ -1,3 +1,5 @@
+> 当前 Android 资料和 UID 的最新传输草案请看 [current/README.md](current/README.md)；本文其余内容描述旧版接口。
+
 # Local profile (version 1)
 
 RegistrationActivity is the launcher. First launch collects a profile before opening HomeActivity; later launches skip registration when a valid profile exists. No username, password, network service, or location permission is required. The existing Settings nickname remains a separate local display preference.

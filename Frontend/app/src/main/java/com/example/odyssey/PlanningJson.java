@@ -24,8 +24,10 @@ final class PlanningJson {
                 .put("questionId", s.step().question.id).put("action", action).put("input", input);
     }
     static JSONObject snapshot(PlanningSession s) throws JSONException {
+        JSONObject profileContext = new JSONObject().put("residence", s.residence).put("preferences", s.preferences)
+                .put("registrationProfile", (s.profileRequest == null || s.profileRequest.isEmpty()) ? JSONObject.NULL : new JSONObject(s.profileRequest));
         JSONObject root = new JSONObject().put("id", s.id).put("revision", s.revision).put("dataMode", "MOCK")
-                .put("profileContext", new JSONObject().put("residence", s.residence).put("preferences", s.preferences))
+                .put("profileContext", profileContext)
                 .put("canGenerate", s.canGenerate()).put("current", s.current).put("feedback", s.feedback)
                 .put("dateDraft", new JSONObject().put("startDate", s.dateDraft.getStartDate())
                         .put("endDate", s.dateDraft.getEndDate()).put("flexible", s.dateDraft.isFlexibleDates()));
@@ -39,7 +41,10 @@ final class PlanningJson {
             JSONObject question = new JSONObject().put("id", q.id).put("title", q.title).put("description", q.description)
                     .put("inputMode", q.inputMode).put("allowText", q.allowText).put("minSelections", q.minSelections)
                     .put("maxSelections", q.maxSelections).put("options", options);
-            steps.put(new JSONObject().put("stepId", PlanningSession.IDS[i]).put("state", step.state).put("question", question)
+            JSONArray messages = new JSONArray();
+            for (PlanningSession.Message message : step.messages)
+                messages.put(new JSONObject().put("role", message.role).put("text", message.text));
+            steps.put(new JSONObject().put("messages", messages).put("chatCandidate", step.chatCandidate).put("stepId", PlanningSession.IDS[i]).put("state", step.state).put("question", question)
                     .put("answer", step.answer).put("draft", step.draft).put("keywords", new JSONArray(step.keywords))
                     .put("selected", new JSONArray(step.selected)));
         }
@@ -50,6 +55,8 @@ final class PlanningJson {
         JSONObject root = new JSONObject(raw);
         JSONObject profile = root.getJSONObject("profileContext");
         PlanningSession s = new PlanningSession(string(root, "id", 100), string(profile, "residence", 200), string(profile, "preferences", 2000));
+        if (!profile.isNull("registrationProfile") && profile.has("registrationProfile"))
+            s.profileRequest = profile.getJSONObject("registrationProfile").toString();
         s.revision = integer(root, "revision", 0, Integer.MAX_VALUE);
         s.current = integer(root, "current", 0, 7);
         if (!string(root, "dataMode", 10).equals("MOCK")) throw new IllegalArgumentException("Not a Mock session");
@@ -61,6 +68,16 @@ final class PlanningJson {
             if (!string(item, "stepId", 30).equals(PlanningSession.IDS[i])) throw new IllegalArgumentException("Slot order changed");
             step.state = choice(item, "state", "LOCKED", "AWAITING_INPUT", "CONFIRMED", "NEEDS_REVIEW");
             step.answer = string(item, "answer", 2000); step.draft = string(item, "draft", 500);
+            step.chatCandidate = item.has("chatCandidate") ? string(item, "chatCandidate", 500) : "";
+            JSONArray messages = item.optJSONArray("messages");
+            if (messages != null) {
+                if (messages.length() > 12) throw new IllegalArgumentException("Too many chat messages");
+                for (int j = 0; j < messages.length(); j++) {
+                    JSONObject message = messages.getJSONObject(j);
+                    step.messages.add(new PlanningSession.Message(choice(message, "role", "USER", "ASSISTANT"),
+                            InputValidation.requiredText(message.opt("text"), 500, "Message")));
+                }
+            }
             readStrings(item.getJSONArray("keywords"), step.keywords, 20, 500);
             readStrings(item.getJSONArray("selected"), step.selected, 8, 150);
             JSONObject value = item.getJSONObject("question"); PlanningSession.Question q = new PlanningSession.Question();
@@ -118,7 +135,8 @@ final class PlanningJson {
         readStrings(result.getJSONArray("keywords"), keywords, 20, 500);
         PlanningSession next = parse(response.getJSONObject("session").toString());
         if (!next.id.equals(current.id) || next.revision != current.revision + 1
-                || !next.residence.equals(current.residence) || !next.preferences.equals(current.preferences))
+                || !next.residence.equals(current.residence) || !next.preferences.equals(current.preferences)
+                || !sameProfile(current.profileRequest, next.profileRequest))
             throw new IllegalArgumentException("Wrong session revision");
         int expected = navigation.equals("NEXT") ? Math.min(7, current.current + 1) : current.current;
         if (next.current != expected || navigation.equals("GENERATE") && (current.current != 7 || !next.canGenerate())
@@ -129,6 +147,30 @@ final class PlanningJson {
         if (navigation.equals("NEXT") ? !PlanningSession.IDS[expected].equals(nextId) : nextId != JSONObject.NULL)
             throw new IllegalArgumentException("Invalid next slot");
         return new Applied(next, navigation);
+    }
+    /** 拒绝响应静默更改已固定的资料快照；不要在这里记录个人信息。 */
+    private static boolean sameProfile(String left, String right) throws JSONException {
+        if (left.isEmpty() || right.isEmpty()) return left.equals(right);
+        return jsonEqual(new JSONObject(left), new JSONObject(right));
+    }
+    private static boolean jsonEqual(Object left, Object right) throws JSONException {
+        if (left instanceof JSONObject && right instanceof JSONObject) {
+            JSONObject a = (JSONObject) left, b = (JSONObject) right;
+            if (a.length() != b.length()) return false;
+            java.util.Iterator<String> keys = a.keys();
+            while (keys.hasNext()) {
+                String key = keys.next();
+                if (!b.has(key) || !jsonEqual(a.get(key), b.get(key))) return false;
+            }
+            return true;
+        }
+        if (left instanceof JSONArray && right instanceof JSONArray) {
+            JSONArray a = (JSONArray) left, b = (JSONArray) right;
+            if (a.length() != b.length()) return false;
+            for (int i = 0; i < a.length(); i++) if (!jsonEqual(a.get(i), b.get(i))) return false;
+            return true;
+        }
+        return left == right || left != null && left.equals(right);
     }
     static String string(JSONObject o, String key, int limit) {
         return InputValidation.typedText(o.opt(key), limit, key);

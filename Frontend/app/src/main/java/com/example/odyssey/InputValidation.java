@@ -46,5 +46,28 @@ final class InputValidation {
         } catch (java.text.ParseException error) { throw new IllegalArgumentException("Choose a valid date of birth"); }
         return date;
     }
+    static String countryCode(Object value) {
+        String code = optionalText(value, 2, "Country code").toUpperCase(java.util.Locale.ROOT);
+        if (!code.isEmpty() && !java.util.Arrays.asList(java.util.Locale.getISOCountries()).contains(code))
+            throw new IllegalArgumentException("Invalid country code");
+        return code;
+    }
+    static String currencyCode(Object value) {
+        String code = optionalText(value, 3, "Currency").toUpperCase(java.util.Locale.ROOT);
+        if (!code.isEmpty()) {
+            try { if (java.util.Currency.getInstance(code).getDefaultFractionDigits() < 0) throw new IllegalArgumentException(); }
+            catch (IllegalArgumentException invalid) { throw new IllegalArgumentException("Invalid currency"); }
+        }
+        return code;
+    }
+    /** UID 使用标准 UUID 字符串，不从姓名、设备号或个人信息生成。 */
+    static String uid(Object value) {
+        String id = requiredText(value, 36, "UID");
+        try {
+            java.util.UUID parsed = java.util.UUID.fromString(id);
+            if (!parsed.toString().equals(id)) throw new IllegalArgumentException();
+        } catch (IllegalArgumentException error) { throw new IllegalArgumentException("Invalid UID"); }
+        return id;
+    }
     private InputValidation() { }
 }

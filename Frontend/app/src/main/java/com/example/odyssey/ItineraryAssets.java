@@ -48,8 +48,10 @@ final class ItineraryAssets {
         }
         photo.put("id", coverId); media.put(photo); return root.toString();
     }
-    static JSONObject schema(Context context) throws JSONException {
-        return new JSONObject(read(context, "itinerary.schema.json"));
+    static JSONObject schema(Context context, String version) throws JSONException {
+        if ("1.0".equals(version)) return new JSONObject(read(context, "itinerary.schema.json"));
+        if ("2.0".equals(version)) return new JSONObject(read(context, "frontend-itinerary-v2.schema.json"));
+        throw new JSONException("Unsupported itinerary version");
     }
     private ItineraryAssets() {}
 }

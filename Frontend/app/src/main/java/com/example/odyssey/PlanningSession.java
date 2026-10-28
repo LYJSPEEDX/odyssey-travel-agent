@@ -18,6 +18,8 @@ final class PlanningSession implements Serializable {
     int current;
     final String residence;
     final String preferences;
+    // 新会话开始时的资料快照；只用于本地 Mock，真实网络接口还未接入。
+    String profileRequest = "";
     final Step[] steps = new Step[8];
     TripPlanState dateDraft = new TripPlanState();
     String feedback = "";
@@ -39,9 +41,15 @@ final class PlanningSession implements Serializable {
         int minSelections = 1, maxSelections = 1;
         final List<Option> options = new ArrayList<>();
     }
+    static final class Message implements Serializable {
+        private static final long serialVersionUID = 1L;
+        final String role, text;
+        Message(String role, String text) { this.role = role; this.text = text; }
+    }
     static final class Step implements Serializable {
         private static final long serialVersionUID = 1L;
-        String state = "LOCKED", answer = "", draft = "";
+        String state = "LOCKED", answer = "", draft = "", chatCandidate = "";
+        final List<Message> messages = new ArrayList<>();
         Question question;
         final List<String> keywords = new ArrayList<>();
         final LinkedHashSet<String> selected = new LinkedHashSet<>();
@@ -93,6 +101,31 @@ final class PlanningSession implements Serializable {
         staleAfter(index);
         revision++;
     }
+    /** 每个步骤保存独立的小会话；限制长度避免草稿和屏幕重建数据无限增长。 */
+    void chat(String message) {
+        String text = InputValidation.requiredText(message, 500, "Message");
+        step().messages.add(new Message("USER", text));
+        step().messages.add(new Message("ASSISTANT", "Demo reply: I noted your message. You can keep chatting or use it as your answer."));
+        while (step().messages.size() > 12) step().messages.remove(0);
+        step().chatCandidate = text; step().draft = ""; revision++;
+    }
+    /** 模拟不确定的回复：保留旧答案，不生成新的选项，也不进入下一步。 */
+    void clarify(String message, String reply) {
+        Step currentStep = step();
+        currentStep.state = "AWAITING_INPUT";
+        currentStep.selected.clear();
+        currentStep.chatCandidate = "";
+        currentStep.draft = "";
+        currentStep.messages.add(new Message("USER", message));
+        currentStep.messages.add(new Message("ASSISTANT", reply));
+        while (currentStep.messages.size() > 12) currentStep.messages.remove(0);
+        revision++;
+    }
+    void recordRefinement(String message) {
+        step().messages.add(new Message("USER", InputValidation.requiredText(message, 500, "Message")));
+        step().messages.add(new Message("ASSISTANT", "Demo reply: I refreshed the suggestions above. Please choose and confirm."));
+        while (step().messages.size() > 12) step().messages.remove(0);
+    }
     void accept(String stepId, String answer, List<String> keywords) {
         int index = index(stepId);
         for (int i = 0; i < index; i++) if (!steps[i].state.equals("CONFIRMED"))
@@ -105,7 +138,7 @@ final class PlanningSession implements Serializable {
         if (!step.answer.equals(normalized)) staleAfter(index);
         step.answer = normalized;
         step.state = "CONFIRMED";
-        step.draft = "";
+        step.draft = ""; step.chatCandidate = "";
         step.keywords.clear(); step.keywords.addAll(keywords);
         feedback = "Understood: " + String.join(" · ", keywords);
         revision++;

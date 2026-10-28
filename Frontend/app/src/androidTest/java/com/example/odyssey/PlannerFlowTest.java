@@ -31,6 +31,7 @@ public class PlannerFlowTest {
             awaitStep(scenario, "4/7"); choose(scenario, "Comfort", "5/7");
             scenario.onActivity(a -> { clickText(a, "Vegetarian"); clickText(a, "Less walking"); clickText(a, "Continue"); });
             awaitStep(scenario, "6/7"); choose(scenario, "Relaxed", "7/7"); choose(scenario, "Local discoveries", "DEMO");
+            scenario.onActivity(a -> clickText(a, "Finish demo now"));
             await(scenario, a -> a.findViewById(R.id.saveTripStatus) instanceof TextView
                     && value(a, R.id.saveTripStatus).equals("Saved to My Trips · On this device"));
             SavedTrip saved = new TripStore(context).list().get(0);
@@ -45,6 +46,36 @@ public class PlannerFlowTest {
             SharedPreferences.Editor restore = library.edit().clear();
             for (java.util.Map.Entry<String, ?> entry : previous.entrySet()) restore.putString(entry.getKey(), (String) entry.getValue());
             assertTrue(restore.commit());
+        }
+    }
+    @Test public void generationDemoSupportsDetailsDisconnectAndRecreation() {
+        try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
+            choose(scenario, "Sydney", "1/7"); choose(scenario, "Kyoto", "2/7");
+            choose(scenario, "Flexible dates", "3/7");
+            scenario.onActivity(a -> { clickText(a, "Solo"); clickText(a, "Continue"); });
+            awaitStep(scenario, "4/7"); choose(scenario, "Comfort", "5/7");
+            scenario.onActivity(a -> { clickText(a, "No restrictions"); clickText(a, "Continue"); });
+            awaitStep(scenario, "6/7"); choose(scenario, "Balanced", "7/7"); choose(scenario, "Local discoveries", "DEMO");
+            scenario.onActivity(a -> {
+                assertNotNull(findText(a.findViewById(R.id.stepContent), "Getting ready…"));
+                clickText(a, "View trip details");
+                assertNotNull(findText(a.findViewById(R.id.stepContent), "Hide trip details"));
+                clickText(a, "Simulate disconnect");
+                assertNotNull(findText(a.findViewById(R.id.stepContent), "Demo connection interrupted"));
+            });
+            scenario.recreate();
+            scenario.onActivity(a -> {
+                assertNotNull(findText(a.findViewById(R.id.stepContent), "Reconnect demo"));
+                assertNotNull(findText(a.findViewById(R.id.stepContent), "Hide trip details"));
+                // 模拟后台已过去 50 秒，重连后必须追上最新阶段，而非重新从头计时。
+                try {
+                    java.lang.reflect.Field start = MainActivity.class.getDeclaredField("demoStartedAt");
+                    start.setAccessible(true); start.setLong(a, SystemClock.elapsedRealtime() - 50_000L);
+                } catch (ReflectiveOperationException error) { throw new AssertionError(error); }
+                clickText(a, "Reconnect demo");
+                assertNotNull(findText(a.findViewById(R.id.stepContent), "Finding places to stay…"));
+            });
+            EditorialLayoutTest.saveScreen(InstrumentationRegistry.getInstrumentation().getTargetContext(), "generation-demo.png");
         }
     }
     @Test public void textRefinementStaysAndRotationCancelsSafely() {
@@ -95,7 +126,9 @@ public class PlannerFlowTest {
             choose(scenario, "Comfort", "5/7");
             scenario.onActivity(a -> { clickText(a, "No restrictions"); clickText(a, "Continue"); }); awaitStep(scenario, "6/7");
             choose(scenario, "Balanced", "7/7");
-            scenario.onActivity(a -> send(a, "Food tour")); awaitStep(scenario, "DEMO");
+            scenario.onActivity(a -> send(a, "Food tour"));
+            await(scenario, a -> findText(a.findViewById(R.id.stepContent), "Use as answer") != null);
+            scenario.onActivity(a -> clickText(a, "Use as answer")); awaitStep(scenario, "DEMO");
             scenario.onActivity(a -> { click(a, R.id.backButton); assertEquals("7/7", value(a, R.id.stepText)); click(a, R.id.nextButton); });
             awaitStep(scenario, "DEMO");
         } finally {

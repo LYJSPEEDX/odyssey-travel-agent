@@ -23,7 +23,7 @@ public class RegistrationActivity extends AppCompatActivity {
     private LaunchWelcome launchWelcome;
     public static final String EXTRA_EDIT_PROFILE = "edit_profile";
     private final ExecutorService storage = Executors.newSingleThreadExecutor();
-    private TextInputEditText birthDate, location, name, nationality, gender;
+    private TextInputEditText birthDate, location, name, nationality, gender, currency;
     // 已有自由文本偏好仅保留在存档中；新界面只通过标签表达偏好。
     private String legacyPreferences = "";
     private boolean restoringInterests;
@@ -43,6 +43,7 @@ public class RegistrationActivity extends AppCompatActivity {
     private TextView stepLabel;
     private int profileStep;
     private Integer legacyAge;
+    private String residenceCountry = "", currencyOverride = "";
     private static final String PRIVATE = "Prefer not to tell";
     private TextView status, locationStatus;
     @Override protected void onCreate(Bundle state) {
@@ -58,7 +59,11 @@ public class RegistrationActivity extends AppCompatActivity {
         regions = new RegionCatalog(getApplicationContext());
         currentLocation = new CurrentLocation(this, new CurrentLocation.Listener() {
             @Override public void status(String text) { setLocationStatus(text); }
-            @Override public void found(String name) { locationCountry = null; needsRegion = false; location.setText(name); setLocationStatus("Location updated."); }
+            @Override public void found(String name, String countryCode) {
+                locationCountry = null; needsRegion = false; location.setText(name);
+                try { residenceCountry = InputValidation.countryCode(countryCode); } catch (IllegalArgumentException ignored) { residenceCountry = ""; }
+                refreshCurrency(); setLocationStatus("Location updated.");
+            }
         }, state != null && state.getBoolean("location_permission_pending"));
         editing = getIntent().getBooleanExtra(EXTRA_EDIT_PROFILE, false);
         if (state != null && state.containsKey("profile_draft")) {
@@ -112,10 +117,14 @@ public class RegistrationActivity extends AppCompatActivity {
         locationBox.setEndIconContentDescription(R.string.profile_use_location);
         locationBox.setEndIconTintList(android.content.res.ColorStateList.valueOf(ui.color(R.color.profile_field_text)));
         locationBox.setEndIconOnClickListener(view -> { if (location.isEnabled()) currentLocation.start(); });
-        privateAction(ui, location, () -> { currentLocation.cancel(); needsRegion = false; locationCountry = null; location.setText(PRIVATE); setLocationStatus(""); });
+        privateAction(ui, location, () -> { currentLocation.cancel(); needsRegion = false; locationCountry = null; location.setText(PRIVATE); residenceCountry = ""; refreshCurrency(); setLocationStatus(""); });
         locationStatus = ui.text("", 13, false);
         locationStatus.setVisibility(android.view.View.GONE);
         locationStatus.setAccessibilityLiveRegion(android.view.View.ACCESSIBILITY_LIVE_REGION_POLITE);
+        currency = field(ui, R.id.profileCurrency, R.string.profile_currency, InputType.TYPE_CLASS_TEXT, 100);
+        currency.setHint("Choose a currency (optional)");
+        selectionField(currency, this::chooseCurrency);
+        refreshCurrency();
         ui.text("Travel interests · tap to explore", 16, true);
         tags = new com.google.android.material.chip.ChipGroup(this);
         tags.setSingleSelection(false);
@@ -237,6 +246,22 @@ public class RegistrationActivity extends AppCompatActivity {
             }
         }
     }
+    /** 自动币种仅是建议；手动指定后修改居住地不会覆盖用户选择。 */
+    private void refreshCurrency() {
+        if (currency == null) return;
+        String suggested = CurrencyPreference.fromCountry(residenceCountry);
+        currency.setText(currencyOverride.isEmpty() ? (suggested.isEmpty() ? "USD · Default" : suggested + " · Suggested") : currencyOverride + " · Selected");
+    }
+    private void chooseCurrency() {
+        java.util.List<String> codes = new java.util.ArrayList<>();
+        for (java.util.Currency item : java.util.Currency.getAvailableCurrencies())
+            if (item.getDefaultFractionDigits() >= 0) codes.add(item.getCurrencyCode());
+        java.util.Collections.sort(codes); codes.add(0, "Automatic from residence");
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(this, R.style.ThemeOverlay_Odyssey_ProfilePicker)
+                .setTitle("Display currency").setItems(codes.toArray(new String[0]), (dialog, which) -> {
+                    currencyOverride = which == 0 ? "" : codes.get(which); refreshCurrency();
+                }).setNegativeButton("Cancel", null).show();
+    }
     private void chooseCountry(boolean forNationality) {
         java.util.List<RegionCatalog.Country> countries = regions.countries();
         String[] names = new String[countries.size()];
@@ -247,14 +272,14 @@ public class RegistrationActivity extends AppCompatActivity {
                     RegionCatalog.Country selected = countries.get(which);
                     if (forNationality) nationality.setText(selected.name);
                     else {
-                        currentLocation.cancel(); locationCountry = selected; location.setText(selected.name);
+                        currentLocation.cancel(); locationCountry = selected; residenceCountry = selected.code; location.setText(selected.name); refreshCurrency();
                         needsRegion = !regions.regions(selected.code).isEmpty();
                         if (needsRegion) chooseRegion();
                         else setLocationStatus("No regional subdivisions are listed for this country.");
                     }
                 }).setNeutralButton(PRIVATE, (dialog, which) -> {
                     if (forNationality) nationality.setText(PRIVATE);
-                    else { currentLocation.cancel(); locationCountry = null; needsRegion = false; location.setText(PRIVATE); setLocationStatus(""); }
+                    else { currentLocation.cancel(); locationCountry = null; needsRegion = false; residenceCountry = ""; location.setText(PRIVATE); refreshCurrency(); setLocationStatus(""); }
                 }).setNegativeButton("Cancel", null).show();
     }
     private void chooseRegion() {
@@ -303,6 +328,9 @@ public class RegistrationActivity extends AppCompatActivity {
         legacyAge = profile.opt("age") instanceof Integer ? Integer.valueOf(profile.optInt("age")) :
                 (profile.opt("legacy_age") instanceof Integer ? Integer.valueOf(profile.optInt("legacy_age")) : null);
         location.setText(profile.optString("residential_location", ""));
+        residenceCountry = profile.optString("residence_country_code", "");
+        if (residenceCountry.isEmpty()) residenceCountry = CurrencyPreference.countryFromLocation(value(location));
+        currencyOverride = profile.optString("currency_override", ""); refreshCurrency();
         String countryCode = profile.optString("location_country_code", "");
         needsRegion = profile.optBoolean("location_needs_region", false);
         for (RegionCatalog.Country country : regions.countries())
@@ -367,6 +395,8 @@ public class RegistrationActivity extends AppCompatActivity {
                     .put("name", InputValidation.optionalText(disclosed(name), 200, "Name"))
                     .put("gender", disclosed(gender)).put("birth_date", InputValidation.birthDate(disclosed(birthDate)))
                     .put("nationality", InputValidation.optionalText(disclosed(nationality), 200, "Nationality"))
+                    .put("residence_country_code", InputValidation.countryCode(residenceCountry))
+                    .put("currency_override", InputValidation.currencyCode(currencyOverride))
                     .put("residential_location", InputValidation.optionalText(disclosed(location), 200, "Residential location"))
                     .put("travel_preferences", InputValidation.optionalText(legacyPreferences, 2000, "Preferences"))
                     .put("preference_tags", selected);
@@ -406,6 +436,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 state.putString("profile_draft", new org.json.JSONObject().put("name", value(name))
                         .put("nationality", value(nationality)).put("birth_date", value(birthDate)).put("legacy_age", legacyAge)
                         .put("gender", value(gender)).put("residential_location", value(location))
+                        .put("residence_country_code", residenceCountry).put("currency_override", currencyOverride)
                         .put("location_country_code", locationCountry == null ? "" : locationCountry.code)
                         .put("location_needs_region", needsRegion)
                         .put("travel_preferences", legacyPreferences).put("preference_tags", selected).toString());

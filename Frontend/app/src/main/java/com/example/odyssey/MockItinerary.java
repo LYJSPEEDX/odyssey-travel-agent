@@ -81,14 +81,18 @@ final class MockItinerary {
                     "walkingDistanceMeters", null, "events", array(event), "continuingEventIds", array()));
         }
         // 空费用表的零小计表示尚未计价；UI 结合 activeCostItemIds 显示 Estimate pending。
-        JSONObject zero = object("currency", "AUD", "lowMinor", 0, "expectedMinor", 0, "highMinor", 0);
+        String displayCurrency = "USD";
+        try { displayCurrency = CurrencyPreference.preferred(new ProfileStore(context.getApplicationContext()).load()); }
+        catch (Exception ignored) { /* 资料无法读取时使用 USD，不根据国籍猜测。 */ }
+        int fractionDigits = java.util.Currency.getInstance(displayCurrency).getDefaultFractionDigits();
+        JSONObject zero = object("currency", displayCurrency, "lowMinor", 0, "expectedMinor", 0, "highMinor", 0);
         SimpleDateFormat timestamp = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
         timestamp.setTimeZone(TimeZone.getTimeZone("UTC"));
         JSONArray assumptions = array("The traveler list has one placeholder; actual party size and ages are not collected yet.",
                 "ZZ and Etc/UTC are draft placeholders, not resolved country or destination local time.",
-                "AUD is a display default. No prices or exchange rates have been fetched.");
+                displayCurrency + " is the preferred display currency. No prices or exchange rates have been fetched.");
         if (state.isFlexibleDates()) assumptions.put("Proposed dates: three days starting one week from today; not a booking.");
-        JSONObject result = object("schemaVersion", "1.0", "id", id, "revision", 1, "language", "en", "dataMode", "MOCK",
+        JSONObject result = object("schemaVersion", "2.0", "contractId", "odyssey.frontend.itinerary", "id", id, "revision", 1, "language", "en", "dataMode", "MOCK",
                 "status", "PARTIAL", "generatedAt", timestamp.format(new Date()),
                 "requestSnapshot", object("originPlaceId", "origin", "destinationPlaceIds", array("destination"),
                         "dateMode", state.isFlexibleDates() ? "FLEXIBLE" : "FIXED",
@@ -110,7 +114,7 @@ final class MockItinerary {
                                 "status", "PENDING", "recommendedOptionId", null, "planningOptionId", null,
                                 "userSelectedOptionId", null, "options", array())),
                 "stayGroups", array(), "days", days,
-                "money", object("displayCurrency", "AUD", "currencies", array(object("code", "AUD", "minorUnitDigits", 2)),
+                "money", object("displayCurrency", displayCurrency, "currencies", array(object("code", displayCurrency, "minorUnitDigits", fractionDigits)),
                         "exchangeRates", array(), "exchangeAdvice", array()), "entryRequirements", array(),
                 "budget", object("scope", "ENTIRE_PARTY_WHOLE_TRIP", "lineItems", array(), "tripCostItemIds", array(),
                         "activeCostItemIds", array(), "completeness", "PARTIAL", "subtotal", zero, "contingency", zero,
