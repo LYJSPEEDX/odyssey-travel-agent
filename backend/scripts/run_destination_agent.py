@@ -16,7 +16,7 @@ from app.agents.destination import (
 from app.agents.errors import AgentOutputError
 from app.agents.llm import LlmConfigError, build_chat_model
 from app.config import get_settings
-from app.tools.mcp import McpClient, McpError
+from app.tools.mcp import McpError
 from app.tools.models import ToolError
 
 
@@ -63,9 +63,6 @@ async def main() -> int:
 
     settings = get_settings()
     api_key = (settings.google_maps_api_key or "").strip()
-    if not api_key:
-        print("Missing GOOGLE_MAPS_API_KEY. Set it in backend/.env.")
-        return 1
 
     try:
         llm = build_chat_model(settings)
@@ -76,25 +73,23 @@ async def main() -> int:
     print("Starting destination research...")
 
     try:
-        async with McpClient(
-                settings.google_maps_mcp_url,
-                headers={"X-Goog-Api-Key": api_key},
-        ) as client:
-            result = await run_destination_agent(
-                llm,
-                client,
-                task,
-                max_tool_turns=args.max_tool_turns,
-                on_event=print_event,
-            )
+        result = await run_destination_agent(
+            llm,
+            task,
+            settings=settings,
+            max_tool_turns=args.max_tool_turns,
+            on_event=print_event,
+        )
     except (
-            NoPlacesError,
-            AgentOutputError,
-            McpError,
-            ToolError,
-            httpx.HTTPError,
+        NoPlacesError,
+        AgentOutputError,
+        McpError,
+        ToolError,
+        httpx.HTTPError,
     ) as exc:
-        detail = str(exc).replace(api_key, "[REDACTED]")
+        detail = str(exc)
+        if api_key:
+            detail = detail.replace(api_key, "[REDACTED]")
         print(f"Research failed ({type(exc).__name__}): {detail}")
         return 1
 

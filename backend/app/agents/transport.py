@@ -10,9 +10,10 @@ from pydantic import BaseModel, Field
 
 from app.agents.react import AgentTool, EventSink, ToolOutput, untrusted
 from app.agents.runner import parse_json_object, run_agent
+from app.config import Settings, get_settings
 from app.tools.kiwi import FlightQuery, search_flights
 from app.tools.mcp import McpClient
-from app.tools.models import FlightOffer, FlightSector
+from app.tools.models import FlightOffer, FlightSector, ToolError
 from app.tools.money import minor_unit_digits
 
 SHOW_CHEAPEST = 4
@@ -216,27 +217,34 @@ def _parse_final(text: str, evidence: dict) -> tuple[list[str], str]:
 
 async def run_transport_agent(
     llm: BaseChatModel,
-    client: McpClient,
     task: TransportTask,
     *,
+    settings: Settings | None = None,
     max_searches: int = 4,
     on_event: EventSink | None = None,
 ) -> TransportResult:
-    run = await run_agent(
-        llm,
-        [make_search_tool(client, task)],
-        agent_name="Transport",
-        system_prompt=system_prompt(task, max_searches),
-        request="Find the best flight options for this trip.",
-        max_searches=max_searches,
-        parse_final=_parse_final,
-        no_data_marker="No flights found",
-        no_data_error=lambda: NoFlightsError(
-            f"No flights found from {task.origin} to {task.destination} on {task.depart_date}."
-        ),
-        final_event=lambda parsed: {"selected": parsed[0]},
-        on_event=on_event,
-    )
+    """Own the flight MCP connection and run bounded transport research."""
+    settings = settings if settings is not None else get_settings()
+    url = settings.kiwi_mcp_url.strip()
+    if not url:
+        raise ToolError("KIWI_MCP_URL is required.")
+
+    async with McpClient(url) as client:
+        run = await run_agent(
+            llm,
+            [make_search_tool(client, task)],
+            agent_name="Transport",
+            system_prompt=system_prompt(task, max_searches),
+            request="Find the best flight options for this trip.",
+            max_searches=max_searches,
+            parse_final=_parse_final,
+            no_data_marker="No flights found",
+            no_data_error=lambda: NoFlightsError(
+                f"No flights found from {task.origin} to {task.destination} on {task.depart_date}."
+            ),
+            final_event=lambda parsed: {"selected": parsed[0]},
+            on_event=on_event,
+        )
     labels, rationale = run.parsed
     return TransportResult(
         candidates=[run.evidence[label] for label in labels],

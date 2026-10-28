@@ -19,7 +19,6 @@ from app.agents.errors import AgentOutputError
 from app.agents.fake import ScriptedChatModel
 from app.agents.llm import LlmConfigError, build_chat_model
 from app.agents.stay import (
-    TRIVAGO_URL,
     NoStaysError,
     StayTask,
     format_stay,
@@ -27,11 +26,12 @@ from app.agents.stay import (
     scripted_reply_for,
 )
 from app.config import get_settings
-from app.tools.mcp import McpClient, McpError
+from app.tools.mcp import McpError
 from app.tools.models import ToolError
 
 
 def print_event(event: dict) -> None:
+    """Print stay model decisions, tool observations, and repair events."""
     kind = event["type"]
     if kind == "model":
         if event["content"].strip():
@@ -45,6 +45,7 @@ def print_event(event: dict) -> None:
 
 
 async def main() -> int:
+    """Parse CLI input and invoke the self-contained stay agent."""
     p = argparse.ArgumentParser()
     p.add_argument("--to", dest="destination", required=True)
     p.add_argument("--in", dest="check_in", type=date.fromisoformat, required=True)
@@ -63,19 +64,19 @@ async def main() -> int:
         children_ages=a.child_age, country=a.country, currency=a.currency, budget=a.budget,
         constraints=a.constraint,
     )  # fmt: skip
+    settings = get_settings()
     try:
         llm = (
             ScriptedChatModel(script=scripted_reply_for(task))
             if a.scripted
-            else build_chat_model(get_settings())
+            else build_chat_model(settings)
         )
     except LlmConfigError as exc:
         print(f"FAIL config: {exc}")
         return 1
 
     try:
-        async with McpClient(TRIVAGO_URL) as client:
-            result = await run_stay_agent(llm, client, task, on_event=print_event)
+        result = await run_stay_agent(llm, task, settings=settings, on_event=print_event)
     except (NoStaysError, AgentOutputError, McpError, ToolError) as exc:
         print(f"\nFAIL {type(exc).__name__}: {exc}")
         return 1

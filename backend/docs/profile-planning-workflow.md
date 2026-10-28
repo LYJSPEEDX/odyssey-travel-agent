@@ -118,8 +118,8 @@ There is no profile ID and no authenticated account. The response does not creat
 ## Mapping into POST /trips
 
 Use the user-confirmed `departure.location` as `departure` and the selected
-`destinations[i].location` as `destination`. Add `flexibleDates`, ISO `startDate`/
-`endDate`, `companion`, `budget`, `constraints`, and submitted step `notes` as described
+`destinations[i].location` as `destination`. Add required ISO `startDate`/`endDate`,
+`companion`, `budget`, `constraints`, and submitted step `notes` as described
 in the backend README. Do not send recommendation reasons or the profile envelope to
 POST `/trips`.
 

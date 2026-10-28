@@ -5,8 +5,10 @@ from pydantic import BaseModel, Field
 
 from app.agents.react import AgentTool, EventSink, ToolOutput, untrusted
 from app.agents.runner import parse_json_object, run_agent
+from app.config import Settings, get_settings
 from app.tools.google_maps import search_places as search_google_places
 from app.tools.mcp import McpClient
+from app.tools.models import ToolError
 from app.tools.place_models import PlaceInfo
 
 
@@ -175,26 +177,37 @@ def parse_final(text: str, evidence: dict) -> tuple[list[str], str]:
 
 async def run_destination_agent(
     llm: BaseChatModel,
-    client: McpClient,
     task: DestinationTask,
     *,
+    settings: Settings | None = None,
     max_tool_turns: int = 4,
     on_event: EventSink | None = None,
 ) -> DestinationResult:
-    """Research destination candidates using the shared bounded ReAct loop."""
-    run = await run_agent(
-        llm,
-        [make_search_tool(client)],
-        agent_name="Destination",
-        system_prompt=system_prompt(task, max_tool_turns),
-        request="Find suitable candidate places for this trip.",
-        max_searches=max_tool_turns,
-        parse_final=parse_final,
-        no_data_marker="No places found",
-        no_data_error=lambda: NoPlacesError(f"No candidate places found for {task.destination}."),
-        final_event=lambda parsed: {"selected": parsed[0]},
-        on_event=on_event,
-    )
+    """Own the Google MCP connection and research destination candidates."""
+    settings = settings if settings is not None else get_settings()
+    api_key = (settings.google_maps_api_key or "").strip()
+    if not api_key:
+        raise ToolError("GOOGLE_MAPS_API_KEY is required.")
+    url = settings.google_maps_mcp_url.strip()
+    if not url:
+        raise ToolError("GOOGLE_MAPS_MCP_URL is required.")
+
+    async with McpClient(url, headers={"X-Goog-Api-Key": api_key}) as client:
+        run = await run_agent(
+            llm,
+            [make_search_tool(client)],
+            agent_name="Destination",
+            system_prompt=system_prompt(task, max_tool_turns),
+            request="Find suitable candidate places for this trip.",
+            max_searches=max_tool_turns,
+            parse_final=parse_final,
+            no_data_marker="No places found",
+            no_data_error=lambda: NoPlacesError(
+                f"No candidate places found for {task.destination}."
+            ),
+            final_event=lambda parsed: {"selected": parsed[0]},
+            on_event=on_event,
+        )
 
     labels, rationale = run.parsed
 

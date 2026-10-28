@@ -22,7 +22,6 @@ from app.trips import database
 PLAN = {
     "departure": "Sydney",
     "destination": "Kyoto",
-    "flexibleDates": False,
     "startDate": "2026-11-01",
     "endDate": "2026-11-03",
     "companion": "Solo",
@@ -82,9 +81,13 @@ class ValidationTests(unittest.TestCase):
     def test_round_trip(self):
         self.assertEqual(TripRequest(**PLAN).model_dump(mode="json"), NORMALIZED_PLAN)
 
-    def test_flexible_dates(self):
-        plan = {**PLAN, "flexibleDates": True, "startDate": None, "endDate": None}
-        self.assertTrue(TripRequest(**plan).flexibleDates)
+    def test_dates_required(self):
+        """Reject omitted or null dates for fixed-date trip requests."""
+        for field in ("startDate", "endDate"):
+            with self.subTest(field=field, value="omitted"), self.assertRaises(ValidationError):
+                TripRequest(**{key: value for key, value in PLAN.items() if key != field})
+            with self.subTest(field=field, value=None), self.assertRaises(ValidationError):
+                TripRequest(**{**PLAN, field: None})
 
     def test_invalid_plans(self):
         for changes in [
