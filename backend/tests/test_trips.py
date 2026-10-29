@@ -204,6 +204,23 @@ class DatabaseApiTests(unittest.IsolatedAsyncioTestCase):
         status, _, _ = await http(self.app, "GET", f"{path}/runs/{uuid.uuid4()}")
         self.assertEqual(status, 404)
 
+    async def test_legacy_requests_are_readable_without_accepting_new_flexible_trips(self):
+        trip = await self.create()
+        path = f"/trips/{trip['id']}"
+        for flexible in (False, True):
+            old = {**PLAN, "flexibleDates": flexible}
+            if flexible:
+                old.update(startDate=None, endDate=None)
+            async with self.factory() as session:
+                stored = await session.get(Trip, uuid.UUID(trip["id"]))
+                stored.request = old
+                await session.commit()
+            status, _, result = await http(self.app, "GET", path)
+            self.assertEqual(status, 200)
+            self.assertEqual(result["request"]["flexibleDates"], flexible)
+            status, _, _ = await http(self.app, "POST", "/trips", old)
+            self.assertEqual(status, 422)
+
     async def test_ready_itinerary_is_unwrapped(self):
         trip = await self.create()
         # This fixture checks transport shape only, not itinerary schema validation.

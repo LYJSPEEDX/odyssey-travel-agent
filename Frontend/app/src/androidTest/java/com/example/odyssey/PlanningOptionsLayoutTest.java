@@ -69,7 +69,7 @@ public class PlanningOptionsLayoutTest {
             EditorialLayoutTest.saveScreen(context, "compact-destination.png");
             scenario.onActivity(a -> PlannerFlowTest.clickText(a, "Confirm destination"));
             PlannerFlowTest.awaitStep(scenario, "2/7");
-            PlannerFlowTest.choose(scenario, "Flexible dates", "3/7");
+            PlannerFlowTest.chooseDates(scenario);
             scenario.onActivity(a -> {
                 PlannerFlowTest.clickText(a, "Friends"); PlannerFlowTest.clickText(a, "Family");
                 View title = PlannerFlowTest.findText(a.findViewById(R.id.stepContent), "Friends");

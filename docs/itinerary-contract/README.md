@@ -189,3 +189,9 @@ python3 docs/itinerary-contract/validate_examples.py
 接口方案已经固定了可变列表和类型分支，下一步评审应关注卡片内容是否足够，再决定是否实现 Android 模型与渲染器；不需要为每种旅行重新设计一套返回结构。
 
 参考规范：[JSON Schema 类型分支](https://json-schema.org/understanding-json-schema/reference/combining)、[可变长度列表](https://json-schema.org/understanding-json-schema/reference/array)。图片接入另需遵守 [Google Places Photos](https://developers.google.com/maps/documentation/places/web-service/place-photos) 和各图片提供方的现行规则。
+
+## Live preview compatibility
+
+`POST /trips/preview` wraps the v1 document in `itinerary` alongside raw `research` and `schedule`. Android extracts and validates that document before saving. `Flight.isSelfTransfer` and `StayOption.guestCapacity` now accept `null` for provider-unknown facts; existing boolean/integer values remain valid. Unknown capacity is displayed as “to confirm.” A null self-transfer flag is not evidence that a connection is protected. Room type and other unavailable details remain explicitly unconfirmed.
+
+See [Android live demo](../android-live-demo.md) for setup and limitations.

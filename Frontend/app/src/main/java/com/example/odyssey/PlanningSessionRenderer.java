@@ -31,7 +31,8 @@ final class PlanningSessionRenderer {
             content.addView(new TripCalendarView(content.getContext(), session.dateDraft, month, actions::date, actions::redraw));
             if (session.dateDraft.getStartDate() != 0) paragraph("Start: " + TripDates.format(session.dateDraft.getStartDate())
                     + (session.dateDraft.getEndDate() == 0 ? " · Choose your return date" : " → " + TripDates.format(session.dateDraft.getEndDate())));
-            if (session.dateDraft.isStepComplete(2) && !session.dateDraft.isFlexibleDates()) button("Confirm dates", actions::confirm, !loading);
+            if (session.dateDraft.isStepComplete(2) && !session.dateDraft.isFlexibleDates()
+                    && session.dateDraft.getEndDate() > session.dateDraft.getStartDate()) button("Confirm dates", actions::confirm, !loading);
         }
         for (PlanningSession.Option option : step.question.options) {
             MaterialCardView card = new MaterialCardView(content.getContext());

@@ -8,6 +8,6 @@
     <string name="journal_toolbar">Trip journal</string>
     <string name="itinerary_day_tab">Day %1$d</string>
     <string name="itinerary_duration_limit">Choose a trip of 60 days or less for this version.</string>
-    <string name="itinerary_draft_notice">Open your saved itinerary to see every day. This offline draft preserves your choices; routes, stays and prices still need verification.</string>
+    <string name="itinerary_draft_notice">Open your saved itinerary to see every day. This itinerary preserves your choices; routes, stays and prices still need verification.</string>
     <item name="openItinerary" type="id" />
 </resources>

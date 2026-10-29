@@ -311,3 +311,11 @@ invalid generation input, 503 for missing server configuration, 409 for no usabl
 plan, 502 for known model/data-source failures, 504 for the overall timeout,
 and 500 for unexpected failures. Request-shape errors use FastAPI's standard 422
 validation response. This endpoint has no runtime mock or fallback data.
+
+## Android live preview demo
+
+`POST /trips/preview` runs live research, scheduling, and v1 itinerary assembly without persistence. Its response contains `research`, `schedule`, and `itinerary`. The Android debug app now calls this endpoint after the guided questionnaire, validates `itinerary`, and saves it on the device. The request requires fixed dates, explicit `adults` and `currency`, and at least one overnight stay.
+
+The assembler includes selected flight legs and the selected hotel. Round-trip airfare is counted once; room capacity and self-transfer protection are nullable when unknown. Activities allow an estimated two hours after arrival and three hours before return departure. These buffers do not verify actual transfer times or opening hours.
+
+See [Android live demo](../docs/android-live-demo.md) for emulator setup, retry behavior, and limitations. The separate `POST /trips` route continues to store a pending trip without invoking generation.

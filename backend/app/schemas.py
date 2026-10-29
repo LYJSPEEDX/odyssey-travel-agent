@@ -68,8 +68,25 @@ class TripSummary(BaseModel):
     updated_at: datetime
 
 
+class StoredTripRequest(BaseModel):
+    """Read-only compatibility for trips saved before fixed dates became mandatory."""
+
+    model_config = ConfigDict(extra="forbid")
+    departure: str
+    destination: str
+    flexibleDates: bool
+    startDate: date | None = None
+    endDate: date | None = None
+    companion: str
+    budget: str
+    adults: int | None = None
+    currency: str | None = None
+    constraints: list[str] = Field(default_factory=list)
+    notes: dict[str, str] = Field(default_factory=dict)
+
+
 class TripResponse(TripSummary):
-    request: TripRequest
+    request: TripRequest | StoredTripRequest
     itinerary: dict | None
     latest_run: RunResponse | None
 

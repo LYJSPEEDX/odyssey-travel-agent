@@ -1136,7 +1136,14 @@
           ]
         },
         "isSelfTransfer": {
-          "type": "boolean"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       }
     },
@@ -1727,8 +1734,15 @@
           "minimum": 1
         },
         "guestCapacity": {
-          "type": "integer",
-          "minimum": 1
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "amenities": {
           "type": "array",

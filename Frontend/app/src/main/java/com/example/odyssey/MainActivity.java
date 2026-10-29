@@ -20,15 +20,11 @@ import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.core.widget.NestedScrollView;
 import org.json.JSONObject;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * 七轮规划的协调者。PlanningSession 保存固定槽位，Renderer 只画控件；
  * 所有确认/文字提交均先序列化为请求，再由本机 Mock 回包，统一校验后才更新页面。
- * 出发地是 START 前置步骤，不占用七段进度；正式生成仍使用经过验证的旧行程适配器。
+ * 出发地是 START 前置步骤，不占用七段进度；最终生成调用真实后端并验证 v1 行程。
  */
 public class MainActivity extends AppCompatActivity implements PlannerFormRenderer.Actions, PlanningSessionRenderer.Actions {
     private PlanningSession session;
@@ -42,7 +38,11 @@ public class MainActivity extends AppCompatActivity implements PlannerFormRender
     private OnBackPressedCallback backCallback;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final MockPlanningService service = new MockPlanningService();
-    private final ExecutorService saveExecutor = Executors.newSingleThreadExecutor();
+    private androidx.appcompat.app.AlertDialog generationDialog;
+    private TripGenerationModel generationModel;
+    private String generationError = "";
+    private int adults = 0;
+    private String currency = "AUD";
     private String generationId;
     private int saveStatus;
     private boolean loading;
@@ -52,12 +52,9 @@ public class MainActivity extends AppCompatActivity implements PlannerFormRender
     private String error = "";
     private JSONObject retryInput;
     private String retryAction;
-    private final Runnable finishMock = () -> {
-        if (state.isGenerating()) { state.finishGeneration(); render(true); saveTrip(); }
-    };
-
     @Override protected void onCreate(Bundle saved) {
         super.onCreate(saved);
+        generationModel = new androidx.lifecycle.ViewModelProvider(this).get(TripGenerationModel.class);
         // Bundle 只负责旋转/系统重建时的临时恢复；正式行程仍由 TripStore 保存在本机。
         // session 是八槽位问答；state 仅在生成阶段充当旧行程模型的适配器。
         if (saved != null) {
@@ -67,6 +64,8 @@ public class MainActivity extends AppCompatActivity implements PlannerFormRender
             calendarMonth = TripDates.calendar(saved.getInt("calendar_month", TripDates.key(calendarMonth)));
             generationId = saved.getString("generation_id"); saveStatus = saved.getInt("trip_save_status", 0);
             error = saved.getString("planning_error", "");
+            adults = saved.getInt("adults", 0); currency = saved.getString("currency", "AUD");
+            generationError = saved.getString("generation_error", "");
         }
         if (session == null) {
             String residence = "Sydney", preferences = "";
@@ -107,7 +106,17 @@ public class MainActivity extends AppCompatActivity implements PlannerFormRender
             view.setPadding(bars.left, bars.top, bars.right, bars.bottom); return insets;
         });
         render(false);
-        if (state.isGenerated() && saveStatus != 1) saveTrip();
+        generationModel.result().observe(this, result -> {
+            if (result == null || (!state.isGenerating() && !state.isGenerated())) return;
+            if (result.trip != null) {
+                generationId = result.trip.id; generationError = "";
+                state.finishGeneration(); saveStatus = result.saved ? 1 : 2;
+            } else generationError = result.error;
+            render(false);
+        });
+        if (state.isGenerating() && !generationModel.running() && generationModel.result().getValue() == null) {
+            generationError = "Generation was interrupted. Tap Retry generation to continue."; render(false);
+        }
     }
     /** 每次重画都读取答案/草稿，控件实例本身不承担业务状态。 */
     private void render(boolean top) {
@@ -115,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements PlannerFormRender
         text(R.id.planHeadline, generation ? getString(state.isGenerating() ? R.string.generation_loading_title : R.string.generation_done_title) : session.step().question.title);
         text(R.id.assistantTitle, generation ? getString(state.isGenerating() ? R.string.generation_loading_prompt : R.string.generation_done_prompt) : "Let’s shape your trip");
         text(R.id.assistantMessage, generation ? getString(state.isGenerating() ? R.string.generation_loading_help : R.string.generation_done_help) : session.step().question.description);
-        text(R.id.stepText, generation ? "DEMO" : session.progress());
+        text(R.id.stepText, generation ? "AI PREVIEW" : session.progress());
         int[] ids = {R.id.progressStep1, R.id.progressStep2, R.id.progressStep3, R.id.progressStep4, R.id.progressStep5, R.id.progressStep6, R.id.progressStep7};
         // current=0 是 START，没有亮段；current=1 对应第一轮目的地，亮第一段。
         for (int i = 0; i < ids.length; i++) findViewById(ids[i]).setBackgroundColor(ContextCompat.getColor(this,
@@ -133,13 +142,14 @@ public class MainActivity extends AppCompatActivity implements PlannerFormRender
                     session.answer(1), findViewById(R.id.tripBoardPhotoCredit));
         } else SafeImageLoader.SHARED.cancel(photo);
         text(R.id.tripBoardDestination, session.answer(1).isEmpty() ? "Depart from " + session.answer(0) : session.answer(0) + " → " + session.answer(1));
-        text(R.id.tripBoardStatus, "Local demo · " + (session.answer(2).isEmpty() ? "Dates to choose" : session.answer(2)));
+        text(R.id.tripBoardStatus, "Trip brief · " + (session.answer(2).isEmpty() ? "Dates to choose" : session.answer(2)));
         View next = findViewById(R.id.nextButton);
         next.setVisibility(generation ? View.INVISIBLE : View.VISIBLE);
         // NEEDS_REVIEW 不允许用浏览箭头静默确认；用户必须点击当前选项或明确确认按钮。
         next.setEnabled(!loading && !session.step().state.equals("NEEDS_REVIEW") && (session.step().state.equals("CONFIRMED") || !session.step().selected.isEmpty()
-                || session.current == 2 && session.dateDraft.isStepComplete(2) || !session.step().draft.isEmpty()));
-        next.setContentDescription(session.current == 7 ? "Generate demo trip" : "Next step");
+                || session.current == 2 && session.dateDraft.isStepComplete(2)
+                && session.dateDraft.getEndDate() > session.dateDraft.getStartDate() || !session.step().draft.isEmpty()));
+        next.setContentDescription(session.current == 7 ? "Generate AI trip" : "Next step");
         findViewById(R.id.backButton).setEnabled(true);
         backCallback.setEnabled(session.current > 0 || generation);
         if (generation) generationForm.render(); else form.render(session, calendarMonth, loading);
@@ -151,18 +161,21 @@ public class MainActivity extends AppCompatActivity implements PlannerFormRender
         feedback.setVisibility(feedback.length() == 0 ? View.GONE : View.VISIBLE);
         feedback.setOnClickListener(error.isEmpty() ? null : view -> retry());
         if (top) scroll.post(() -> scroll.smoothScrollTo(0, 0));
-        if (state.isGenerating()) scheduleMock();
+
     }
     @Override public void option(String id) {
         if (loading) return;
         saveDraft(); session.toggle(id); error = "";
-        if (session.current == 2) session.dateDraft.useFlexibleDates();
         // 城市卡片只选择；用户点明确的确认按钮（或前进箭头）才提交，允许先比较建议。
         // 同行人/限制为多选，只有 Continue 才确认；预算与追问仍可点击接受。
         if (session.current < 2 || session.current == 3 || session.current == 5) render(false); else confirm();
     }
     @Override public void confirm() {
         if (loading) return;
+        if (session.current == 2 && (session.dateDraft.isFlexibleDates()
+                || session.dateDraft.getEndDate() <= session.dateDraft.getStartDate())) {
+            error = "Choose departure and return dates with at least one overnight stay."; render(false); return;
+        }
         saveDraft();
         try {
             // 最后一轮也接受文字；从生成页返回后再生成时，明确重交已确认文字而非空选项。
@@ -199,10 +212,11 @@ public class MainActivity extends AppCompatActivity implements PlannerFormRender
                     session = applied.session;
                     loading = false; pending = null; retryInput = null; retryAction = null;
                     if (applied.navigation.equals("GENERATE")) {
-                        // 全八槽位均确认后才能转换旧模型；生成 ID 只在新一轮生成时创建。
-                        // 后续保存失败重试/旋转恢复继续复用此 ID，避免行程库新增重复记录。
+                        // Confirm all answers before the live request. The backend owns the result ID.
                         state = session.toPlan(); generationForm = new PlannerFormRenderer(findViewById(R.id.stepContent), state, calendarMonth, this);
-                        generationId = UUID.randomUUID().toString(); saveStatus = 0;
+                        generationId = null; saveStatus = 0; generationError = "";
+                        generationModel.cancel();
+                        requestGenerationDetails();
                     }
                     render(!action.equals("REFINE"));
                 } catch (Exception exception) { loading = false; pending = null; fail(exception); }
@@ -223,7 +237,7 @@ public class MainActivity extends AppCompatActivity implements PlannerFormRender
     }
     @Override public void back() {
         saveDraft(); cancelOperation(); hideKeyboard();
-        if (state.isGenerating() || state.isGenerated()) { handler.removeCallbacks(finishMock); state.goBack(); session.current = 7; }
+        if (state.isGenerating() || state.isGenerated()) { generationModel.cancel(); generationError = ""; state.goBack(); session.current = 7; }
         else if (session.current > 0) session.browse(-1);
         else { finish(); return; }
         error = "";
@@ -257,25 +271,48 @@ public class MainActivity extends AppCompatActivity implements PlannerFormRender
     }
     private void hideKeyboard() { input.clearFocus(); new WindowInsetsControllerCompat(getWindow(), input).hide(WindowInsetsCompat.Type.ime()); }
     private void text(int id, String text) { ((TextView) findViewById(id)).setText(text); }
-    private void scheduleMock() { handler.removeCallbacks(finishMock); handler.postDelayed(finishMock, 1200); }
+    private void requestGenerationDetails() {
+        android.widget.LinearLayout fields = new android.widget.LinearLayout(this);
+        fields.setOrientation(android.widget.LinearLayout.VERTICAL);
+        int padding = Math.round(24 * getResources().getDisplayMetrics().density);
+        fields.setPadding(padding, 0, padding, 0);
+        TextView help = new TextView(this);
+        help.setText("Live research supports adult-only trips. Confirm the adult count and search currency. Daily budget tiers remain illustrative AUD amounts.");
+        fields.addView(help);
+        AppCompatEditText count = new AppCompatEditText(this); count.setHint("Adults (1–20)");
+        count.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+        if (adults > 0) count.setText(String.valueOf(adults)); fields.addView(count);
+        AppCompatEditText code = new AppCompatEditText(this); code.setHint("Currency, e.g. AUD");
+        code.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
+        code.setText(currency); fields.addView(code);
+        androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Generate with AI").setView(fields).setPositiveButton("Generate", null)
+                .setNegativeButton("Edit choices", (d, which) -> back()).create();
+        generationDialog = dialog;
+        dialog.setOnCancelListener(d -> back());
+        dialog.setOnShowListener(d -> dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            try {
+                int value = Integer.parseInt(count.getText().toString().trim());
+                String selectedCurrency = code.getText().toString().trim().toUpperCase(java.util.Locale.ROOT);
+                JSONObject request = TripPreviewClient.request(state, value, selectedCurrency, session.preferences);
+                adults = value; currency = selectedCurrency; generationError = "";
+                dialog.dismiss(); generationModel.start(request); render(false);
+            } catch (Exception invalid) {
+                help.setText(invalid instanceof NumberFormatException ? "Enter an adult count from 1 to 20." : invalid.getMessage());
+            }
+        }));
+        dialog.show();
+    }
+    @Override public String generationError() { return generationError; }
+    @Override public void retryGeneration() { if (!generationModel.running()) requestGenerationDetails(); }
     @Override public int saveStatus() { return saveStatus; }
     @Override public void saveTrip() {
         if (!state.isGenerated()) return;
-        if (generationId == null) generationId = UUID.randomUUID().toString();
-        String savingId = generationId;
-        SavedTrip snapshot;
-        // 在主线程取得独立快照，随后用户编辑答案不会改变已经排队的保存内容。
-        try { snapshot = SavedTrip.fromPlan(this, state, savingId); }
-        catch (IllegalArgumentException exception) { saveStatus = 2; render(false); return; }
-        TripStore store = new TripStore(getApplicationContext()); saveStatus = 0; render(false);
-        saveExecutor.execute(() -> {
-            boolean saved = store.save(snapshot);
-            runOnUiThread(() -> {
-                // 磁盘任务可能晚于退出或另一轮生成；旧保存回调只能结束自己的那一轮。
-                if (isDestroyed() || !savingId.equals(generationId) || !state.isGenerated()) return;
-                saveStatus = saved ? 1 : 2; render(false);
-            });
-        });
+        if (generationModel.result().getValue() == null) {
+            error = "The live result is unavailable. Edit choices and generate again.";
+            render(false); return;
+        }
+        saveStatus = 0; generationModel.retrySave(); render(false);
     }
     @Override public void viewSavedTrips() {
         startActivity(new Intent(this, HomeActivity.class).putExtra(HomeActivity.EXTRA_OPEN_MY, true)
@@ -289,11 +326,13 @@ public class MainActivity extends AppCompatActivity implements PlannerFormRender
         // onStop 已取消回包并保留草稿；再次可见时必须重画，恢复被 loading 禁用的输入。
         if (input != null) render(false);
     }
-    @Override protected void onStop() { saveDraft(); cancelOperation(); handler.removeCallbacks(finishMock); super.onStop(); }
-    @Override protected void onDestroy() { cancelOperation(); handler.removeCallbacks(finishMock); saveExecutor.shutdown(); super.onDestroy(); }
+    @Override protected void onStop() { saveDraft(); cancelOperation(); super.onStop(); }
+    @Override protected void onDestroy() { if (generationDialog != null) generationDialog.dismiss(); cancelOperation(); super.onDestroy(); }
     @Override protected void onSaveInstanceState(Bundle out) {
         saveDraft(); cancelOperation();
         out.putSerializable("planning_session", session); out.putSerializable("trip_state", state);
+        out.putInt("adults", adults); out.putString("currency", currency);
+        out.putString("generation_error", generationError);
         out.putString("generation_id", generationId); out.putInt("trip_save_status", saveStatus);
         out.putInt("calendar_month", TripDates.key(calendarMonth)); out.putString("planning_error", error);
         super.onSaveInstanceState(out);

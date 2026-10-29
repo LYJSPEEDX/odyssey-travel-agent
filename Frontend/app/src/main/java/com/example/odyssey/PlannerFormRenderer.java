@@ -35,6 +35,8 @@ final class PlannerFormRenderer {
         void saveTrip();
         void viewSavedTrips();
         void viewItinerary();
+        default String generationError() { return ""; }
+        default void retryGeneration() { }
     }
 
     // Context 提供资源、主题等环境；content 是 XML 的 stepContent 容器。
@@ -207,7 +209,12 @@ final class PlannerFormRenderer {
 
     /** 区分“生成完毕”与“写入成功”：只有成功落盘，才提供打开已保存行程的入口。 */
     private void generation() {
-        if (state.isGenerating()) {
+        if (state.isGenerating() && !actions.generationError().isEmpty()) {
+            paragraph(actions.generationError());
+            button(R.string.generation_retry, actions::retryGeneration);
+            button(R.string.edit_trip, actions::back);
+        }
+        if (state.isGenerating() && actions.generationError().isEmpty()) {
             LinearProgressIndicator progress = new LinearProgressIndicator(context);
             // indeterminate 是不确定进度动画：这里只模拟等待，不伪造真实百分比。
             progress.setIndeterminate(true);

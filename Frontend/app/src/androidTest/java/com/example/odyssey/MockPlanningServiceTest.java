@@ -47,7 +47,7 @@ public class MockPlanningServiceTest {
         PlanningSession s = new PlanningSession("Sydney", "Food");
         s = confirm(s, "home"); s = confirm(s, "tokyo");
         assertTrue(s.steps[4].question.options.get(0).description.contains("AUD 130"));
-        s = confirm(s, "flexible"); s = confirm(s, "friends", "family"); s = confirm(s, "budget-1");
+        s = dates(s); s = confirm(s, "friends", "family"); s = confirm(s, "budget-1");
         s = confirm(s, "constraint-0", "constraint-3");
         String oldId = s.step().question.options.get(0).id;
         s = confirm(s, oldId); s = confirm(s, s.step().question.options.get(0).id);
@@ -60,13 +60,18 @@ public class MockPlanningServiceTest {
         assertFalse(s.steps[6].question.options.get(0).id.equals(oldId));
         assertTrue(s.steps[4].question.options.get(0).description.contains("AUD 70"));
     }
+    private static PlanningSession dates(PlanningSession s) throws Exception {
+        s.selectDate(20261210); s.selectDate(20261214);
+        JSONObject request = PlanningJson.request(s, "CONFIRM", PlanningJson.dateInput(s.dateDraft));
+        return PlanningJson.apply(s, request, new MockPlanningService().respond(request.toString(), PlanningJson.snapshot(s).toString()));
+    }
     private static PlanningSession confirm(PlanningSession s, String... ids) throws Exception {
         JSONObject request = PlanningJson.request(s, "CONFIRM", PlanningJson.optionsInput(java.util.Arrays.asList(ids)));
         return PlanningJson.apply(s, request, new MockPlanningService().respond(request.toString(), PlanningJson.snapshot(s).toString()));
     }
     @Test public void textAnswerReplacesPreviousOptionSelection() throws Exception {
         PlanningSession s = new PlanningSession("Sydney", "");
-        s = confirm(s, "home"); s = confirm(s, "tokyo"); s = confirm(s, "flexible"); s = confirm(s, "friends");
+        s = confirm(s, "home"); s = confirm(s, "tokyo"); s = dates(s); s = confirm(s, "friends");
         s.current = 3;
         JSONObject request = PlanningJson.request(s, "SUBMIT", PlanningJson.textInput("Three colleagues"));
         s = PlanningJson.apply(s, request, new MockPlanningService().respond(request.toString(), PlanningJson.snapshot(s).toString()));
@@ -76,7 +81,7 @@ public class MockPlanningServiceTest {
     }
     @Test public void sameEarlierAnswerInCompleteSessionNavigatesWithoutGenerating() throws Exception {
         PlanningSession s = new PlanningSession("Sydney", "");
-        s = confirm(s, "home"); s = confirm(s, "tokyo"); s = confirm(s, "flexible");
+        s = confirm(s, "home"); s = confirm(s, "tokyo"); s = dates(s);
         s = confirm(s, "solo"); s = confirm(s, "budget-1"); s = confirm(s, "none");
         s = confirm(s, s.step().question.options.get(0).id); s = confirm(s, s.step().question.options.get(0).id);
         assertTrue(s.canGenerate()); s.current = 0;

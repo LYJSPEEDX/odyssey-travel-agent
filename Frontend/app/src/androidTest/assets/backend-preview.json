@@ -1,0 +1,625 @@
+{
+  "schemaVersion": "1.0",
+  "id": "39669076-b9e4-4e52-a3c8-5358f01be7c7",
+  "revision": 1,
+  "language": "en",
+  "dataMode": "LIVE",
+  "status": "PARTIAL",
+  "generatedAt": "2026-10-28T06:44:53.495237+00:00",
+  "requestSnapshot": {
+    "originPlaceId": "place_origin",
+    "destinationPlaceIds": [
+      "place_destination"
+    ],
+    "dateMode": "FIXED",
+    "requestedStartDate": "2026-12-10",
+    "requestedEndDate": "2026-12-12",
+    "returnDateMeaning": "LEAVE_DESTINATION",
+    "companions": "CUSTOM",
+    "travelers": [
+      {
+        "id": "traveler_1",
+        "age": null,
+        "passportCountry": null,
+        "passportType": null,
+        "residenceCountry": null
+      },
+      {
+        "id": "traveler_2",
+        "age": null,
+        "passportCountry": null,
+        "passportType": null,
+        "residenceCountry": null
+      }
+    ],
+    "budget": {
+      "scope": "ENTIRE_PARTY_WHOLE_TRIP",
+      "target": null,
+      "includeIntercityTransport": true
+    },
+    "constraints": [],
+    "notes": [
+      "Food and culture",
+      "Companions: Couple",
+      "Budget: AUD 4000"
+    ]
+  },
+  "summary": {
+    "title": "Trip to Osaka",
+    "subtitle": "Travel from Sydney",
+    "startDate": "2026-12-10",
+    "endDate": "2026-12-13",
+    "dayCount": 4,
+    "coverImageId": null,
+    "highlights": [],
+    "advice": [
+      "Activities and prices require confirmation."
+    ]
+  },
+  "places": [
+    {
+      "id": "place_origin",
+      "name": "Sydney",
+      "kind": "CITY",
+      "countryCode": "AU",
+      "timeZone": "Australia/Sydney",
+      "address": null,
+      "coordinates": null,
+      "providerPlaceId": null,
+      "imageIds": [],
+      "evidence": {
+        "status": "UNVERIFIED",
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    },
+    {
+      "id": "place_destination",
+      "name": "Osaka",
+      "kind": "CITY",
+      "countryCode": "JP",
+      "timeZone": "Asia/Tokyo",
+      "address": null,
+      "coordinates": null,
+      "providerPlaceId": null,
+      "imageIds": [],
+      "evidence": {
+        "status": "UNVERIFIED",
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    },
+    {
+      "id": "place_candidate_1",
+      "name": "Example Park",
+      "kind": "OTHER",
+      "countryCode": "JP",
+      "timeZone": "Asia/Tokyo",
+      "address": null,
+      "coordinates": null,
+      "providerPlaceId": "provider-place",
+      "imageIds": [],
+      "evidence": {
+        "status": "UNVERIFIED",
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    },
+    {
+      "id": "place_hotel",
+      "name": "Example Hotel",
+      "kind": "HOTEL",
+      "countryCode": "JP",
+      "timeZone": "Asia/Tokyo",
+      "address": null,
+      "coordinates": null,
+      "providerPlaceId": null,
+      "imageIds": [],
+      "evidence": {
+        "status": "UNVERIFIED",
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    },
+    {
+      "id": "transport_outbound_1_from",
+      "name": "SYD Airport",
+      "kind": "AIRPORT",
+      "countryCode": "AU",
+      "timeZone": "Australia/Sydney",
+      "address": null,
+      "coordinates": null,
+      "providerPlaceId": null,
+      "imageIds": [],
+      "evidence": {
+        "status": "UNVERIFIED",
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    },
+    {
+      "id": "transport_outbound_1_to",
+      "name": "KIX Airport",
+      "kind": "AIRPORT",
+      "countryCode": "JP",
+      "timeZone": "Asia/Tokyo",
+      "address": null,
+      "coordinates": null,
+      "providerPlaceId": null,
+      "imageIds": [],
+      "evidence": {
+        "status": "UNVERIFIED",
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    },
+    {
+      "id": "transport_inbound_1_from",
+      "name": "KIX Airport",
+      "kind": "AIRPORT",
+      "countryCode": "JP",
+      "timeZone": "Asia/Tokyo",
+      "address": null,
+      "coordinates": null,
+      "providerPlaceId": null,
+      "imageIds": [],
+      "evidence": {
+        "status": "UNVERIFIED",
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    },
+    {
+      "id": "transport_inbound_1_to",
+      "name": "SYD Airport",
+      "kind": "AIRPORT",
+      "countryCode": "AU",
+      "timeZone": "Australia/Sydney",
+      "address": null,
+      "coordinates": null,
+      "providerPlaceId": null,
+      "imageIds": [],
+      "evidence": {
+        "status": "UNVERIFIED",
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    }
+  ],
+  "media": [],
+  "transportGroups": [
+    {
+      "id": "transport_outbound",
+      "title": "Outbound flight",
+      "fromPlaceId": "transport_outbound_1_from",
+      "toPlaceId": "transport_outbound_1_to",
+      "status": "AVAILABLE",
+      "recommendedOptionId": "transport_outbound_option",
+      "planningOptionId": "transport_outbound_option",
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": "transport_outbound_option",
+          "title": "Outbound flight",
+          "reason": "Selected for this schedule; price covers the return journey.",
+          "legs": [
+            {
+              "id": "transport_outbound_leg_1",
+              "mode": "FLIGHT",
+              "fromPlaceId": "transport_outbound_1_from",
+              "toPlaceId": "transport_outbound_1_to",
+              "departure": {
+                "at": "2026-12-10T08:00:00+11:00",
+                "timeZone": "Australia/Sydney"
+              },
+              "arrival": {
+                "at": "2026-12-10T16:00:00+09:00",
+                "timeZone": "Asia/Tokyo"
+              },
+              "durationMinutes": 600,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "SCHEDULED",
+              "evidence": {
+                "status": "UNVERIFIED",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "marketingAirline": "Example Air",
+                "operatingAirline": null,
+                "flightNumber": "XX123",
+                "departureAirportCode": "SYD",
+                "arrivalAirportCode": "KIX",
+                "departureTerminal": null,
+                "arrivalTerminal": null,
+                "checkedBaggageKgPerPerson": null,
+                "isSelfTransfer": null
+              }
+            }
+          ],
+          "costItemIds": [
+            "cost_flight"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "transport_inbound",
+      "title": "Return flight",
+      "fromPlaceId": "transport_inbound_1_from",
+      "toPlaceId": "transport_inbound_1_to",
+      "status": "AVAILABLE",
+      "recommendedOptionId": "transport_inbound_option",
+      "planningOptionId": "transport_inbound_option",
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": "transport_inbound_option",
+          "title": "Return flight",
+          "reason": "Selected for this schedule; price covers the return journey.",
+          "legs": [
+            {
+              "id": "transport_inbound_leg_1",
+              "mode": "FLIGHT",
+              "fromPlaceId": "transport_inbound_1_from",
+              "toPlaceId": "transport_inbound_1_to",
+              "departure": {
+                "at": "2026-12-12T20:00:00+09:00",
+                "timeZone": "Asia/Tokyo"
+              },
+              "arrival": {
+                "at": "2026-12-13T08:00:00+11:00",
+                "timeZone": "Australia/Sydney"
+              },
+              "durationMinutes": 600,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "SCHEDULED",
+              "evidence": {
+                "status": "UNVERIFIED",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "marketingAirline": "Example Air",
+                "operatingAirline": null,
+                "flightNumber": "XX123",
+                "departureAirportCode": "KIX",
+                "arrivalAirportCode": "SYD",
+                "departureTerminal": null,
+                "arrivalTerminal": null,
+                "checkedBaggageKgPerPerson": null,
+                "isSelfTransfer": null
+              }
+            }
+          ],
+          "costItemIds": []
+        }
+      ]
+    }
+  ],
+  "stayGroups": [
+    {
+      "id": "stay_main",
+      "title": "Stay at Example Hotel",
+      "checkInDate": "2026-12-10",
+      "checkOutDate": "2026-12-12",
+      "nights": 2,
+      "status": "AVAILABLE",
+      "recommendedOptionId": "stay_option",
+      "planningOptionId": "stay_option",
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": "stay_option",
+          "placeId": "place_hotel",
+          "title": "Example Hotel",
+          "reason": "Near the sights",
+          "roomType": "Room type to confirm",
+          "roomCount": 1,
+          "guestCapacity": null,
+          "amenities": [
+            "Wi-Fi"
+          ],
+          "availability": "UNKNOWN",
+          "cancellationSummary": null,
+          "costItemIds": [
+            "cost_stay"
+          ],
+          "evidence": {
+            "status": "UNVERIFIED",
+            "sourceIds": [],
+            "checkedAt": null
+          }
+        }
+      ]
+    }
+  ],
+  "days": [
+    {
+      "id": "day_1",
+      "dayNumber": 1,
+      "date": "2026-12-10",
+      "timeZone": "Asia/Tokyo",
+      "title": "Day 1",
+      "summary": "Travel plans and estimated activities.",
+      "walkingDistanceMeters": null,
+      "events": [
+        {
+          "id": "event_outbound",
+          "type": "TRANSPORT",
+          "title": "Outbound flight",
+          "description": "Flight option details need confirmation.",
+          "imageIds": [],
+          "transportGroupId": "transport_outbound"
+        },
+        {
+          "id": "event_1_1",
+          "type": "ACTIVITY",
+          "title": "Visit the park",
+          "description": "Explore at a relaxed pace",
+          "imageIds": [],
+          "start": {
+            "at": "2026-12-10T18:00:00+09:00",
+            "timeZone": "Asia/Tokyo"
+          },
+          "end": {
+            "at": "2026-12-10T19:00:00+09:00",
+            "timeZone": "Asia/Tokyo"
+          },
+          "timingStatus": "ESTIMATED",
+          "evidence": {
+            "status": "UNVERIFIED",
+            "sourceIds": [],
+            "checkedAt": null
+          },
+          "placeId": "place_candidate_1",
+          "costItemIds": [],
+          "details": {
+            "category": "OTHER",
+            "reservationStatus": "UNKNOWN",
+            "openingHoursNote": null
+          }
+        }
+      ],
+      "continuingEventIds": []
+    },
+    {
+      "id": "day_2",
+      "dayNumber": 2,
+      "date": "2026-12-11",
+      "timeZone": "Asia/Tokyo",
+      "title": "Day 2",
+      "summary": "Travel plans and estimated activities.",
+      "walkingDistanceMeters": null,
+      "events": [
+        {
+          "id": "event_2_1",
+          "type": "ACTIVITY",
+          "title": "Visit the park",
+          "description": "Explore at a relaxed pace",
+          "imageIds": [],
+          "start": {
+            "at": "2026-12-11T10:00:00+09:00",
+            "timeZone": "Asia/Tokyo"
+          },
+          "end": {
+            "at": "2026-12-11T12:00:00+09:00",
+            "timeZone": "Asia/Tokyo"
+          },
+          "timingStatus": "ESTIMATED",
+          "evidence": {
+            "status": "UNVERIFIED",
+            "sourceIds": [],
+            "checkedAt": null
+          },
+          "placeId": "place_candidate_1",
+          "costItemIds": [],
+          "details": {
+            "category": "OTHER",
+            "reservationStatus": "UNKNOWN",
+            "openingHoursNote": null
+          }
+        }
+      ],
+      "continuingEventIds": []
+    },
+    {
+      "id": "day_3",
+      "dayNumber": 3,
+      "date": "2026-12-12",
+      "timeZone": "Asia/Tokyo",
+      "title": "Day 3",
+      "summary": "Travel plans and estimated activities.",
+      "walkingDistanceMeters": null,
+      "events": [
+        {
+          "id": "event_3_1",
+          "type": "ACTIVITY",
+          "title": "Visit the park",
+          "description": "Explore at a relaxed pace",
+          "imageIds": [],
+          "start": {
+            "at": "2026-12-12T10:00:00+09:00",
+            "timeZone": "Asia/Tokyo"
+          },
+          "end": {
+            "at": "2026-12-12T12:00:00+09:00",
+            "timeZone": "Asia/Tokyo"
+          },
+          "timingStatus": "ESTIMATED",
+          "evidence": {
+            "status": "UNVERIFIED",
+            "sourceIds": [],
+            "checkedAt": null
+          },
+          "placeId": "place_candidate_1",
+          "costItemIds": [],
+          "details": {
+            "category": "OTHER",
+            "reservationStatus": "UNKNOWN",
+            "openingHoursNote": null
+          }
+        },
+        {
+          "id": "event_inbound",
+          "type": "TRANSPORT",
+          "title": "Return flight",
+          "description": "Flight option details need confirmation.",
+          "imageIds": [],
+          "transportGroupId": "transport_inbound"
+        }
+      ],
+      "continuingEventIds": []
+    },
+    {
+      "id": "day_4",
+      "dayNumber": 4,
+      "date": "2026-12-13",
+      "timeZone": "Australia/Sydney",
+      "title": "Day 4",
+      "summary": "Travel plans and estimated activities.",
+      "walkingDistanceMeters": null,
+      "events": [],
+      "continuingEventIds": [
+        "event_inbound"
+      ]
+    }
+  ],
+  "money": {
+    "displayCurrency": "AUD",
+    "currencies": [
+      {
+        "code": "AUD",
+        "minorUnitDigits": 2
+      }
+    ],
+    "exchangeRates": [],
+    "exchangeAdvice": []
+  },
+  "entryRequirements": [],
+  "budget": {
+    "scope": "ENTIRE_PARTY_WHOLE_TRIP",
+    "lineItems": [
+      {
+        "id": "cost_flight",
+        "category": "INTERCITY_TRANSPORT",
+        "label": "Return flights for the travel party",
+        "unit": "PARTY",
+        "quantity": 1,
+        "unitPrice": {
+          "currency": "AUD",
+          "lowMinor": 200000,
+          "expectedMinor": 200000,
+          "highMinor": 200000
+        },
+        "originalTotal": {
+          "currency": "AUD",
+          "lowMinor": 200000,
+          "expectedMinor": 200000,
+          "highMinor": 200000
+        },
+        "displayTotal": {
+          "currency": "AUD",
+          "lowMinor": 200000,
+          "expectedMinor": 200000,
+          "highMinor": 200000
+        },
+        "exchangeRateId": null,
+        "taxesAndFees": "UNKNOWN",
+        "evidence": {
+          "status": "UNVERIFIED",
+          "sourceIds": [],
+          "checkedAt": null
+        }
+      },
+      {
+        "id": "cost_stay",
+        "category": "ACCOMMODATION",
+        "label": "Stay at Example Hotel",
+        "unit": "PARTY",
+        "quantity": 1,
+        "unitPrice": {
+          "currency": "AUD",
+          "lowMinor": 40000,
+          "expectedMinor": 40000,
+          "highMinor": 40000
+        },
+        "originalTotal": {
+          "currency": "AUD",
+          "lowMinor": 40000,
+          "expectedMinor": 40000,
+          "highMinor": 40000
+        },
+        "displayTotal": {
+          "currency": "AUD",
+          "lowMinor": 40000,
+          "expectedMinor": 40000,
+          "highMinor": 40000
+        },
+        "exchangeRateId": null,
+        "taxesAndFees": "UNKNOWN",
+        "evidence": {
+          "status": "UNVERIFIED",
+          "sourceIds": [],
+          "checkedAt": null
+        }
+      }
+    ],
+    "tripCostItemIds": [
+      "cost_flight",
+      "cost_stay"
+    ],
+    "activeCostItemIds": [
+      "cost_flight",
+      "cost_stay"
+    ],
+    "completeness": "PARTIAL",
+    "subtotal": {
+      "currency": "AUD",
+      "lowMinor": 240000,
+      "expectedMinor": 240000,
+      "highMinor": 240000
+    },
+    "contingency": {
+      "currency": "AUD",
+      "lowMinor": 0,
+      "expectedMinor": 0,
+      "highMinor": 0
+    },
+    "total": {
+      "currency": "AUD",
+      "lowMinor": 240000,
+      "expectedMinor": 240000,
+      "highMinor": 240000
+    },
+    "excludedCategories": [
+      "Meals",
+      "Activities",
+      "Local transport",
+      "Unverified fees"
+    ],
+    "notes": [
+      "Totals include only available same-currency quotes; no contingency has been estimated."
+    ]
+  },
+  "quality": {
+    "sources": [],
+    "assumptions": [
+      "Activities and meal categories are estimates.",
+      "Country codes are inferred from airport time zones and require confirmation.",
+      "Return dates refer to departure from the destination.",
+      "Quoted flight and hotel prices are unverified and may change."
+    ],
+    "notices": [
+      {
+        "code": "UNVERIFIED_DETAILS",
+        "severity": "WARNING",
+        "message": "Flight and hotel quotes are unbooked; room type, capacity, baggage weight and transfer details require confirmation.",
+        "relatedIds": []
+      }
+    ],
+    "constraintChecks": []
+  }
+}

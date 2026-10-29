@@ -151,8 +151,8 @@ final class PlanningSession implements Serializable {
                 q.options.add(new Option("kyoto", "Kyoto", "Slow discovery", "Kyoto", "Temples", "Gardens", "Tradition"));
             } else if (i == 2) {
                 q.inputMode = "DATE_RANGE";
-                q.description = "Select start and return dates, or confirm a flexible demo suggestion.";
-                q.options.add(new Option("flexible", "Flexible dates", "A suggested three-day trip", "Flexible dates", "Flexible"));
+                q.description = "Select fixed departure and return dates, with at least one overnight stay.";
+
             } else if (i == 3) {
                 q.maxSelections = 3;
                 for (String value : new String[]{"Solo", "Partner", "Friends", "Family"})

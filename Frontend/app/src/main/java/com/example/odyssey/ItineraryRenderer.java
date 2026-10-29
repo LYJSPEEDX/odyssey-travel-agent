@@ -263,7 +263,8 @@ final class ItineraryRenderer {
                         .append(" · Flight: ").append(optional(detail, "flightNumber", "To be confirmed"))
                         .append("\nOperating airline: ").append(optional(detail, "operatingAirline", "To be confirmed"))
                         .append("\nBaggage: ").append(optional(detail, "checkedBaggageKgPerPerson", "Unknown")).append(" kg per person");
-                if (detail.getBoolean("isSelfTransfer")) result.append("\nSelf-transfer — verify connection and entry requirements.");
+                if (detail.isNull("isSelfTransfer")) result.append("\nConnection protection to confirm.");
+                if (detail.optBoolean("isSelfTransfer", false)) result.append("\nSelf-transfer — verify connection and entry requirements.");
             } else {
                 if (detail.has("operator")) result.append("\nOperator: ").append(optional(detail, "operator", "To be confirmed"));
                 result.append("\n").append(detail.getString("routeInstructions"));
@@ -292,7 +293,7 @@ final class ItineraryRenderer {
                 String body = (planned ? "In this plan · not booked\n" : "Alternative · not included in total\n")
                         + option.getString("reason") + "\n" + placeDetails(option.getString("placeId"))
                         + "\n" + option.getInt("roomCount") + " × " + option.getString("roomType")
-                        + " · Capacity: " + option.getInt("guestCapacity")
+                        + " · Capacity: " + (option.isNull("guestCapacity") ? "to confirm" : option.getInt("guestCapacity"))
                         + "\n" + join(option.getJSONArray("amenities"))
                         + "\nAvailability: " + label(option.getString("availability"))
                         + "\n" + optional(option, "cancellationSummary", "Cancellation policy unverified")

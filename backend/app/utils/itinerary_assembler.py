@@ -1,5 +1,7 @@
 """Prepare trusted research and schedule data for itinerary assembly."""
 
+from datetime import UTC
+
 from pydantic import BaseModel
 
 from app.agents.orchestrator import ResearchResult
@@ -10,8 +12,8 @@ from app.agents.schedule import (
 )
 from app.agents.stay import StayCandidate
 from app.tools.models import FlightOffer
-from app.tools.place_models import PlaceInfo
 from app.tools.money import minor_unit_digits
+from app.tools.place_models import PlaceInfo
 
 
 class AssemblyContext(BaseModel):
@@ -25,8 +27,8 @@ class AssemblyContext(BaseModel):
 
 
 def build_assembly_context(
-        research: ResearchResult,
-        schedule: ScheduleResult,
+    research: ResearchResult,
+    schedule: ScheduleResult,
 ) -> AssemblyContext:
     """Resolve planning references before building the itinerary document."""
     task = build_schedule_task(research)
@@ -36,10 +38,7 @@ def build_assembly_context(
         task,
     )
 
-    places_by_label = {
-        candidate.label: candidate.place
-        for candidate in task.candidates
-    }
+    places_by_label = {candidate.label: candidate.place for candidate in task.candidates}
 
     if len(places_by_label) != len(task.candidates):
         raise ValueError("Destination candidate labels must be unique.")
@@ -51,6 +50,7 @@ def build_assembly_context(
         hotel=task.stay,
         places_by_label=places_by_label,
     )
+
 
 def _country_for_zone(zone_name: str) -> str:
     """Resolve a unique country from the system IANA timezone database."""
@@ -74,8 +74,7 @@ def _range(currency: str, amount: int) -> dict:
     """Represent a known amount without inventing an uncertainty range."""
     if amount < 0:
         raise ValueError("A quoted amount cannot be negative.")
-    return {"currency": currency, "lowMinor": amount,
-            "expectedMinor": amount, "highMinor": amount}
+    return {"currency": currency, "lowMinor": amount, "expectedMinor": amount, "highMinor": amount}
 
 
 def _evidence() -> dict:
@@ -85,42 +84,70 @@ def _evidence() -> dict:
 
 def _moment(day, clock, zone_name: str) -> dict:
     """Convert an estimated local time into a timezone-aware moment."""
-    from datetime import datetime, timezone
+    from datetime import datetime
     from zoneinfo import ZoneInfo
 
     zone = ZoneInfo(zone_name)
     value = datetime.combine(day, clock, tzinfo=zone)
-    if value.astimezone(timezone.utc).astimezone(zone).replace(tzinfo=None) != value.replace(tzinfo=None):
+    if value.astimezone(UTC).astimezone(zone).replace(tzinfo=None) != value.replace(tzinfo=None):
         raise ValueError(f"Schedule contains a nonexistent local time: {value}")
     if value.replace(fold=0).utcoffset() != value.replace(fold=1).utcoffset():
         raise ValueError(f"Schedule contains an ambiguous local time: {value}")
     return {"at": value.isoformat(), "timeZone": zone_name}
 
 
-def _place(place_id: str, name: str, kind: str, country: str, zone: str,
-           *, latitude=None, longitude=None, provider_id=None) -> dict:
+def _place(
+    place_id: str,
+    name: str,
+    kind: str,
+    country: str,
+    zone: str,
+    *,
+    latitude=None,
+    longitude=None,
+    provider_id=None,
+) -> dict:
     """Build a protocol place while keeping missing coordinates unknown."""
     coordinates = None
     if latitude is not None and longitude is not None:
         coordinates = {"latitude": latitude, "longitude": longitude}
-    return {"id": place_id, "name": name, "kind": kind, "countryCode": country,
-            "timeZone": zone, "address": None, "coordinates": coordinates,
-            "providerPlaceId": provider_id, "imageIds": [], "evidence": _evidence()}
+    return {
+        "id": place_id,
+        "name": name,
+        "kind": kind,
+        "countryCode": country,
+        "timeZone": zone,
+        "address": None,
+        "coordinates": coordinates,
+        "providerPlaceId": provider_id,
+        "imageIds": [],
+        "evidence": _evidence(),
+    }
 
 
-def _cost(cost_id: str, category: str, label: str, amount: int,
-          currency: str, display_currency: str) -> dict:
+def _cost(
+    cost_id: str, category: str, label: str, amount: int, currency: str, display_currency: str
+) -> dict:
     """Keep a whole-party quote without guessing a conversion or unit price."""
     price = _range(currency, amount)
-    return {"id": cost_id, "category": category, "label": label,
-            "unit": "PARTY", "quantity": 1, "unitPrice": price,
-            "originalTotal": price, "displayTotal": price if currency == display_currency else None,
-            "exchangeRateId": None, "taxesAndFees": "UNKNOWN", "evidence": _evidence()}
+    return {
+        "id": cost_id,
+        "category": category,
+        "label": label,
+        "unit": "PARTY",
+        "quantity": 1,
+        "unitPrice": price,
+        "originalTotal": price,
+        "displayTotal": price if currency == display_currency else None,
+        "exchangeRateId": None,
+        "taxesAndFees": "UNKNOWN",
+        "evidence": _evidence(),
+    }
 
 
 def assemble_itinerary(research: ResearchResult, schedule: ScheduleResult) -> dict:
     """Assemble a partial v1 itinerary from validated research and schedule facts."""
-    from datetime import datetime, timedelta, timezone
+    from datetime import datetime, timedelta
     from uuid import uuid4
 
     context = build_assembly_context(research, schedule)
@@ -142,106 +169,348 @@ def assemble_itinerary(research: ResearchResult, schedule: ScheduleResult) -> di
         raise ValueError("The itinerary exceeds the 60-day protocol limit.")
     places = [
         _place("place_origin", request.departure, "CITY", origin_country, origin_zone),
-        _place("place_destination", request.destination, "CITY", destination_country, destination_zone),
+        _place(
+            "place_destination", request.destination, "CITY", destination_country, destination_zone
+        ),
     ]
     place_ids = {}
     for index, (label, place) in enumerate(context.places_by_label.items(), 1):
         place_id = f"place_candidate_{index}"
         place_ids[label] = place_id
-        places.append(_place(place_id, place.source_title or f"Place {label}", "OTHER",
-                             destination_country, destination_zone, latitude=place.latitude,
-                             longitude=place.longitude, provider_id=place.place_id))
+        places.append(
+            _place(
+                place_id,
+                place.source_title or f"Place {label}",
+                "OTHER",
+                destination_country,
+                destination_zone,
+                latitude=place.latitude,
+                longitude=place.longitude,
+                provider_id=place.place_id,
+            )
+        )
     hotel = context.hotel.offer
-    places.append(_place("place_hotel", hotel.name, "HOTEL", destination_country,
-                         destination_zone, latitude=hotel.latitude, longitude=hotel.longitude))
+    places.append(
+        _place(
+            "place_hotel",
+            hotel.name,
+            "HOTEL",
+            destination_country,
+            destination_zone,
+            latitude=hotel.latitude,
+            longitude=hotel.longitude,
+        )
+    )
     schedules = {day.date: day for day in context.schedule.days}
     days = []
     for index in range(day_count):
         day_date = start + timedelta(days=index)
         events = []
         if day_date == flight.outbound.departure.date():
-            events.append({"id": "event_outbound", "type": "TRANSPORT", "title": "Outbound flight",
-                           "description": "Flight option details need confirmation.", "imageIds": [],
-                           "transportGroupId": "transport_outbound"})
+            events.append(
+                {
+                    "id": "event_outbound",
+                    "type": "TRANSPORT",
+                    "title": "Outbound flight",
+                    "description": "Flight option details need confirmation.",
+                    "imageIds": [],
+                    "transportGroupId": "transport_outbound",
+                }
+            )
         schedule_day = schedules.get(day_date)
         if schedule_day:
             for position, item in enumerate(schedule_day.items, 1):
-                event = {"id": f"event_{index + 1}_{position}", "type": item.type,
-                         "title": item.title, "description": item.description, "imageIds": [],
-                         "start": _moment(day_date, item.start_time, destination_zone),
-                         "end": _moment(day_date, item.end_time, destination_zone),
-                         "timingStatus": "ESTIMATED", "evidence": _evidence(),
-                         "placeId": place_ids.get(item.place_label), "costItemIds": []}
+                event = {
+                    "id": f"event_{index + 1}_{position}",
+                    "type": item.type,
+                    "title": item.title,
+                    "description": item.description,
+                    "imageIds": [],
+                    "start": _moment(day_date, item.start_time, destination_zone),
+                    "end": _moment(day_date, item.end_time, destination_zone),
+                    "timingStatus": "ESTIMATED",
+                    "evidence": _evidence(),
+                    "placeId": place_ids.get(item.place_label),
+                    "costItemIds": [],
+                }
                 if item.type == "ACTIVITY":
-                    event["details"] = {"category": "OTHER", "reservationStatus": "UNKNOWN", "openingHoursNote": None}
+                    event["details"] = {
+                        "category": "OTHER",
+                        "reservationStatus": "UNKNOWN",
+                        "openingHoursNote": None,
+                    }
                 elif item.type == "MEAL":
                     hour = item.start_time.hour
-                    meal_type = "BREAKFAST" if hour < 11 else "LUNCH" if hour < 15 else "DINNER" if hour < 21 else "SNACK"
-                    event["details"] = {"mealType": meal_type, "cuisine": "Not specified",
-                                        "dietaryStatus": "UNVERIFIED", "reservationStatus": "UNKNOWN"}
+                    meal_type = (
+                        "BREAKFAST"
+                        if hour < 11
+                        else "LUNCH"
+                        if hour < 15
+                        else "DINNER"
+                        if hour < 21
+                        else "SNACK"
+                    )
+                    event["details"] = {
+                        "mealType": meal_type,
+                        "cuisine": "Not specified",
+                        "dietaryStatus": "UNVERIFIED",
+                        "reservationStatus": "UNKNOWN",
+                    }
                 events.append(event)
         if day_date == inbound.departure.date():
-            events.append({"id": "event_inbound", "type": "TRANSPORT", "title": "Return flight",
-                           "description": "Flight option details need confirmation.", "imageIds": [],
-                           "transportGroupId": "transport_inbound"})
+            events.append(
+                {
+                    "id": "event_inbound",
+                    "type": "TRANSPORT",
+                    "title": "Return flight",
+                    "description": "Flight option details need confirmation.",
+                    "imageIds": [],
+                    "transportGroupId": "transport_inbound",
+                }
+            )
         if len(events) > 40:
             raise ValueError(f"Too many events for {day_date}.")
-        days.append({"id": f"day_{index + 1}", "dayNumber": index + 1, "date": day_date.isoformat(),
-                     "timeZone": destination_zone if schedule_day else origin_zone,
-                     "title": f"Day {index + 1}", "summary": "Travel plans and estimated activities.",
-                     "walkingDistanceMeters": None, "events": events, "continuingEventIds": []})
-    flight_cost = _cost("cost_flight", "INTERCITY_TRANSPORT", "Return flights for the travel party",
-                        flight.price_minor, flight.currency, request.currency)
+        continuing = []
+        for event_id, sector in (("event_outbound", flight.outbound), ("event_inbound", inbound)):
+            if sector.departure.date() < day_date <= sector.arrival.date():
+                continuing.append(event_id)
+        days.append(
+            {
+                "id": f"day_{index + 1}",
+                "dayNumber": index + 1,
+                "date": day_date.isoformat(),
+                "timeZone": destination_zone if schedule_day else origin_zone,
+                "title": f"Day {index + 1}",
+                "summary": "Travel plans and estimated activities.",
+                "walkingDistanceMeters": None,
+                "events": events,
+                "continuingEventIds": continuing,
+            }
+        )
+    flight_cost = _cost(
+        "cost_flight",
+        "INTERCITY_TRANSPORT",
+        "Return flights for the travel party",
+        flight.price_minor,
+        flight.currency,
+        request.currency,
+    )
     hotel_deal = hotel.best_deal
-    hotel_cost = _cost("cost_stay", "ACCOMMODATION", f"Stay at {hotel.name}",
-                       hotel_deal.total_minor, hotel_deal.currency, request.currency)
+    hotel_cost = _cost(
+        "cost_stay",
+        "ACCOMMODATION",
+        f"Stay at {hotel.name}",
+        hotel_deal.total_minor,
+        hotel_deal.currency,
+        request.currency,
+    )
     costs = [flight_cost, hotel_cost]
-    subtotal = sum(item["displayTotal"]["expectedMinor"] for item in costs if item["displayTotal"] is not None)
+    subtotal = sum(
+        item["displayTotal"]["expectedMinor"] for item in costs if item["displayTotal"] is not None
+    )
     codes = list(dict.fromkeys([request.currency, flight.currency, hotel_deal.currency]))
-    constraints = [{"id": f"constraint_{i}", "code": "CUSTOM", "strength": "SOFT", "description": value}
-                   for i, value in enumerate(request.constraints, 1)]
-    def pending_transport(group_id: str, title: str, from_id: str, to_id: str) -> dict:
-        """Create a transport placeholder when the contract requires missing facts."""
-        return {"id": group_id, "title": title, "fromPlaceId": from_id, "toPlaceId": to_id,
-                "status": "PENDING", "recommendedOptionId": None, "planningOptionId": None,
-                "userSelectedOptionId": None, "options": []}
+    constraints = [
+        {"id": f"constraint_{i}", "code": "CUSTOM", "strength": "SOFT", "description": value}
+        for i, value in enumerate(request.constraints, 1)
+    ]
+
+    def transport_group(group_id, title, sector, cost_ids):
+        legs = []
+        for index, segment in enumerate(sector.segments, 1):
+            endpoints = []
+            for side, code, name, zone in (
+                ("from", segment.from_code, segment.from_name, segment.departure_tz),
+                ("to", segment.to_code, segment.to_name, segment.arrival_tz),
+            ):
+                place_id = f"{group_id}_{index}_{side}"
+                places.append(
+                    _place(place_id, name or code, "AIRPORT", _country_for_zone(zone), zone)
+                )
+                endpoints.append(place_id)
+            legs.append(
+                {
+                    "id": f"{group_id}_leg_{index}",
+                    "mode": "FLIGHT",
+                    "fromPlaceId": endpoints[0],
+                    "toPlaceId": endpoints[1],
+                    "departure": {
+                        "at": segment.departure.isoformat(),
+                        "timeZone": segment.departure_tz,
+                    },
+                    "arrival": {"at": segment.arrival.isoformat(), "timeZone": segment.arrival_tz},
+                    "durationMinutes": max(1, (segment.duration_s + 59) // 60),
+                    "distanceMeters": None,
+                    "distanceBasis": "UNKNOWN",
+                    "timingStatus": "SCHEDULED",
+                    "evidence": _evidence(),
+                    "details": {
+                        "marketingAirline": segment.carrier_name or None,
+                        "operatingAirline": None,
+                        "flightNumber": segment.flight_number or None,
+                        "departureAirportCode": segment.from_code,
+                        "arrivalAirportCode": segment.to_code,
+                        "departureTerminal": None,
+                        "arrivalTerminal": None,
+                        "checkedBaggageKgPerPerson": None,
+                        "isSelfTransfer": None,
+                    },
+                }
+            )
+        option_id = f"{group_id}_option"
+        return {
+            "id": group_id,
+            "title": title,
+            "fromPlaceId": legs[0]["fromPlaceId"],
+            "toPlaceId": legs[-1]["toPlaceId"],
+            "status": "AVAILABLE",
+            "recommendedOptionId": option_id,
+            "planningOptionId": option_id,
+            "userSelectedOptionId": None,
+            "options": [
+                {
+                    "id": option_id,
+                    "title": title,
+                    "reason": "Selected for this schedule; price covers the return journey.",
+                    "legs": legs,
+                    "costItemIds": cost_ids,
+                }
+            ],
+        }
+
+    transport_groups = [
+        transport_group("transport_outbound", "Outbound flight", flight.outbound, ["cost_flight"]),
+        transport_group("transport_inbound", "Return flight", inbound, []),
+    ]
+    stay_option = {
+        "id": "stay_option",
+        "placeId": "place_hotel",
+        "title": hotel.name,
+        "reason": research.stay.rationale or "Selected for the schedule.",
+        "roomType": "Room type to confirm",
+        "roomCount": context.hotel.rooms,
+        "guestCapacity": None,
+        "amenities": hotel.amenities,
+        "availability": "UNKNOWN",
+        "cancellationSummary": None,
+        "costItemIds": ["cost_stay"],
+        "evidence": _evidence(),
+    }
     zero = _range(request.currency, 0)
     return {
-        "schemaVersion": "1.0", "id": str(uuid4()), "revision": 1, "language": "en",
-        "dataMode": "LIVE", "status": "PARTIAL", "generatedAt": datetime.now(timezone.utc).isoformat(),
-        "requestSnapshot": {"originPlaceId": "place_origin", "destinationPlaceIds": ["place_destination"],
-            "dateMode": "FIXED", "requestedStartDate": request.startDate.isoformat(),
-            "requestedEndDate": request.endDate.isoformat(), "returnDateMeaning": "LEAVE_DESTINATION",
-            "companions": "CUSTOM", "travelers": [{"id": f"traveler_{i}", "age": None,
-                "passportCountry": None, "passportType": None, "residenceCountry": None}
-                for i in range(1, request.adults + 1)],
-            "budget": {"scope": "ENTIRE_PARTY_WHOLE_TRIP", "target": None, "includeIntercityTransport": True},
-            "constraints": constraints, "notes": [*request.notes.values(), f"Companions: {request.companion}", f"Budget: {request.budget}"]},
-        "summary": {"title": f"Trip to {request.destination}", "subtitle": f"Travel from {request.departure}",
-            "startDate": start.isoformat(), "endDate": end.isoformat(), "dayCount": day_count,
-            "coverImageId": None, "highlights": [], "advice": ["Activities and prices require confirmation."]},
-        "places": places, "media": [],
-        "transportGroups": [pending_transport("transport_outbound", "Outbound flight", "place_origin", "place_destination"),
-                            pending_transport("transport_inbound", "Return flight", "place_destination", "place_origin")],
-        "stayGroups": [{"id": "stay_main", "title": f"Stay at {hotel.name}",
-            "checkInDate": research.check_in.isoformat(), "checkOutDate": research.check_out.isoformat(),
-            "nights": (research.check_out - research.check_in).days, "status": "PENDING",
-            "recommendedOptionId": None, "planningOptionId": None, "userSelectedOptionId": None, "options": []}],
+        "schemaVersion": "1.0",
+        "id": str(uuid4()),
+        "revision": 1,
+        "language": "en",
+        "dataMode": "LIVE",
+        "status": "PARTIAL",
+        "generatedAt": datetime.now(UTC).isoformat(),
+        "requestSnapshot": {
+            "originPlaceId": "place_origin",
+            "destinationPlaceIds": ["place_destination"],
+            "dateMode": "FIXED",
+            "requestedStartDate": request.startDate.isoformat(),
+            "requestedEndDate": request.endDate.isoformat(),
+            "returnDateMeaning": "LEAVE_DESTINATION",
+            "companions": "CUSTOM",
+            "travelers": [
+                {
+                    "id": f"traveler_{i}",
+                    "age": None,
+                    "passportCountry": None,
+                    "passportType": None,
+                    "residenceCountry": None,
+                }
+                for i in range(1, request.adults + 1)
+            ],
+            "budget": {
+                "scope": "ENTIRE_PARTY_WHOLE_TRIP",
+                "target": None,
+                "includeIntercityTransport": True,
+            },
+            "constraints": constraints,
+            "notes": [
+                *request.notes.values(),
+                f"Companions: {request.companion}",
+                f"Budget: {request.budget}",
+            ],
+        },
+        "summary": {
+            "title": f"Trip to {request.destination}",
+            "subtitle": f"Travel from {request.departure}",
+            "startDate": start.isoformat(),
+            "endDate": end.isoformat(),
+            "dayCount": day_count,
+            "coverImageId": None,
+            "highlights": [],
+            "advice": ["Activities and prices require confirmation."],
+        },
+        "places": places,
+        "media": [],
+        "transportGroups": transport_groups,
+        "stayGroups": [
+            {
+                "id": "stay_main",
+                "title": f"Stay at {hotel.name}",
+                "checkInDate": research.check_in.isoformat(),
+                "checkOutDate": research.check_out.isoformat(),
+                "nights": (research.check_out - research.check_in).days,
+                "status": "AVAILABLE",
+                "recommendedOptionId": "stay_option",
+                "planningOptionId": "stay_option",
+                "userSelectedOptionId": None,
+                "options": [stay_option],
+            }
+        ],
         "days": days,
-        "money": {"displayCurrency": request.currency, "currencies": [{"code": code, "minorUnitDigits": minor_unit_digits(code)} for code in codes],
-                  "exchangeRates": [], "exchangeAdvice": []},
+        "money": {
+            "displayCurrency": request.currency,
+            "currencies": [
+                {"code": code, "minorUnitDigits": minor_unit_digits(code)} for code in codes
+            ],
+            "exchangeRates": [],
+            "exchangeAdvice": [],
+        },
         "entryRequirements": [],
-        "budget": {"scope": "ENTIRE_PARTY_WHOLE_TRIP", "lineItems": costs,
-            "tripCostItemIds": ["cost_flight", "cost_stay"], "activeCostItemIds": ["cost_flight", "cost_stay"],
-            "completeness": "PARTIAL", "subtotal": _range(request.currency, subtotal), "contingency": zero,
-            "total": _range(request.currency, subtotal), "excludedCategories": ["Meals", "Activities", "Local transport", "Unverified fees"],
-            "notes": ["Totals include only available same-currency quotes; no contingency has been estimated."]},
-        "quality": {"sources": [], "assumptions": ["Activities and meal categories are estimates.",
-            "Country codes are inferred from airport time zones and require confirmation.",
-            "Return dates refer to departure from the destination.",
-            "Quoted flight and hotel prices are unverified and may change."],
-            "notices": [{"code": "INCOMPLETE_OPTIONS", "severity": "WARNING",
-                "message": "Flight and hotel options need additional details before they can be displayed as confirmed choices.", "relatedIds": []}],
-            "constraintChecks": [{"constraintId": item["id"], "status": "UNVERIFIED",
-                "explanation": "This preference requires further verification.", "relatedIds": []} for item in constraints]},
+        "budget": {
+            "scope": "ENTIRE_PARTY_WHOLE_TRIP",
+            "lineItems": costs,
+            "tripCostItemIds": ["cost_flight", "cost_stay"],
+            "activeCostItemIds": ["cost_flight", "cost_stay"],
+            "completeness": "PARTIAL",
+            "subtotal": _range(request.currency, subtotal),
+            "contingency": zero,
+            "total": _range(request.currency, subtotal),
+            "excludedCategories": ["Meals", "Activities", "Local transport", "Unverified fees"],
+            "notes": [
+                "Totals include only available same-currency quotes; "
+                "no contingency has been estimated."
+            ],
+        },
+        "quality": {
+            "sources": [],
+            "assumptions": [
+                "Activities and meal categories are estimates.",
+                "Country codes are inferred from airport time zones and require confirmation.",
+                "Return dates refer to departure from the destination.",
+                "Quoted flight and hotel prices are unverified and may change.",
+            ],
+            "notices": [
+                {
+                    "code": "UNVERIFIED_DETAILS",
+                    "severity": "WARNING",
+                    "message": "Flight and hotel quotes are unbooked; room type, capacity, "
+                    "baggage weight and transfer details require confirmation.",
+                    "relatedIds": [],
+                }
+            ],
+            "constraintChecks": [
+                {
+                    "constraintId": item["id"],
+                    "status": "UNVERIFIED",
+                    "explanation": "This preference requires further verification.",
+                    "relatedIds": [],
+                }
+                for item in constraints
+            ],
+        },
     }

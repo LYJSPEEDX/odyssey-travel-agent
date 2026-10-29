@@ -29,8 +29,13 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    buildFeatures { buildConfig = true }
     buildTypes {
+        debug {
+            buildConfigField("String", "API_BASE_URL", "\"" + providers.gradleProperty("odysseyApiBaseUrl").getOrElse("http://10.0.2.2:8000").trimEnd('/') + "\"")
+        }
         release {
+            buildConfigField("String", "API_BASE_URL", "\"\"")
             optimization {
                 enable = false
             }

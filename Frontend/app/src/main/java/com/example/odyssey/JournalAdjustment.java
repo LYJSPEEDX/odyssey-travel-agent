@@ -37,7 +37,7 @@ final class JournalAdjustment {
         scroll.addView(content);
         journal.tag(content, "Offline preview · Not sent", R.color.mint);
         journal.heading(content, "Make it your kind of trip", 24).setPadding(0, ui.dp(16), 0, 0);
-        journal.text(content, "AI is not connected yet. Your draft stays on this screen only and is cleared when you leave the trip. Your itinerary will not change.", 14, false);
+        journal.text(content, "AI adjustments are not connected yet. Your draft stays on this screen only and is cleared when you leave the trip. Your itinerary will not change.", 14, false);
         ChipGroup options = new ChipGroup(context); options.setChipSpacingHorizontal(ui.dp(8));
         content.addView(options);
         TextInputLayout field = new TextInputLayout(context);
