@@ -300,3 +300,9 @@ invalid generation input, 503 for missing server configuration, 409 for no usabl
 plan, 502 for known model/data-source failures, 504 for the overall timeout,
 and 500 for unexpected failures. Request-shape errors use FastAPI's standard 422
 validation response. This endpoint has no runtime mock or fallback data.
+
+## Planning chatbot
+
+The shared application also serves `/v1/planning-sessions` (create, restore, turns, finalize, delete). The independently scoped `app/planning` component reuses `.env`, the model factory, session ownership middleware and PostgreSQL. It collects explicitly confirmed travel facts and exports an existing `TripRequest`; it does not generate an itinerary or change Android.
+
+Start the backend normally, then run `uv run python -m scripts.planning_chat`, or use the **planning chatbot** Swagger section. See [component workflow and API examples](docs/planning-chatbot.md) for configuration, confirmation/revision rules, generation handoff, tests and limitations.

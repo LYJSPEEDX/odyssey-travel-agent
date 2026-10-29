@@ -8,6 +8,7 @@ from app.recommendations import router as recommendations_router
 from app.agents.research import router as research_router
 from app.session import SessionIdMiddleware
 from app.trips import router as trips_router
+from app.planning.routes import router as planning_router
 
 
 @asynccontextmanager
@@ -29,6 +30,7 @@ def create_app() -> FastAPI:
     app.include_router(trips_router)
     app.include_router(recommendations_router)
     app.include_router(research_router)
+    app.include_router(planning_router)
 
     @app.get("/healthz")
     async def healthz(response: Response) -> dict:

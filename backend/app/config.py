@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     llm_base_url: str | None = None
     llm_temperature: float = 0.2
     llm_timeout_s: float = 120.0
+    planning_timeout_s: float = Field(default=90.0, gt=0, le=300)
     research_timeout_s: float = Field(default=600.0, gt=0, le=3600)
 
     kiwi_mcp_url: str = "https://mcp.kiwi.com"
