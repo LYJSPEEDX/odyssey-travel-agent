@@ -39,3 +39,16 @@ For a backend validator, load this schema as the reference root and validate usi
 `ProfileContractsTest` checks the shared string rules, strict profile types, incomplete trip requests, response requirements, and malformed model JSON. `ProfileStoreTest` also checks that malformed saved fields do not get coerced or silently overwritten.
 
 The separate, pre-existing prototype under `tmp/` currently exposes a destination-only API with `homeCity`, `interests`, and `notes`, and returns four destination cards. The new departure-and-destination contract is not a replacement for that API and is not sent to it. A future connector must explicitly adapt that provisional API or extend it; these changes preserve its existing inputs, output, and tests.
+
+## Backend recommendation endpoint
+
+The backend at `root/Backend/odyssey-travel-agent/backend` now implements
+`POST /recommendations/locations` using this request/response contract. It accepts the
+profile, returns both departure and destination suggestions with reasons, and preserves
+known origin/destination choices. Its initial provider is a demo catalog ranked by
+preference keywords, not an LLM or live travel service. Profiles are not persisted.
+
+The Android networking call is still to be wired: invoke it on entry to trip planning,
+validate the response with ProfileContracts, let the user confirm locations, then submit
+the completed form to POST `/trips`. The existing planner accepts one destination.
+The backend's `docs/profile-planning-workflow.md` documents the full handoff and examples.
