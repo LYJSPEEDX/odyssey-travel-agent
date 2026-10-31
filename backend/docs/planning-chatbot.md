@@ -166,7 +166,7 @@ It explicitly confirms synthetic example facts, exports generation input, and de
 
 ## Integration boundaries and remaining concerns
 
-- Android is unchanged and still calls its local mock. This API uses its own versioned contract: string `schemaVersion`, flattened text/action fields, proposal IDs and explicit confirmation. A future Android adapter must translate the existing local protocol rather than substitute the URL alone.
-- Itinerary generation now emits the shared frontend v2 contract; the Android HTTP adapter and generation-job/SSE APIs remain separate work. They are not necessary to exercise this standalone chatbot.
+- Android now has a dedicated live adapter using this versioned contract: string `schemaVersion`, flattened text/action fields, proposal IDs and explicit confirmation. Its offline mock is a separate entry; no mock protocol is sent over HTTP. See [Android live demo](../../docs/live-android-demo.md).
+- Itinerary generation now emits the shared frontend v2 contract; the Android HTTP adapter is implemented; generation-job/SSE APIs remain separate work. They are not necessary to exercise this standalone chatbot.
 - Anonymous ownership follows existing backend conventions. It is not account authentication. Add authentication, per-owner rate limits/quotas, retention/expiry, abandoned-turn recovery and deployment controls before exposing it as a public service. Sessions/turns currently persist until explicitly deleted; message context is bounded to 16 entries per step, but stored turn records are retained for replay.
 - The model can still misunderstand a user or suggest a poor destination. Structured validation prevents malformed facts and invalid transitions, not semantic errors; explicit confirmation is required.

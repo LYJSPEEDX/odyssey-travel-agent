@@ -119,6 +119,9 @@ public class HomeActivity extends AppCompatActivity {
         View banner = LayoutInflater.from(this).inflate(R.layout.home_banner, ui.content, false);
         banner.setOnClickListener(view -> startPlanner());
         ui.content.addView(banner);
+        ui.text("Live AI planning · review and confirm each step before generation", 12, false);
+        ui.button(R.string.dialog_ok, () -> startActivity(new Intent(this, MainActivity.class)))
+                .setText("Try the offline demo");
         ui.text(getString(R.string.editorial_inspiration), 23, true).setPadding(0, ui.dp(28), 0, ui.dp(8));
         ui.text(getString(R.string.editorial_inspiration_subtitle), 12, false);
         List<SavedTrip> examples = ExampleTrips.all(this);
@@ -154,7 +157,7 @@ public class HomeActivity extends AppCompatActivity {
         }
         ui.text(getString(R.string.local_only_notice), 12, false);
     }
-    private void startPlanner() { startActivity(new Intent(this, MainActivity.class)); }
+    private void startPlanner() { startActivity(new Intent(this, LivePlannerActivity.class)); }
     /** 首页保持桌面入口；资料检查完成后由正确页面接手欢迎层。 */
     private void checkProfile() {
         if (checkingProfile) return;

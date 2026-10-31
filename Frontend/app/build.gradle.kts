@@ -13,6 +13,7 @@ val itineraryAssets = tasks.register<Sync>("syncItineraryAssets") {
 }
 
 android {
+    buildFeatures { buildConfig = true }
     sourceSets.getByName("main").assets.directories.add(layout.buildDirectory.dir("generated/itineraryAssets").get().asFile.path)
     namespace = "com.example.odyssey"
     compileSdk {

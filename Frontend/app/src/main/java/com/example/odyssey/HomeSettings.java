@@ -37,6 +37,8 @@ final class HomeSettings {
         String[] themes = activity.getResources().getStringArray(R.array.settings_theme_options);
         ui.card(activity.getString(R.string.settings_theme), themes[preferences.themeIndex()],
                 R.color.surface, this::chooseTheme).setId(R.id.settingsTheme);
+        ui.card("Live demo server", new BackendConfig(activity).url(), R.color.surface,
+                () -> new BackendSettingsDialog(activity, refresh).show()).setTag("settings-backend");
         ui.section(R.string.settings_about_section);
         ui.card(activity.getString(R.string.settings_about), activity.getString(R.string.settings_about_subtitle),
                 R.color.surface, () -> info(R.string.settings_about, R.string.settings_about_message));

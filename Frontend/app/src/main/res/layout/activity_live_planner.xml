@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/liveRoot" android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:background="@color/background" android:paddingHorizontal="20dp">
+    <com.google.android.material.appbar.MaterialToolbar android:id="@+id/liveToolbar"
+        android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="56dp" />
+    <androidx.core.widget.NestedScrollView android:id="@+id/liveScroll" android:layout_width="match_parent"
+        android:layout_height="0dp" android:layout_weight="1" android:fillViewport="true">
+        <LinearLayout android:id="@+id/liveContent" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:paddingBottom="24dp" />
+    </androidx.core.widget.NestedScrollView>
+    <LinearLayout android:id="@+id/liveComposer" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical" android:paddingVertical="8dp">
+        <androidx.appcompat.widget.AppCompatEditText android:id="@+id/liveInput" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:minHeight="56dp" android:maxLength="500" android:maxLines="5"
+            android:inputType="textCapSentences|textMultiLine" android:hint="Describe your travel plans…"
+            android:contentDescription="Message to planning assistant" />
+        <com.google.android.material.button.MaterialButton android:id="@+id/liveSend" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:minHeight="48dp" android:text="Send to planner" />
+    </LinearLayout>
+</LinearLayout>

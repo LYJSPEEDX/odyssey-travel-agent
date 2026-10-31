@@ -25,7 +25,7 @@
     <string name="my_subtitle">Every journey deserves a place to stay.</string>
     <string name="my_empty_title">No trips yet</string>
     <string name="my_empty_description">Your next adventure starts here.\nGenerate a trip to save it to your collection.</string>
-    <string name="local_only_notice">Saved on this device · No cloud sync\nUninstalling or clearing app data removes your saved trips.</string>
+    <string name="local_only_notice">Itinerary snapshots are saved on this device. Live plans and generated trips also remain on your configured server.\nClearing app data removes local snapshots and your anonymous server identity.</string>
     <plurals name="saved_trip_meta">
         <item quantity="one">%1$s · %2$d day</item>
         <item quantity="other">%1$s · %2$d days</item>
@@ -67,7 +67,7 @@
     <string name="settings_about_subtitle">Odyssey · From inspiration to itinerary</string>
     <string name="settings_about_message">Odyssey is a travel planning prototype guided by conversation and simple choices.\n\nThis version uses local sample data. Live pricing, bookings and AI services are not connected.</string>
     <string name="settings_storage">Data and privacy</string>
-    <string name="settings_storage_description">Your saved trips, display name and appearance preferences stay on this device and are excluded from system backups. There is no cloud sync. Uninstalling or clearing app data removes this local data.</string>
+    <string name="settings_storage_description">Profiles, preferences and itinerary snapshots are saved on this device. Live planning sends profile city, currency and travel preferences to your configured server. Planning conversations and generated trips are also stored there under an anonymous session. Clearing app data loses local snapshots and that server identity; it does not delete server records.</string>
     <string name="settings_version">Version</string>
     <string name="settings_version_format">%1$s (%2$d)</string>
     <string name="settings_version_unavailable">Version unavailable</string>

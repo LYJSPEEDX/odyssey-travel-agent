@@ -1,7 +1,7 @@
 # Current integration status
 
 Backend generation now emits the shared frontend v2 contract. Android's `SavedTrip.fromContract`
-accepts it and preserves v1 reading. HTTP integration and generation jobs/SSE are still pending.
+accepts it and preserves v1 reading. HTTP integration now uses a separate live planner with persisted sessions, explicit proposal confirmation, generation and server-trip recovery. Generation jobs/SSE remain pending. See [live demo setup](../live-android-demo.md).
 See [v2](v2.md) for null/unknown states, date and cost semantics, fixture verification and legacy handling.
 The historical walkthrough below may describe earlier UI limitations; the code and v2 schema are authoritative.
 
