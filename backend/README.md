@@ -1,7 +1,6 @@
 # Odyssey Backend
 
-FastAPI + PostgreSQL backend for the Odyssey travel agent (LangGraph agents to follow).
-This is the foundation: configuration, health check, anonymous session id and the database layer.
+FastAPI + PostgreSQL backend with specialist research agents, itinerary assembly and a persisted planning chatbot.
 
 ## Local setup
 
@@ -20,7 +19,7 @@ powershell -c "irm https://astral.sh/uv/install.ps1 | iex"       # Windows
 ```sh
 git clone https://github.com/LYJSPEEDX/odyssey-travel-agent.git
 cd odyssey-travel-agent
-git checkout feat/backend-travel-agent
+git checkout main
 cd backend
 uv sync
 ```
@@ -167,8 +166,7 @@ unsent drafts or UI generation state. Unknown top-level fields are rejected.
 
 Send POST `/trips` with `adults` and `currency`, allow for the synchronous generation
 time, and read the v2 itinerary from the response body. Persist `X-Session-Id` for
-subsequent reads; `Location` identifies the saved trip. The existing Android v1
-parser does not accept v2 and needs a separate update. POST is not idempotent.
+subsequent reads; `Location` identifies the saved trip. Android accepts the shared frontend v2 contract (`contractId: "odyssey.frontend.itinerary"`) and retains v1 support; its HTTP integration remains pending. POST is not idempotent.
 
 ### Tests
 
@@ -306,3 +304,7 @@ validation response. This endpoint has no runtime mock or fallback data.
 The shared application also serves `/v1/planning-sessions` (create, restore, turns, finalize, delete). The independently scoped `app/planning` component reuses `.env`, the model factory, session ownership middleware and PostgreSQL. It collects explicitly confirmed travel facts and exports an existing `TripRequest`; it does not generate an itinerary or change Android.
 
 Start the backend normally, then run `uv run python -m scripts.planning_chat`, or use the **planning chatbot** Swagger section. See [component workflow and API examples](docs/planning-chatbot.md) for configuration, confirmation/revision rules, generation handoff, tests and limitations.
+
+## Canonical itinerary contract
+
+See [shared v2 contract](../docs/itinerary-contract/v2.md). Both generation endpoints now emit the frontend v2 shape. Runtime validates the packaged schema plus semantic checks. Itineraries remain PARTIAL even when the database execution status is READY. Old backend-format v2 read requests return an explicit unsupported-contract error; stored records are preserved.

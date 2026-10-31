@@ -1,3 +1,10 @@
+# Current integration status
+
+Backend generation now emits the shared frontend v2 contract. Android's `SavedTrip.fromContract`
+accepts it and preserves v1 reading. HTTP integration and generation jobs/SSE are still pending.
+See [v2](v2.md) for null/unknown states, date and cost semantics, fixture verification and legacy handling.
+The historical walkthrough below may describe earlier UI limitations; the code and v2 schema are authoritative.
+
 # Android 接入说明
 
 当前状态：本地 JSON → 校验 → 英文行程详情 → 本机保存已接入；不包含 HTTP、真实模型、图片下载、地图或预订。

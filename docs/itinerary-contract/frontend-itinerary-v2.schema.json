@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Odyssey frontend itinerary v2",
-  "description": "Frontend-defined Odyssey v2; distinct from the backend MVP schema. Supports existing v1 UI structures.",
+  "description": "Canonical Odyssey itinerary contract shared by Android and backend. Unknown facts are explicit; existing frontend v1 remains supported.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -167,7 +167,14 @@
               ]
             },
             "includeIntercityTransport": {
-              "type": "boolean"
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             }
           }
         },
@@ -693,7 +700,8 @@
           "type": "string",
           "enum": [
             "HARD",
-            "SOFT"
+            "SOFT",
+            "UNSPECIFIED"
           ]
         },
         "description": {
@@ -829,12 +837,26 @@
           ]
         },
         "countryCode": {
-          "type": "string",
-          "pattern": "^[A-Z]{2}$"
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Z]{2}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "timeZone": {
-          "type": "string",
-          "minLength": 1
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "address": {
           "anyOf": [
@@ -1140,7 +1162,14 @@
           ]
         },
         "isSelfTransfer": {
-          "type": "boolean"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       }
     },
@@ -1723,16 +1752,30 @@
           "minLength": 1
         },
         "roomType": {
-          "type": "string",
-          "minLength": 1
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "roomCount": {
           "type": "integer",
           "minimum": 1
         },
         "guestCapacity": {
-          "type": "integer",
-          "minimum": 1
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "amenities": {
           "type": "array",
@@ -2184,7 +2227,8 @@
                     "BREAKFAST",
                     "LUNCH",
                     "DINNER",
-                    "SNACK"
+                    "SNACK",
+                    "UNKNOWN"
                   ]
                 },
                 "cuisine": {

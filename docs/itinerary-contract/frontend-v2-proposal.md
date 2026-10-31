@@ -1,3 +1,8 @@
+# Status update
+
+This proposal has been implemented as the [shared v2 contract](v2.md). Backend assembly now
+emits frontend v2; references below to an incompatible current backend describe the archived MVP format.
+
 # 行程 v2：前端展示需求草案
 
 状态：**前端先行定义 v2**。前端协议与当前后端 v2 MVP 不同，需要后续双方联调；本地已有 schema 和示例，真实模型尚未接入。

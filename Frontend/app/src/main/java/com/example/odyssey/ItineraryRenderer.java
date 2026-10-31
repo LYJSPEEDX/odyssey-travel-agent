@@ -66,7 +66,7 @@ final class ItineraryRenderer {
         JSONObject budget = root.getJSONObject("budget");
         journal.text(header, summary.getInt("dayCount") + " days  ·  " + label(request.getString("companions"))
                 + "  ·  " + label(root.getString("status")), 12, false);
-        if (budget.getJSONArray("activeCostItemIds").length() > 0)
+        if (hasPricedActiveCosts())
             journal.text(header, money(budget.getJSONObject("total"), false) + " est. · Entire party"
                     + (budget.getString("completeness").equals("PARTIAL") ? " · Partial" : ""), 14, true);
         JSONArray notices = root.getJSONObject("quality").getJSONArray("notices");
@@ -263,7 +263,8 @@ final class ItineraryRenderer {
                         .append(" · Flight: ").append(optional(detail, "flightNumber", "To be confirmed"))
                         .append("\nOperating airline: ").append(optional(detail, "operatingAirline", "To be confirmed"))
                         .append("\nBaggage: ").append(optional(detail, "checkedBaggageKgPerPerson", "Unknown")).append(" kg per person");
-                if (detail.getBoolean("isSelfTransfer")) result.append("\nSelf-transfer — verify connection and entry requirements.");
+                if (detail.isNull("isSelfTransfer")) result.append("\nSelf-transfer status unverified.");
+                else if (detail.getBoolean("isSelfTransfer")) result.append("\nSelf-transfer — verify connection and entry requirements.");
             } else {
                 if (detail.has("operator")) result.append("\nOperator: ").append(optional(detail, "operator", "To be confirmed"));
                 result.append("\n").append(detail.getString("routeInstructions"));
@@ -291,8 +292,8 @@ final class ItineraryRenderer {
                 boolean planned = selected != null && selected.getString("id").equals(option.getString("id"));
                 String body = (planned ? "In this plan · not booked\n" : "Alternative · not included in total\n")
                         + option.getString("reason") + "\n" + placeDetails(option.getString("placeId"))
-                        + "\n" + option.getInt("roomCount") + " × " + option.getString("roomType")
-                        + " · Capacity: " + option.getInt("guestCapacity")
+                        + "\n" + option.getInt("roomCount") + " × " + optional(option, "roomType", "Room type unverified")
+                        + " · Capacity: " + optional(option, "guestCapacity", "Unverified")
                         + "\n" + join(option.getJSONArray("amenities"))
                         + "\nAvailability: " + label(option.getString("availability"))
                         + "\n" + optional(option, "cancellationSummary", "Cancellation policy unverified")
@@ -313,13 +314,19 @@ final class ItineraryRenderer {
             }
         }
     }
+    private boolean hasPricedActiveCosts() throws JSONException {
+        JSONArray active = doc.root.getJSONObject("budget").getJSONArray("activeCostItemIds");
+        for (int i = 0; i < active.length(); i++)
+            if (!doc.get(active.getString(i)).isNull("displayTotal")) return true;
+        return false;
+    }
     private void budget() throws JSONException {
         // 没有已计价项目时显示待估价，不能把占位的零金额误导为“免费旅行”。
         // 汇总金额由数据提供方给出；不能将所有备选酒店/交通都加进当前总预算。
         JSONObject budget = doc.root.getJSONObject("budget");
         ui.text("Estimated budget", 22, true);
         JSONArray active = budget.getJSONArray("activeCostItemIds");
-        ui.card(active.length() == 0 ? "Estimate pending" : money(budget.getJSONObject("total")),
+        ui.card(!hasPricedActiveCosts() ? "Estimate pending" : money(budget.getJSONObject("total")),
                 "Entire party · whole trip\n" + (budget.getString("completeness").equals("PARTIAL")
                         ? "Partial estimate — excludes unpriced items." : "Estimate only — not a quote.")
                         + "\n" + join(budget.getJSONArray("notes")), R.color.surface, null);

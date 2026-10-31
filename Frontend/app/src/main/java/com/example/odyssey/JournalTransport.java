@@ -47,7 +47,8 @@ final class JournalTransport {
             endpoint(clocks, leg.getJSONObject("departure"), "Departs"); endpoint(clocks, leg.getJSONObject("arrival"), "Arrives");
             journal.text(card, JournalTime.duration(leg.getInt("durationMinutes")) + " · Flight "
                     + (detail.isNull("flightNumber") ? "to confirm" : detail.getString("flightNumber")), 12, false);
-            if (detail.getBoolean("isSelfTransfer")) journal.text(card, "Self-transfer · Check entry and connection", 12, true);
+            if (detail.isNull("isSelfTransfer")) journal.text(card, "Self-transfer status unverified", 12, false);
+            else if (detail.getBoolean("isSelfTransfer")) journal.text(card, "Self-transfer · Check entry and connection", 12, true);
         }
         journal.text(card, "Flight & baggage details  ↗", 12, true);
     }
