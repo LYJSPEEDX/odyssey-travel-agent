@@ -52,6 +52,7 @@ public class LivePlannerActivity extends AppCompatActivity {
     private final Calendar month = Calendar.getInstance();
     private int shownStep = -1;
     private String chosenOption = "", tappedChoice = "";
+    private int shownMessages;
     private final java.util.Set<String> constraints = new java.util.LinkedHashSet<>();
     private final androidx.activity.result.ActivityResultLauncher<String> localNetwork = registerForActivityResult(
             new androidx.activity.result.contract.ActivityResultContracts.RequestPermission(), granted -> {
@@ -115,6 +116,7 @@ public class LivePlannerActivity extends AppCompatActivity {
     }
     private void render() {
         ui.content.removeAllViews();
+        if (!model.busy) tappedChoice = "";
         boolean saved = !model.savedTripId.isEmpty();
         boolean generating = model.busy && model.generationUncertain;
         boolean planning = model.session != null && !saved && !generating;
@@ -194,20 +196,30 @@ public class LivePlannerActivity extends AppCompatActivity {
         JSONObject answer = current.optJSONObject("answer");
         JSONObject ready = session.getJSONObject("generationReadiness");
         if (!ready.getBoolean("ready") && model.selected == 7 && ready.getJSONArray("blockingFields").length() > 0) renderBlocking(ready.getJSONArray("blockingFields"));
-        boolean isCurrent = model.selected == LivePlanningProtocol.index(session.getString("currentStep"));
-        if (messages.length() == 0 && isCurrent && !session.optString("assistantMessage").isEmpty()) bubble(session.getString("assistantMessage"), false);
-        for (int i = 0; i < messages.length(); i++) {
-            JSONObject message = messages.getJSONObject(i);
-            bubble(message.getString("text"), message.getString("role").equals("USER"));
-        }
+        // 点预设或 Skip 后等回复时只显示进度；跳过的步骤之后也不显示这段对话。
+        boolean presetTurn = model.busy && !tappedChoice.isEmpty();
+        boolean skipped = model.skipped.contains(model.selected) && "CONFIRMED".equals(current.getString("state"));
         if (answer != null && !proposing) ui.card(LivePlanningProtocol.headline(step, answer), LivePlanningProtocol.detail(step, answer), R.color.purple, null);
-        if (model.busy) progress(model.status);
-        if (proposing) renderProposal(step, proposal);
-        else if (answer == null) {
+        // 操作区固定在上面，对话始终在操作区下面。
+        if (proposing && !presetTurn) renderProposal(step, proposal);
+        else if (answer == null && !proposing) {
             if (model.selected == 2) renderCalendar();
             else renderChoices();
         }
         if (ready.getBoolean("ready")) renderReview(steps);
+        boolean isCurrent = model.selected == LivePlanningProtocol.index(session.getString("currentStep"));
+        if (!presetTurn && !skipped) {
+            if (messages.length() == 0 && isCurrent && !session.optString("assistantMessage").isEmpty()) bubble(session.getString("assistantMessage"), false);
+            for (int i = 0; i < messages.length(); i++) {
+                JSONObject message = messages.getJSONObject(i);
+                bubble(message.getString("text"), message.getString("role").equals("USER"));
+            }
+        }
+        if (model.busy) progress(model.status);
+        // 助手追问时操作区可能很高（日历），滚到最新一条；有提议时留在上面看选项。
+        int shown = presetTurn || skipped ? 0 : messages.length();
+        if (shown > shownMessages && !proposing) scroll.post(() -> scroll.smoothScrollTo(0, scroll.getChildAt(0).getHeight()));
+        shownMessages = shown;
     }
     /** 多个提议并列，点击变紫，再用同一个按钮确认；同名结果只留一个。 */
     private void renderProposal(String step, JSONObject proposal) throws JSONException {
@@ -276,7 +288,9 @@ public class LivePlannerActivity extends AppCompatActivity {
     private void choice(String title, String detail, String photo, String message) {
         ui.content.addView(optionCard(title, detail, photo, message.equals(tappedChoice), () -> send(message)), cardParams());
     }
-    private void skip(String message) { button("Skip", R.color.surface, () -> send(message), "live-skip"); }
+    private void skip(String message) {
+        button("Skip", R.color.surface, () -> { if (!model.busy) model.skipped.add(model.selected); send(message); }, "live-skip");
+    }
     private void send(String message) {
         if (model.busy) return;
         tappedChoice = message; model.choose(message);
@@ -305,6 +319,8 @@ public class LivePlannerActivity extends AppCompatActivity {
         TextView name = new TextView(this); name.setText(title); name.setTextSize(16);
         AppFonts.style(name, android.graphics.Typeface.BOLD);
         name.setTextColor(ui.color(selected ? R.color.on_accent : R.color.text_primary));
+        // 地名选项只有一行，文字居中。
+        if (detail.isEmpty() && model.selected <= 1) name.setGravity(android.view.Gravity.CENTER);
         body.addView(name);
         if (!detail.isEmpty()) {
             TextView caption = new TextView(this); caption.setText(detail); caption.setTextSize(13);

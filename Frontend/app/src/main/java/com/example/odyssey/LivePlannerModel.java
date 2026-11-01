@@ -33,6 +33,7 @@ final class LivePlannerModel {
     String error = "", status = "", savedTripId = "", resultJson = "";
     boolean busy, generationUncertain;
     int selected;
+    final java.util.Set<Integer> skipped = new java.util.HashSet<>();
     private volatile boolean autoConfirm;
     final TripDateRange dates = new TripDateRange();
     private int event;
@@ -217,7 +218,7 @@ final class LivePlannerModel {
         android.content.SharedPreferences.Editor editor = config.preferences.edit();
         for (int i = 0; i < 8; i++) editor.remove(key + "_draft_" + i);
         editor.commit(); persist();
-        dates.clear();
+        dates.clear(); skipped.clear();
         startInternal();
     }); }
     static String friendly(Exception exception) {
