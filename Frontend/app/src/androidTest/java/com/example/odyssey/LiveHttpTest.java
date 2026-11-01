@@ -66,7 +66,7 @@ public class LiveHttpTest {
                 assertEquals("AWAITING_CONFIRMATION", model.session.getJSONObject("steps").getJSONObject(LivePlanningProtocol.STEPS[i]).getString("state"));
                 assertFalse(model.session.getJSONObject("generationReadiness").getBoolean("ready"));
                 if (i == 0) { scenario.recreate(); await(() -> !model.busy); }
-                scenario.onActivity(activity -> activity.findViewById(R.id.liveContent).findViewWithTag("live-confirm-0").performClick());
+                scenario.onActivity(activity -> activity.findViewById(R.id.liveContent).findViewWithTag("live-confirm").performClick());
                 await(() -> !model.busy && model.session.optJSONObject("proposal") == null);
                 assertEquals("CONFIRMED", model.session.getJSONObject("steps").getJSONObject(LivePlanningProtocol.STEPS[i]).getString("state"));
             }

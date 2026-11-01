@@ -43,7 +43,7 @@ final class LivePlanningProtocol {
             case "ORIGIN": case "DESTINATION": return a.getString("label") + " · " + a.getString("countryCode");
             case "DATES": return "FIXED".equals(a.getString("mode"))
                     ? "Depart " + a.getString("startDate") + " · Leave destination " + a.getString("endDate") : "Flexible dates";
-            case "COMPANIONS": return a.getInt("adults") + " adults · " + (a.getJSONArray("childrenAges").length() == 0 ? "No children" : "Children aged " + a.getJSONArray("childrenAges")) + "\n" + a.getString("description");
+            case "COMPANIONS": return a.getInt("adults") + (a.getInt("adults") == 1 ? " adult · " : " adults · ") + (a.getJSONArray("childrenAges").length() == 0 ? "No children" : "Children aged " + a.getJSONArray("childrenAges")) + "\n" + a.getString("description");
             case "BUDGET": return a.getString("description") + "\n" + budgetAmount(a) + "\n" + a.getString("currency") + " · "
                     + a.getString("scope").toLowerCase(java.util.Locale.ROOT).replace('_', ' ')
                     + "\nFlights " + (a.getBoolean("includesFlights") ? "included" : "excluded");
@@ -57,6 +57,56 @@ final class LivePlanningProtocol {
                 JSONArray preferences = a.getJSONArray("preferences"); StringBuilder lines = new StringBuilder();
                 for (int i = 0; i < preferences.length(); i++) { if (i > 0) lines.append(" · "); lines.append(preferences.getString(i)); }
                 return lines.toString();
+        }
+    }
+    /** 选项和已确认答案的主文字：最重要的事实，用大字加粗。 */
+    static String headline(String step, JSONObject a) throws JSONException {
+        switch (step) {
+            case "ORIGIN": case "DESTINATION": return a.getString("label");
+            case "DATES": return "FIXED".equals(a.getString("mode")) ? dates(a) : "Flexible dates";
+            case "COMPANIONS": return companions(a);
+            case "BUDGET": return budgetTitle(a);
+            default: return answer(step, a);
+        }
+    }
+    /** 主文字之外的补充信息，没有时返回空字符串。 */
+    static String detail(String step, JSONObject a) throws JSONException {
+        switch (step) {
+            case "DATES":
+                if (!"FIXED".equals(a.getString("mode"))) return "";
+                int nights = TripDates.daysBetweenInclusive(dateKey(a.getString("startDate")), dateKey(a.getString("endDate"))) - 1;
+                return nights + (nights == 1 ? " night" : " nights");
+            case "COMPANIONS": return a.getString("description");
+            case "BUDGET": return budgetCaption(a);
+            default: return "";
+        }
+    }
+    /** 没有后端推荐接口可用，按资料里的所在地和国家给出发地建议。 */
+    static java.util.List<String> originSuggestions(JSONObject creation) {
+        JSONObject profile = creation == null ? null : creation.optJSONObject("profile");
+        String home = profile == null || profile.isNull("residentialLocation") ? "" : profile.optString("residentialLocation");
+        String country = profile == null || profile.isNull("residenceCountryCode") ? "" : profile.optString("residenceCountryCode");
+        java.util.List<String> places = new java.util.ArrayList<>();
+        if (!home.isEmpty()) places.add(home);
+        String homeCity = home.split(",")[0].trim();
+        for (String city : citiesIn(country)) {
+            if (places.size() == 3) break;
+            if (!city.split(",")[0].trim().equalsIgnoreCase(homeCity)) places.add(city);
+        }
+        return places;
+    }
+    private static String[] citiesIn(String country) {
+        switch (country) {
+            case "AU": return new String[]{"Sydney, Australia", "Melbourne, Australia", "Brisbane, Australia"};
+            case "CN": return new String[]{"Shanghai, China", "Beijing, China", "Guangzhou, China"};
+            case "US": return new String[]{"New York, United States", "Los Angeles, United States", "San Francisco, United States"};
+            case "GB": return new String[]{"London, United Kingdom", "Manchester, United Kingdom", "Edinburgh, United Kingdom"};
+            case "JP": return new String[]{"Tokyo, Japan", "Osaka, Japan", "Fukuoka, Japan"};
+            case "NZ": return new String[]{"Auckland, New Zealand", "Wellington, New Zealand", "Christchurch, New Zealand"};
+            case "CA": return new String[]{"Toronto, Canada", "Vancouver, Canada", "Montreal, Canada"};
+            case "SG": return new String[]{"Singapore"};
+            case "HK": return new String[]{"Hong Kong"};
+            default: return new String[]{"Sydney, Australia", "Singapore", "London, United Kingdom"};
         }
     }
     /** 行程卡上的城市名；"Osaka, Japan" 只取 Osaka。 */

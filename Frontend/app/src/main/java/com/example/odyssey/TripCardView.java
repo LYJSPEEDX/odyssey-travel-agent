@@ -30,6 +30,9 @@ final class TripCardView {
         text(card, R.id.editorialDuration, ui.context.getResources().getQuantityString(
                 R.plurals.editorial_days, trip.totalDays, trip.totalDays));
         text(card, R.id.editorialKeywords, keywords(trip));
+        // 行程摘要可能很长，卡片上只留两行，完整内容在详情页。
+        TextView keywords = card.findViewById(R.id.editorialKeywords);
+        keywords.setMaxLines(2); keywords.setEllipsize(android.text.TextUtils.TruncateAt.END);
         text(card, R.id.editorialDates, trip.dates);
         // 字体放大时增加封面高度，不能让标题覆盖顶部标签。
         View cover = card.findViewById(R.id.editorialCover);

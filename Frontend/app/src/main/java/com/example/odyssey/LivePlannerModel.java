@@ -33,6 +33,7 @@ final class LivePlannerModel {
     String error = "", status = "", savedTripId = "", resultJson = "";
     boolean busy, generationUncertain;
     int selected;
+    private volatile boolean autoConfirm;
     final TripDateRange dates = new TripDateRange();
     private int event;
 
@@ -87,7 +88,8 @@ final class LivePlannerModel {
         session = response; selected = LivePlanningProtocol.index(response.getString("currentStep"));
         persist();
     }
-    void start() { run("Opening your planning session…", () -> {
+    void start() { run("Opening your planning session…", this::startInternal); }
+    private void startInternal() throws Exception {
         if (session != null) { restoreInternal(); return; }
         if (creation == null) {
             JSONObject profile = new JSONObject();
@@ -101,22 +103,38 @@ final class LivePlannerModel {
             persist();
         }
         apply(transport.call("POST", "/v1/planning-sessions", creation, false));
-    }); }
+    }
     void restore() { if (session == null) start(); else run("Restoring confirmed answers…", this::restoreInternal); }
     private void restoreInternal() throws Exception { apply(transport.call("GET", path(), null, false)); }
+    /** 用户点了预设选项：先发文字，后端只给出一个提议时直接确认，不用再点一次。 */
+    void choose(String text) {
+        if (busy || session == null || pendingTurn != null) return;
+        autoConfirm = true;
+        try { submit(LivePlanningProtocol.turn(session, LivePlanningProtocol.STEPS[selected], text)); }
+        catch (Exception exception) { autoConfirm = false; error = friendly(exception); publish(); }
+    }
     void send(String text) {
         if (busy || session == null || pendingTurn != null) return;
+        autoConfirm = false;
         try { submit(LivePlanningProtocol.turn(session, LivePlanningProtocol.STEPS[selected], text)); }
         catch (Exception exception) { error = friendly(exception); publish(); }
     }
     void confirm(String optionId) {
         if (busy || session == null || pendingTurn != null) return;
+        autoConfirm = false;
         try { submit(LivePlanningProtocol.confirm(session, optionId)); }
         catch (Exception exception) { error = friendly(exception); publish(); }
     }
     private void submit(JSONObject turn) { run("Waiting for the planning assistant…", () -> {
         pendingTurn = turn; persist();
         deliverPending();
+        boolean confirmNow = autoConfirm; autoConfirm = false;
+        JSONObject proposal = session.optJSONObject("proposal");
+        if (confirmNow && proposal != null && proposal.getJSONArray("options").length() == 1) {
+            pendingTurn = LivePlanningProtocol.confirm(session, proposal.getJSONArray("options").getJSONObject(0).getString("id"));
+            persist();
+            deliverPending();
+        }
     }); }
     void replay() { if (pendingTurn != null) run("Checking the original reply…", this::deliverPending); }
     private void deliverPending() throws Exception {
@@ -192,13 +210,15 @@ final class LivePlannerModel {
     }); }
     void allowAnotherGeneration() { if (!busy) { generationUncertain = false; error = "";
         run("Preparing a new attempt…", this::persist); } }
-    void newSession() { run("Starting a fresh plan…", () -> {
+    void newSession() { run("Getting things ready…", () -> {
         if (generationUncertain) throw new IOException("Check saved server trips or explicitly acknowledge a new generation first.");
         session = null; creation = null; pendingTurn = null; savedTripId = ""; resultJson = "";
         serverTrips = new JSONArray(); selected = 0;
         android.content.SharedPreferences.Editor editor = config.preferences.edit();
         for (int i = 0; i < 8; i++) editor.remove(key + "_draft_" + i);
         editor.commit(); persist();
+        dates.clear();
+        startInternal();
     }); }
     static String friendly(Exception exception) {
         if (exception instanceof BackendHttp.ApiError) {

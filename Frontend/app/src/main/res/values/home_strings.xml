@@ -32,7 +32,6 @@
     <string-array name="settings_theme_options">
         <item>System default</item><item>Light</item><item>Dark</item>
     </string-array>
-    <string name="home_recent_trips">Your recent trips.</string>
     <string name="settings_server_section">Connection</string>
     <string name="settings_server">Server</string>
     <string name="settings_about_section">About</string>

@@ -32,6 +32,7 @@ public class HomeActivity extends AppCompatActivity {
     // 读取本机资料的工作线程，不阻塞界面。
     private final java.util.concurrent.ExecutorService worker = java.util.concurrent.Executors.newSingleThreadExecutor();
     private boolean checkingProfile, openingProfile;
+    private boolean generating;
     private boolean profileComplete, profileChecked;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +42,12 @@ public class HomeActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_home);
         navigation = findViewById(R.id.bottomNavigation);
+        // 生成结束时刷新，提示消失、新行程出现。
+        LivePlannerModel live = LivePlannerModel.get(getApplication());
+        live.updates.observe(this, ignored -> {
+            boolean now = live.busy && live.generationUncertain;
+            if (now != generating) { generating = now; if (ui != null) render(); }
+        });
         scroll = findViewById(R.id.homeScroll);
         ui = new HomeUi(findViewById(R.id.homeContent));
         if (savedInstanceState != null) {
@@ -113,24 +120,15 @@ public class HomeActivity extends AppCompatActivity {
     private void home() {
         // 品牌栏保持轻量；主要视觉焦点留给下方照片，而不是重复的彩色面板。
         AppFonts.style(ui.text(getString(R.string.editorial_wordmark), 30, true), android.graphics.Typeface.BOLD);
+        generationStatus();
         View banner = LayoutInflater.from(this).inflate(R.layout.home_banner, ui.content, false);
         banner.setOnClickListener(view -> startPlanner());
         ui.content.addView(banner);
-        // 首页只展示用户自己最近的行程，没有行程时留白显示邮戳。
-        try {
-            List<SavedTrip> trips = new TripStore(this).list();
-            if (!trips.isEmpty()) ui.text(getString(R.string.home_recent_trips), 23, true).setPadding(0, ui.dp(28), 0, ui.dp(8));
-            for (int i = 0; i < Math.min(trips.size(), 3); i++) {
-                SavedTrip trip = trips.get(i);
-                TripCardView.add(ui, trip, () -> openTrip(trip.id)).setTag("saved-" + trip.id);
-            }
-        } catch (JSONException | ClassCastException exception) {
-            ui.text(getString(R.string.trip_read_error), 14, false);
-        }
         ui.stamps();
     }
     private void myTrips() {
         ui.text(getString(R.string.editorial_my_title), 28, true);
+        generationStatus();
         new HomeUi(ui.group()).actionRow(getString(R.string.profile_edit), "", () -> startActivity(new Intent(this, RegistrationActivity.class)
                 .putExtra(RegistrationActivity.EXTRA_EDIT_PROFILE, true))).setId(R.id.editProfile);
         try {
@@ -152,7 +150,13 @@ public class HomeActivity extends AppCompatActivity {
         ui.text(getString(R.string.local_only_notice), 12, false);
         ui.stamps();
     }
-    private void startPlanner() { startActivity(new Intent(this, LivePlannerActivity.class)); }
+    /** 行程还在后台生成时给出提示；后端没有进度推送，只能告诉用户正在进行。 */
+    private void generationStatus() {
+        LivePlannerModel model = LivePlannerModel.get(getApplication());
+        if (model.busy && model.generationUncertain) ui.card("Your trip is being built", "Usually takes 2–4 minutes. We’ll add it to My Trips when it’s ready.",
+                R.color.purple_light, () -> startActivity(new Intent(this, LivePlannerActivity.class)));
+    }
+    private void startPlanner() { startActivity(new Intent(this, LivePlannerActivity.class).putExtra(LivePlannerActivity.EXTRA_NEW_PLAN, true)); }
     /** 首页保持桌面入口；资料检查完成后由正确页面接手欢迎层。 */
     private void checkProfile() {
         if (checkingProfile) return;

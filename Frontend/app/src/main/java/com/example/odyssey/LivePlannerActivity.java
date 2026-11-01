@@ -29,17 +29,30 @@ import java.util.List;
 public class LivePlannerActivity extends AppCompatActivity {
     private static final int[] SEGMENTS = {R.id.progressStep1, R.id.progressStep2, R.id.progressStep3, R.id.progressStep4,
             R.id.progressStep5, R.id.progressStep6, R.id.progressStep7, R.id.progressStep8};
-    private static final String[] HINTS = {"Your departure city and country.", "Your destination city and country.",
-            "Pick your departure and return dates.", "How many adults, and whether any children are travelling.",
-            "Currency, amount, whether it covers everyone or per person, the whole trip or per day, and whether flights are included.",
-            "Anything essential or preferred. You can also say there are no extra requirements.",
-            "How busy you want each day to be.", "Food, culture, nature or anything else you want to experience."};
+    /** 预设选项：标题、说明和发给助手的完整句子。 */
+    private static final String[][] COMPANIONS = {{"Solo", "Just me", "One adult, no children."}, {"Partner", "Two of us", "Two adults, no children."},
+            {"Friends", "A group of friends", "Travelling with friends, adults only."}, {"Family", "Travelling with family", "Travelling with family."}};
+    private static final String[][] BUDGETS = {{"Essentials", "AUD 130–210 · per person, per day", "About AUD 170 per person per day, flights not included."},
+            {"Comfort", "AUD 210–350 · per person, per day", "About AUD 280 per person per day, flights not included."},
+            {"Treat yourself", "AUD 350+ · per person, per day", "About AUD 450 per person per day, flights not included."}};
+    private static final String[][] CONSTRAINTS = {{"Vegetarian", "Meat-free choices"}, {"With pets", "Pet-friendly stays"}, {"With older adults", "More breaks, easier connections"},
+            {"Less walking", "Short walking distances"}, {"See more", "Fit more into each day"}, {"Take it slow", "Space to rest"}};
+    private static final String[][] PACES = {{"Relaxed", "One main activity, with breaks", "A relaxed pace with regular breaks."},
+            {"Balanced", "A mix of exploring and downtime", "A balanced pace."}, {"Packed", "See more each day", "A packed pace, seeing more each day."}};
+    private static final String[][] EXPERIENCES = {{"Local discoveries", "Food, neighbourhoods and everyday culture", "Local discoveries: food, neighbourhoods and everyday culture."},
+            {"Nature time", "Parks, scenery and time outdoors", "Nature time: parks, scenery and time outdoors."},
+            {"Classic highlights", "The memorable sights", "Classic highlights and the memorable sights."}};
+    private static final String[] DESTINATIONS = {"Tokyo, Japan", "Bali, Indonesia", "Kyoto, Japan", "Paris, France", "New York, United States"};
+    /** 从首页横幅进入：上一趟已生成完时开始新计划。 */
+    static final String EXTRA_NEW_PLAN = "new_plan";
     private LivePlannerModel model;
     private HomeUi ui;
     private AppCompatEditText input;
     private NestedScrollView scroll;
     private final Calendar month = Calendar.getInstance();
     private int shownStep = -1;
+    private String chosenOption = "", tappedChoice = "";
+    private final java.util.Set<String> constraints = new java.util.LinkedHashSet<>();
     private final androidx.activity.result.ActivityResultLauncher<String> localNetwork = registerForActivityResult(
             new androidx.activity.result.contract.ActivityResultContracts.RequestPermission(), granted -> {
                 if (granted) connect();
@@ -77,9 +90,8 @@ public class LivePlannerActivity extends AppCompatActivity {
         tabs.setOnItemSelectedListener(item -> { openHomeTab(item.getItemId()); return false; });
         tabs.setOnItemReselectedListener(item -> openHomeTab(item.getItemId()));
         model.updates.observe(this, ignored -> render());
-        if (state == null && !model.busy && model.savedTripId.isEmpty() && !model.generationUncertain) {
-            connect();
-        }
+        boolean done = !model.savedTripId.isEmpty();
+        if (state == null && !model.busy && !model.generationUncertain && (!done || getIntent().getBooleanExtra(EXTRA_NEW_PLAN, false))) connect();
     }
     /** 打开即连接后端；已有会话时只读恢复，不会自动提交消息或确认提议。 */
     private void connect() {
@@ -88,7 +100,9 @@ public class LivePlannerActivity extends AppCompatActivity {
                 && ContextCompat.checkSelfPermission(this, permission) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
             localNetwork.launch(permission); return;
         }
-        if (model.session != null) model.restore(); else model.start();
+        if (!model.savedTripId.isEmpty()) model.newSession();
+        else if (model.session != null) model.restore();
+        else model.start();
     }
     private void back() {
         if (!model.savedTripId.isEmpty()) openHomeTab(R.id.nav_home);
@@ -178,36 +192,136 @@ public class LivePlannerActivity extends AppCompatActivity {
         boolean proposing = proposal != null && step.equals(proposal.getString("stepId"));
         JSONArray messages = current.getJSONArray("messages");
         JSONObject answer = current.optJSONObject("answer");
-        if (answer != null && !proposing) ui.card("Your answer", LivePlanningProtocol.answer(step, answer), R.color.purple, null);
-        if (model.selected == 2 && !proposing) renderCalendar();
-        else if (answer == null && !proposing && messages.length() == 0) ui.text(HINTS[model.selected], 14, false);
-        if (messages.length() == 0 && model.selected == LivePlanningProtocol.index(session.getString("currentStep"))
-                && !session.optString("assistantMessage").isEmpty()) bubble(session.getString("assistantMessage"), false);
+        JSONObject ready = session.getJSONObject("generationReadiness");
+        if (!ready.getBoolean("ready") && model.selected == 7 && ready.getJSONArray("blockingFields").length() > 0) renderBlocking(ready.getJSONArray("blockingFields"));
+        boolean isCurrent = model.selected == LivePlanningProtocol.index(session.getString("currentStep"));
+        if (messages.length() == 0 && isCurrent && !session.optString("assistantMessage").isEmpty()) bubble(session.getString("assistantMessage"), false);
         for (int i = 0; i < messages.length(); i++) {
             JSONObject message = messages.getJSONObject(i);
             bubble(message.getString("text"), message.getString("role").equals("USER"));
         }
+        if (answer != null && !proposing) ui.card(LivePlanningProtocol.headline(step, answer), LivePlanningProtocol.detail(step, answer), R.color.purple, null);
         if (model.busy) progress(model.status);
-        if (proposing) {
-            JSONArray options = proposal.getJSONArray("options");
-            for (int i = 0; i < options.length(); i++) {
-                JSONObject option = options.getJSONObject(i); String id = option.getString("id");
-                ui.card(option.getString("title"), LivePlanningProtocol.answer(step, option.getJSONObject("answer")), R.color.surface, null);
-                button("Confirm this answer", R.color.lime, () -> model.confirm(id), "live-confirm-" + i)
-                        .setEnabled(!model.busy && model.pendingTurn == null && !model.generationUncertain);
-            }
+        if (proposing) renderProposal(step, proposal);
+        else if (answer == null) {
+            if (model.selected == 2) renderCalendar();
+            else renderChoices();
         }
-        JSONObject ready = session.getJSONObject("generationReadiness");
         if (ready.getBoolean("ready")) renderReview(steps);
-        else if (model.selected == 7 && ready.getJSONArray("blockingFields").length() > 0) renderBlocking(ready.getJSONArray("blockingFields"));
-        if (model.selected > 0 || answer != null) button("Start a new plan", R.color.surface, model::newSession, "live-fresh");
+    }
+    /** 多个提议并列，点击变紫，再用同一个按钮确认；同名结果只留一个。 */
+    private void renderProposal(String step, JSONObject proposal) throws JSONException {
+        JSONArray options = proposal.getJSONArray("options");
+        List<JSONObject> distinct = new ArrayList<>();
+        java.util.Set<String> seen = new java.util.HashSet<>();
+        for (int i = 0; i < options.length(); i++) {
+            JSONObject option = options.getJSONObject(i);
+            if (seen.add(LivePlanningProtocol.headline(step, option.getJSONObject("answer")))) distinct.add(option);
+        }
+        boolean known = false;
+        for (JSONObject option : distinct) known |= option.getString("id").equals(chosenOption);
+        if (!known) chosenOption = distinct.size() == 1 ? distinct.get(0).getString("id") : "";
+        boolean photos = step.equals("DESTINATION");
+        for (JSONObject option : distinct) {
+            String id = option.getString("id");
+            JSONObject answer = option.getJSONObject("answer");
+            ui.content.addView(optionCard(LivePlanningProtocol.headline(step, answer), LivePlanningProtocol.detail(step, answer),
+                    photos ? LivePlanningProtocol.place(answer) : "", id.equals(chosenOption), () -> { chosenOption = id; render(); }), cardParams());
+        }
+        button("Confirm this answer", R.color.lime, () -> model.confirm(chosenOption), "live-confirm")
+                .setEnabled(!chosenOption.isEmpty() && !model.busy && model.pendingTurn == null && !model.generationUncertain);
+    }
+    /** 每一步的预设选项：点一下就发给助手；最后三步还能跳过。 */
+    private void renderChoices() {
+        switch (model.selected) {
+            case 0:
+                for (String place : LivePlanningProtocol.originSuggestions(model.creation)) choice(place, "", "", "Departing from " + place + ".");
+                break;
+            case 1:
+                String origin = "";
+                try { origin = LivePlanningProtocol.place(model.session.getJSONObject("steps").getJSONObject("ORIGIN").optJSONObject("answer")); }
+                catch (JSONException ignored) { /* 没有出发地时不做排除。 */ }
+                for (String place : DESTINATIONS) {
+                    String city = place.split(",")[0];
+                    if (!city.equalsIgnoreCase(origin)) choice(place, "", city, "Destination " + place + ".");
+                }
+                break;
+            case 3: choices(COMPANIONS); break;
+            case 4: choices(BUDGETS); break;
+            case 5: renderConstraints(); break;
+            case 6: choices(PACES); skip("A balanced pace."); break;
+            case 7: choices(EXPERIENCES); skip("General sightseeing."); break;
+            default: break;
+        }
+    }
+    private void renderConstraints() {
+        for (int i = 0; i < CONSTRAINTS.length; i += 2) {
+            LinearLayout row = new LinearLayout(this); row.setBaselineAligned(false);
+            for (int j = i; j < Math.min(i + 2, CONSTRAINTS.length); j++) {
+                String name = CONSTRAINTS[j][0];
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, -1, 1f);
+                params.setMargins(j > i ? ui.dp(10) : 0, ui.dp(5), 0, ui.dp(5));
+                row.addView(optionCard(name, CONSTRAINTS[j][1], "", constraints.contains(name), () -> {
+                    if (!constraints.remove(name)) constraints.add(name);
+                    render();
+                }), params);
+            }
+            ui.content.addView(row, new LinearLayout.LayoutParams(-1, -2));
+        }
+        button("Continue", R.color.lime, () -> send("Preferred: " + android.text.TextUtils.join(", ", constraints) + "."), "live-continue")
+                .setEnabled(!constraints.isEmpty() && !model.busy);
+        skip("No extra requirements.");
+    }
+    private void choices(String[][] items) { for (String[] item : items) choice(item[0], item[1], "", item[2]); }
+    private void choice(String title, String detail, String photo, String message) {
+        ui.content.addView(optionCard(title, detail, photo, message.equals(tappedChoice), () -> send(message)), cardParams());
+    }
+    private void skip(String message) { button("Skip", R.color.surface, () -> send(message), "live-skip"); }
+    private void send(String message) {
+        if (model.busy) return;
+        tappedChoice = message; model.choose(message);
+    }
+    private LinearLayout.LayoutParams cardParams() {
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-1, -2); params.setMargins(0, ui.dp(5), 0, ui.dp(5));
+        return params;
+    }
+    private MaterialCardView optionCard(String title, String detail, String photoCity, boolean selected, Runnable click) {
+        MaterialCardView card = new MaterialCardView(this);
+        card.setRadius(ui.dp(20)); card.setCardElevation(0); card.setMinimumHeight(ui.dp(48));
+        card.setCardBackgroundColor(ui.color(selected ? R.color.purple : R.color.surface));
+        card.setStrokeColor(ui.color(R.color.on_accent)); card.setStrokeWidth(selected ? ui.dp(1) : 0);
+        card.setSelected(selected); card.setClickable(true); card.setEnabled(!model.busy);
+        card.setOnClickListener(view -> click.run());
+        LinearLayout body = new LinearLayout(this); body.setOrientation(LinearLayout.VERTICAL);
+        body.setPadding(ui.dp(14), ui.dp(12), ui.dp(14), ui.dp(12));
+        // 后端不返回图片，只有 App 自带照片的城市才显示。
+        if (!photoCity.isEmpty() && TripPhotos.resource(photoCity) != R.drawable.bg_photo_placeholder) {
+            com.google.android.material.imageview.ShapeableImageView image = new com.google.android.material.imageview.ShapeableImageView(this);
+            image.setShapeAppearanceModel(com.google.android.material.shape.ShapeAppearanceModel.builder().setAllCornerSizes(ui.dp(12)).build());
+            TripPhotos.show(image, photoCity);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-1, ui.dp(72)); params.bottomMargin = ui.dp(8);
+            body.addView(image, params);
+        }
+        TextView name = new TextView(this); name.setText(title); name.setTextSize(16);
+        AppFonts.style(name, android.graphics.Typeface.BOLD);
+        name.setTextColor(ui.color(selected ? R.color.on_accent : R.color.text_primary));
+        body.addView(name);
+        if (!detail.isEmpty()) {
+            TextView caption = new TextView(this); caption.setText(detail); caption.setTextSize(13);
+            AppFonts.style(caption, android.graphics.Typeface.NORMAL);
+            caption.setTextColor(ui.color(selected ? R.color.on_accent : R.color.text_secondary));
+            caption.setPadding(0, ui.dp(2), 0, 0);
+            body.addView(caption);
+        }
+        card.addView(body);
+        return card;
     }
     private void renderCalendar() {
         ui.content.addView(new TripCalendarView(this, model.dates, month, date -> { model.dates.select(date); render(); }, this::render));
         if (model.dates.isComplete()) {
             int duration = TripDates.daysBetweenInclusive(model.dates.getStartDate(), model.dates.getEndDate());
             if (duration > 60) ui.text("Choose a trip of at most 60 days.", 14, false);
-            else button("Confirm dates", R.color.lime, () -> model.send("Fixed dates: depart " + LivePlanningProtocol.isoDate(model.dates.getStartDate())
+            else button("Confirm dates", R.color.lime, () -> send("Fixed dates: depart " + LivePlanningProtocol.isoDate(model.dates.getStartDate())
                     + " and leave the destination on " + LivePlanningProtocol.isoDate(model.dates.getEndDate()) + "."), "live-dates");
         }
     }
@@ -232,8 +346,9 @@ public class LivePlannerActivity extends AppCompatActivity {
     }
     private void renderGenerating() {
         ui.content.addView(new GenerationRouteView(this), new LinearLayout.LayoutParams(-1, ui.dp(42)));
-        progress("Usually takes a few minutes");
+        ui.text("Usually takes 2–4 minutes", 14, false);
         ui.text(model.status, 19, true);
+        ui.text("You can return to home. We’ll keep building it while Odyssey stays open.", 14, false);
         button("Return to home", R.color.purple, this::finish, "live-home");
     }
     private void renderSaved() throws JSONException {
@@ -283,14 +398,38 @@ public class LivePlannerActivity extends AppCompatActivity {
         ui.content.addView(progress, track);
         if (!label.isEmpty()) ui.text(label, 14, false);
     }
+    /** 助手在左带头像，用户在右。 */
     private void bubble(String value, boolean user) {
+        LinearLayout row = new LinearLayout(this);
+        row.setGravity(user ? android.view.Gravity.END : android.view.Gravity.START);
+        if (!user) {
+            android.widget.ImageView avatar = new android.widget.ImageView(this);
+            avatar.setImageResource(R.drawable.ic_robot);
+            avatar.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+            avatar.setPadding(ui.dp(7), ui.dp(7), ui.dp(7), ui.dp(7));
+            android.graphics.drawable.GradientDrawable circle = new android.graphics.drawable.GradientDrawable();
+            circle.setShape(android.graphics.drawable.GradientDrawable.OVAL); circle.setColor(ui.color(R.color.purple));
+            avatar.setBackground(circle);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ui.dp(36), ui.dp(36)); params.setMarginEnd(ui.dp(8));
+            row.addView(avatar, params);
+        }
         TextView bubble = new TextView(this); bubble.setText(value); bubble.setTextSize(14);
         AppFonts.style(bubble, android.graphics.Typeface.NORMAL);
-        bubble.setPadding(ui.dp(12), ui.dp(10), ui.dp(12), ui.dp(10));
-        bubble.setTextColor(ui.color(user ? R.color.text_primary : R.color.on_accent));
-        bubble.setBackgroundResource(user ? R.drawable.bg_user_chat : R.drawable.bg_chat_bubble);
-        LinearLayout.LayoutParams row = new LinearLayout.LayoutParams(-1, -2); row.setMargins(0, ui.dp(4), 0, ui.dp(4));
-        ui.content.addView(bubble, row);
+        bubble.setPadding(ui.dp(14), ui.dp(10), ui.dp(14), ui.dp(10));
+        bubble.setTextColor(ui.color(user ? R.color.on_accent : R.color.text_primary));
+        android.graphics.drawable.GradientDrawable shape = new android.graphics.drawable.GradientDrawable();
+        shape.setColor(ui.color(user ? R.color.purple_light : R.color.surface));
+        int big = ui.dp(18), small = ui.dp(4);
+        // 靠近说话人一侧的上角收小，形成对话框的感觉。
+        shape.setCornerRadii(user ? new float[]{big, big, small, small, big, big, big, big} : new float[]{small, small, big, big, big, big, big, big});
+        bubble.setBackground(shape);
+        LinearLayout.LayoutParams textParams = new LinearLayout.LayoutParams(-2, -2);
+        if (user) textParams.setMarginStart(ui.dp(44));
+        // 权重让长文字换行，而不是把头像挤出屏幕。
+        else { textParams = new LinearLayout.LayoutParams(0, -2, 1f); }
+        row.addView(bubble, textParams);
+        LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(-1, -2); rowParams.setMargins(0, ui.dp(5), 0, ui.dp(5));
+        ui.content.addView(row, rowParams);
     }
     private MaterialButton button(String text, int background, Runnable click, String tag) {
         MaterialButton button = ui.button(text, click);

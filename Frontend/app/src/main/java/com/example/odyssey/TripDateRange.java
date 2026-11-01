@@ -5,6 +5,7 @@ final class TripDateRange {
     private int start, end;
     int getStartDate() { return start; }
     int getEndDate() { return end; }
+    void clear() { start = 0; end = 0; }
     boolean isComplete() { return start != 0 && end != 0; }
     void select(int date) {
         if (start == 0 || end != 0 || date < start) { start = date; end = 0; }
