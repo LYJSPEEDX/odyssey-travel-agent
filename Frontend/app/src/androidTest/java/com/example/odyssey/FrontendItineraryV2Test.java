@@ -24,4 +24,37 @@ public class FrontendItineraryV2Test {
         try { ItineraryDocument.parse(context, value.toString()); fail("Missing contract identifier"); }
         catch (org.json.JSONException | IllegalArgumentException expected) { }
     }
+    @Test public void acceptsActualBackendAssemblyAndUnknownFacts() throws Exception {
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        String raw = ItineraryAssets.read(context, "examples/backend-generated-frontend-v2.json");
+        ItineraryDocument doc = ItineraryDocument.parse(context, raw);
+        assertEquals("LIVE", doc.root.getString("dataMode"));
+        assertEquals(5, doc.root.getJSONArray("days").length());
+        assertTrue(doc.root.getJSONArray("stayGroups").getJSONObject(0)
+                .getJSONArray("options").getJSONObject(0).isNull("guestCapacity"));
+        SavedTrip snapshot = SavedTrip.fromContract(context, raw);
+        assertEquals("backend_contract_fixture", snapshot.id);
+        assertEquals(5, SavedTrip.fromJson(snapshot.toJson().toString()).totalDays);
+    }
+    @Test public void rendersActualBackendOutputOnEveryDay() throws Exception {
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        String raw = ItineraryAssets.read(context, "examples/backend-generated-frontend-v2.json");
+        try (androidx.test.core.app.ActivityScenario<HomeActivity> scenario =
+                     androidx.test.core.app.ActivityScenario.launch(HomeActivity.class)) {
+            scenario.onActivity(activity -> {
+                try {
+                    ItineraryDocument doc = ItineraryDocument.parse(activity, raw);
+                    for (int day = 0; day < doc.root.getJSONArray("days").length(); day++) {
+                        android.widget.LinearLayout content = new android.widget.LinearLayout(activity);
+                        content.setOrientation(android.widget.LinearLayout.VERTICAL);
+                        new ItineraryRenderer(new HomeUi(content), doc, day, ignored -> { }).render();
+                        assertTrue(ItineraryIntegrationTest.contains(content, "Estimated budget"));
+                        assertTrue(ItineraryIntegrationTest.contains(content, "Where to stay"));
+                    }
+                } catch (org.json.JSONException error) {
+                    throw new AssertionError("Backend output failed rendering", error);
+                }
+            });
+        }
+    }
 }

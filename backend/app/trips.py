@@ -22,7 +22,7 @@ from app.agents.schedule import (
     run_schedule_agent,
 )
 from app.config import get_settings
-from app.utils.itinerary_assembler import assemble_itinerary
+from app.utils.itinerary_assembler import ItineraryCompatibilityError, assemble_itinerary
 from app.agents.research import (
     failure,
     redact,
@@ -155,6 +155,8 @@ async def generate_itinerary(
 
     try:
         itinerary = assemble_itinerary(research_result, schedule, itinerary_id=itinerary_id)
+    except ItineraryCompatibilityError as exc:
+        raise failure(409, "UNSUPPORTED_JOURNEY_TIMELINE", str(exc), request_id) from exc
     except Exception as exc:
         logger.error("[research=%s][assembly] failed: %s", request_id, redact(str(exc), secrets))
         raise failure(500, "ASSEMBLY_FAILED", "The itinerary could not be assembled. Check server logs.", request_id) from exc
@@ -236,6 +238,13 @@ async def get_itinerary(trip_id: uuid.UUID, request: Request, db: Database) -> d
     trip = await owned_trip(db, trip_id, request.state.session_id)
     if trip.status != "READY" or trip.itinerary is None:
         raise HTTPException(status_code=409, detail="Itinerary is not ready")
+    from app.contracts import is_legacy_backend
+
+    if is_legacy_backend(trip.itinerary):
+        raise HTTPException(status_code=409, detail={
+            "code": "UNSUPPORTED_ITINERARY_CONTRACT",
+            "message": "This trip uses the legacy backend v2 format. Regenerate it with the current API.",
+        })
     return trip.itinerary
 
 

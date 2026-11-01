@@ -1,7 +1,6 @@
 # Odyssey Backend
 
-FastAPI + PostgreSQL backend for the Odyssey travel agent (LangGraph agents to follow).
-This is the foundation: configuration, health check, anonymous session id and the database layer.
+FastAPI + PostgreSQL backend with specialist research agents, itinerary assembly and a persisted planning chatbot.
 
 ## Local setup
 
@@ -20,7 +19,7 @@ powershell -c "irm https://astral.sh/uv/install.ps1 | iex"       # Windows
 ```sh
 git clone https://github.com/LYJSPEEDX/odyssey-travel-agent.git
 cd odyssey-travel-agent
-git checkout feat/backend-travel-agent
+git checkout main
 cd backend
 uv sync
 ```
@@ -110,8 +109,7 @@ same anonymous session; if it is absent or malformed a new one is minted. There 
 ## Trip API
 
 The API maps to the latest Android sources in `root/odyssey-travel-agent/Frontend/`,
-particularly `TripPlanState` and `SavedTrip.fromContract`. It does not yet replace
-Android's local mock flow; the frontend network client is still to be implemented.
+particularly `SavedTrip.fromContract`. The dedicated Android live client uses planning sessions and finalization to obtain a TripRequest, then calls the trip API. The offline mock remains a separate demo entry.
 
 | Method | Path | Result |
 |---|---|---|
@@ -167,8 +165,7 @@ unsent drafts or UI generation state. Unknown top-level fields are rejected.
 
 Send POST `/trips` with `adults` and `currency`, allow for the synchronous generation
 time, and read the v2 itinerary from the response body. Persist `X-Session-Id` for
-subsequent reads; `Location` identifies the saved trip. The existing Android v1
-parser does not accept v2 and needs a separate update. POST is not idempotent.
+subsequent reads; `Location` identifies the saved trip. Android accepts the shared frontend v2 contract (`contractId: "odyssey.frontend.itinerary"`) and retains v1 support; the dedicated live HTTP adapter is implemented. POST is not idempotent.
 
 ### Tests
 
@@ -303,6 +300,14 @@ validation response. This endpoint has no runtime mock or fallback data.
 
 ## Planning chatbot
 
-The shared application also serves `/v1/planning-sessions` (create, restore, turns, finalize, delete). The independently scoped `app/planning` component reuses `.env`, the model factory, session ownership middleware and PostgreSQL. It collects explicitly confirmed travel facts and exports an existing `TripRequest`; it does not generate an itinerary or change Android.
+The shared application also serves `/v1/planning-sessions` (create, restore, turns, finalize, delete). The independently scoped `app/planning` component reuses `.env`, the model factory, session ownership middleware and PostgreSQL. It collects explicitly confirmed travel facts and exports an existing `TripRequest`; it does not generate an itinerary; Android explicitly hands its finalized request to the trip API.
 
 Start the backend normally, then run `uv run python -m scripts.planning_chat`, or use the **planning chatbot** Swagger section. See [component workflow and API examples](docs/planning-chatbot.md) for configuration, confirmation/revision rules, generation handoff, tests and limitations.
+
+## Canonical itinerary contract
+
+See [shared v2 contract](../docs/itinerary-contract/v2.md). Both generation endpoints now emit the frontend v2 shape. Runtime validates the packaged schema plus semantic checks. Itineraries remain PARTIAL even when the database execution status is READY. Old backend-format v2 read requests return an explicit unsupported-contract error; stored records are preserved.
+
+## Android live HTTP demo
+
+The Android home banner now opens the live planning client. See [setup and rehearsal guide](../docs/live-android-demo.md) for emulator/phone addressing, session restoration, explicit confirmations, generation and lost-response recovery. The offline prototype remains a separate labeled entry. Real generation still requires PostgreSQL, LLM and travel-provider configuration; no SSE or generation-job API is implied.

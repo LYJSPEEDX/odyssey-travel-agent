@@ -12,6 +12,7 @@
     <exclude domain="file" path="profile.json.new" />
     <exclude domain="sharedpref" path="trip_library.xml" />
     <exclude domain="sharedpref" path="app_preferences.xml" />
+        <exclude domain="sharedpref" path="live_backend.xml" />
     <!--
    <include domain="sharedpref" path="."/>
    <exclude domain="sharedpref" path="device.xml"/>

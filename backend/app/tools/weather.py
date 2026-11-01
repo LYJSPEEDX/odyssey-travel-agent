@@ -61,36 +61,64 @@ class WeatherDay(BaseModel):
     years_sampled: int | None  # typical only
 
 
-async def geocode(client: httpx.AsyncClient, query: str, count: int = 10) -> list[GeoPlace]:
-    """Places matching "Kyoto" or "Kyoto, Japan" (text after the comma must match the region
-    or country, so an ambiguous name never silently resolves to the wrong place)."""
-    name, _, hint = (part.strip() for part in query.partition(","))
-    if not name:
-        raise ToolError("empty place name")
-    data = await get_json(
-        client, GEOCODING_URL, {"name": name, "count": count, "language": "en", "format": "json"}
+def _location_hint(value: str) -> str:
+    normalized = " ".join(value.casefold().split())
+    return {"usa": "us", "u.s.a.": "us", "u.s.": "us",
+            "united states of america": "us", "uk": "gb", "u.k.": "gb"}.get(
+        normalized, normalized
     )
-    places = [
-        GeoPlace(
-            name=r["name"],
-            admin1=r.get("admin1"),
-            country=r.get("country", ""),
-            country_code=r.get("country_code", ""),
-            latitude=r["latitude"],
-            longitude=r["longitude"],
-            timezone=r.get("timezone", "UTC"),
-            population=r.get("population"),
+
+
+async def geocode(client: httpx.AsyncClient, query: str, count: int = 10) -> list[GeoPlace]:
+    """Resolve a city plus explicit region/country qualifiers without dropping hints.
+
+    Open-Meteo accepts one comma qualifier. Further qualifiers are checked against
+    returned metadata. Unpunctuated input gets at most four qualified retries;
+    no retry broadens it to an unqualified city in a different state/country.
+    """
+    parts = [part.strip() for part in query.split(",") if part.strip()]
+    if not parts:
+        raise ToolError("empty place name")
+    if not 1 <= count <= 100:
+        raise ValueError("Geocoding count must be between 1 and 100.")
+
+    async def lookup(name: str, hints: list[str]) -> list[GeoPlace]:
+        # A city can have many namesakes. Filter before applying the caller's cap.
+        search = name + (", " + hints[0] if hints else "")
+        data = await get_json(
+            client, GEOCODING_URL,
+            {"name": search, "count": 100 if hints else count,
+             "language": "en", "format": "json"},
         )
-        for r in data.get("results") or []
-    ]
-    if hint:
-        h = hint.lower()
-        places = [
-            p
-            for p in places
-            if h in {(p.country or "").lower(), p.country_code.lower(), (p.admin1 or "").lower()}
-        ]
-    return places
+        places = []
+        for row in data.get("results") or []:
+            known = {_location_hint(row.get(field) or "")
+                     for field in ("country", "country_code", "admin1")}
+            if any(_location_hint(hint) not in known for hint in hints):
+                continue
+            # Missing timezone must not silently become a fabricated UTC location.
+            if not row.get("timezone"):
+                continue
+            places.append(GeoPlace(
+                name=row["name"], admin1=row.get("admin1"), country=row.get("country", ""),
+                country_code=row.get("country_code", ""), latitude=row["latitude"],
+                longitude=row["longitude"], timezone=row["timezone"],
+                population=row.get("population"),
+            ))
+        # Prefix search also returns airports/landmarks (e.g. Park City Ski Area Heliport).
+        # Prefer exact city-name matches when present, preserving disambiguating metadata.
+        exact = [place for place in places if place.name.casefold() == name.casefold()]
+        return (exact or places)[:count]
+
+    places = await lookup(parts[0], parts[1:])
+    if places or len(parts) > 1:
+        return places
+    words = parts[0].split()
+    for split in list(range(len(words) - 1, 0, -1))[:4]:
+        places = await lookup(" ".join(words[:split]), [" ".join(words[split:])])
+        if places:
+            return places
+    return []
 
 
 def _describe(code: int | None) -> str:

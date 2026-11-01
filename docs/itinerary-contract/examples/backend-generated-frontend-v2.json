@@ -1,0 +1,774 @@
+{
+  "contractId": "odyssey.frontend.itinerary",
+  "schemaVersion": "2.0",
+  "id": "backend_contract_fixture",
+  "revision": 1,
+  "language": "en",
+  "dataMode": "LIVE",
+  "status": "PARTIAL",
+  "generatedAt": "2026-10-30T00:00:00+00:00",
+  "requestSnapshot": {
+    "originPlaceId": "origin",
+    "destinationPlaceIds": [
+      "destination"
+    ],
+    "dateMode": "FIXED",
+    "requestedStartDate": "2026-12-10",
+    "requestedEndDate": "2026-12-13",
+    "returnDateMeaning": "LEAVE_DESTINATION",
+    "companions": "CUSTOM",
+    "travelers": [
+      {
+        "id": "traveler_1",
+        "age": null,
+        "passportCountry": null,
+        "passportType": null,
+        "residenceCountry": null
+      },
+      {
+        "id": "traveler_2",
+        "age": null,
+        "passportCountry": null,
+        "passportType": null,
+        "residenceCountry": null
+      }
+    ],
+    "budget": {
+      "scope": "ENTIRE_PARTY_WHOLE_TRIP",
+      "target": null,
+      "includeIntercityTransport": null
+    },
+    "constraints": [
+      {
+        "id": "constraint_1",
+        "code": "CUSTOM",
+        "strength": "UNSPECIFIED",
+        "description": "Less walking"
+      }
+    ],
+    "notes": [
+      "Budget as entered: JPY 20000 per day",
+      "Companions as entered: Two adults",
+      "Step 5: Parks"
+    ]
+  },
+  "summary": {
+    "title": "Sydney \u2192 Osaka",
+    "subtitle": "Estimated fixture schedule",
+    "startDate": "2026-12-10",
+    "endDate": "2026-12-14",
+    "dayCount": 5,
+    "coverImageId": null,
+    "highlights": [],
+    "advice": [
+      "Partial quote subtotal only; meals, activities, local transfers and unverified fees are excluded.",
+      "No exchange rates or contingency allowance have been applied.",
+      "Accommodation room type/capacity, entry requirements and self-transfer status are unverified."
+    ]
+  },
+  "places": [
+    {
+      "id": "origin",
+      "name": "Sydney",
+      "kind": "CITY",
+      "countryCode": null,
+      "timeZone": "Australia/Sydney",
+      "address": null,
+      "coordinates": null,
+      "providerPlaceId": null,
+      "imageIds": [],
+      "evidence": {
+        "status": "UNVERIFIED",
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    },
+    {
+      "id": "destination",
+      "name": "Osaka",
+      "kind": "CITY",
+      "countryCode": null,
+      "timeZone": "Asia/Tokyo",
+      "address": null,
+      "coordinates": null,
+      "providerPlaceId": null,
+      "imageIds": [],
+      "evidence": {
+        "status": "UNVERIFIED",
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    },
+    {
+      "id": "airport_1",
+      "name": "SYD",
+      "kind": "AIRPORT",
+      "countryCode": null,
+      "timeZone": "Australia/Sydney",
+      "address": null,
+      "coordinates": null,
+      "providerPlaceId": null,
+      "imageIds": [],
+      "evidence": {
+        "status": "UNVERIFIED",
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    },
+    {
+      "id": "airport_2",
+      "name": "SIN",
+      "kind": "AIRPORT",
+      "countryCode": null,
+      "timeZone": "Asia/Singapore",
+      "address": null,
+      "coordinates": null,
+      "providerPlaceId": null,
+      "imageIds": [],
+      "evidence": {
+        "status": "UNVERIFIED",
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    },
+    {
+      "id": "airport_3",
+      "name": "KIX",
+      "kind": "AIRPORT",
+      "countryCode": null,
+      "timeZone": "Asia/Tokyo",
+      "address": null,
+      "coordinates": null,
+      "providerPlaceId": null,
+      "imageIds": [],
+      "evidence": {
+        "status": "UNVERIFIED",
+        "sourceIds": [],
+        "checkedAt": null
+      }
+    },
+    {
+      "id": "hotel_1",
+      "name": "Fixture Hotel 0",
+      "kind": "HOTEL",
+      "countryCode": null,
+      "timeZone": null,
+      "address": null,
+      "coordinates": null,
+      "providerPlaceId": "hotel-provider-0",
+      "imageIds": [],
+      "evidence": {
+        "status": "SOURCED",
+        "sourceIds": [
+          "source_2"
+        ],
+        "checkedAt": "2026-10-30T00:00:00+00:00"
+      }
+    },
+    {
+      "id": "hotel_2",
+      "name": "Fixture Hotel 1",
+      "kind": "HOTEL",
+      "countryCode": null,
+      "timeZone": null,
+      "address": null,
+      "coordinates": null,
+      "providerPlaceId": "hotel-provider-1",
+      "imageIds": [],
+      "evidence": {
+        "status": "SOURCED",
+        "sourceIds": [
+          "source_3"
+        ],
+        "checkedAt": "2026-10-30T00:00:00+00:00"
+      }
+    },
+    {
+      "id": "place_1",
+      "name": "Fixture Park",
+      "kind": "OTHER",
+      "countryCode": null,
+      "timeZone": null,
+      "address": null,
+      "coordinates": null,
+      "providerPlaceId": "same-provider-id",
+      "imageIds": [],
+      "evidence": {
+        "status": "SOURCED",
+        "sourceIds": [
+          "source_4"
+        ],
+        "checkedAt": "2026-10-30T00:00:00+00:00"
+      }
+    }
+  ],
+  "media": [],
+  "transportGroups": [
+    {
+      "id": "outbound",
+      "title": "Outbound flights",
+      "fromPlaceId": "airport_1",
+      "toPlaceId": "airport_3",
+      "status": "AVAILABLE",
+      "recommendedOptionId": "option_outbound_1",
+      "planningOptionId": "option_outbound_1",
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": "option_outbound_1",
+          "title": "Outbound \u00b7 return fare option 1",
+          "reason": "Fixture flights Paired outbound and return options share one return fare; do not mix fares.",
+          "legs": [
+            {
+              "id": "leg_outbound_1_1",
+              "mode": "FLIGHT",
+              "fromPlaceId": "airport_1",
+              "toPlaceId": "airport_2",
+              "departure": {
+                "at": "2026-12-10T12:00:00+11:00",
+                "timeZone": "Australia/Sydney"
+              },
+              "arrival": {
+                "at": "2026-12-10T17:00:00+08:00",
+                "timeZone": "Asia/Singapore"
+              },
+              "durationMinutes": 480,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "SCHEDULED",
+              "evidence": {
+                "status": "UNVERIFIED",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "marketingAirline": "Fixture Air",
+                "operatingAirline": null,
+                "flightNumber": "XX1",
+                "departureAirportCode": "SYD",
+                "arrivalAirportCode": "SIN",
+                "departureTerminal": null,
+                "arrivalTerminal": null,
+                "checkedBaggageKgPerPerson": null,
+                "isSelfTransfer": null
+              }
+            },
+            {
+              "id": "leg_outbound_1_2",
+              "mode": "FLIGHT",
+              "fromPlaceId": "airport_2",
+              "toPlaceId": "airport_3",
+              "departure": {
+                "at": "2026-12-10T19:00:00+08:00",
+                "timeZone": "Asia/Singapore"
+              },
+              "arrival": {
+                "at": "2026-12-11T02:00:00+09:00",
+                "timeZone": "Asia/Tokyo"
+              },
+              "durationMinutes": 360,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "SCHEDULED",
+              "evidence": {
+                "status": "UNVERIFIED",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "marketingAirline": "Fixture Air",
+                "operatingAirline": null,
+                "flightNumber": "XX1",
+                "departureAirportCode": "SIN",
+                "arrivalAirportCode": "KIX",
+                "departureTerminal": null,
+                "arrivalTerminal": null,
+                "checkedBaggageKgPerPerson": null,
+                "isSelfTransfer": null
+              }
+            }
+          ],
+          "costItemIds": [
+            "cost_flight_1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "inbound",
+      "title": "Inbound flights",
+      "fromPlaceId": "airport_3",
+      "toPlaceId": "airport_1",
+      "status": "AVAILABLE",
+      "recommendedOptionId": "option_inbound_1",
+      "planningOptionId": "option_inbound_1",
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": "option_inbound_1",
+          "title": "Inbound \u00b7 return fare option 1",
+          "reason": "Fixture flights Paired outbound and return options share one return fare; do not mix fares.",
+          "legs": [
+            {
+              "id": "leg_inbound_1_1",
+              "mode": "FLIGHT",
+              "fromPlaceId": "airport_3",
+              "toPlaceId": "airport_1",
+              "departure": {
+                "at": "2026-12-13T21:00:00+09:00",
+                "timeZone": "Asia/Tokyo"
+              },
+              "arrival": {
+                "at": "2026-12-14T08:00:00+11:00",
+                "timeZone": "Australia/Sydney"
+              },
+              "durationMinutes": 540,
+              "distanceMeters": null,
+              "distanceBasis": "UNKNOWN",
+              "timingStatus": "SCHEDULED",
+              "evidence": {
+                "status": "UNVERIFIED",
+                "sourceIds": [],
+                "checkedAt": null
+              },
+              "details": {
+                "marketingAirline": "Fixture Air",
+                "operatingAirline": null,
+                "flightNumber": "XX1",
+                "departureAirportCode": "KIX",
+                "arrivalAirportCode": "SYD",
+                "departureTerminal": null,
+                "arrivalTerminal": null,
+                "checkedBaggageKgPerPerson": null,
+                "isSelfTransfer": null
+              }
+            }
+          ],
+          "costItemIds": [
+            "cost_flight_1"
+          ]
+        }
+      ]
+    }
+  ],
+  "stayGroups": [
+    {
+      "id": "stay",
+      "title": "Stay in Osaka",
+      "checkInDate": "2026-12-11",
+      "checkOutDate": "2026-12-13",
+      "nights": 2,
+      "status": "AVAILABLE",
+      "recommendedOptionId": "stay_option_1",
+      "planningOptionId": "stay_option_1",
+      "userSelectedOptionId": null,
+      "options": [
+        {
+          "id": "stay_option_1",
+          "placeId": "hotel_1",
+          "title": "Fixture Hotel 0",
+          "reason": "Fixture hotels",
+          "roomType": null,
+          "roomCount": 2,
+          "guestCapacity": null,
+          "amenities": [],
+          "availability": "UNKNOWN",
+          "cancellationSummary": null,
+          "costItemIds": [
+            "cost_stay_1"
+          ],
+          "evidence": {
+            "status": "SOURCED",
+            "sourceIds": [
+              "source_2"
+            ],
+            "checkedAt": "2026-10-30T00:00:00+00:00"
+          }
+        },
+        {
+          "id": "stay_option_2",
+          "placeId": "hotel_2",
+          "title": "Fixture Hotel 1",
+          "reason": "Fixture hotels",
+          "roomType": null,
+          "roomCount": 2,
+          "guestCapacity": null,
+          "amenities": [],
+          "availability": "UNKNOWN",
+          "cancellationSummary": null,
+          "costItemIds": [
+            "cost_stay_2"
+          ],
+          "evidence": {
+            "status": "SOURCED",
+            "sourceIds": [
+              "source_3"
+            ],
+            "checkedAt": "2026-10-30T00:00:00+00:00"
+          }
+        }
+      ]
+    }
+  ],
+  "days": [
+    {
+      "id": "day_1",
+      "dayNumber": 1,
+      "date": "2026-12-10",
+      "timeZone": "Australia/Sydney",
+      "title": "Day 1",
+      "summary": "Estimated plan; transfers and opening hours require verification.",
+      "walkingDistanceMeters": null,
+      "events": [
+        {
+          "id": "event_outbound",
+          "type": "TRANSPORT",
+          "title": "Outbound flights",
+          "description": "Fixture flights",
+          "imageIds": [],
+          "transportGroupId": "outbound"
+        }
+      ],
+      "continuingEventIds": []
+    },
+    {
+      "id": "day_2",
+      "dayNumber": 2,
+      "date": "2026-12-11",
+      "timeZone": "Asia/Tokyo",
+      "title": "Day 2",
+      "summary": "Estimated plan; transfers and opening hours require verification.",
+      "walkingDistanceMeters": null,
+      "events": [
+        {
+          "id": "event_2026-12-11_1",
+          "type": "ACTIVITY",
+          "title": "Fixture stop",
+          "description": "Unverified stop",
+          "imageIds": [],
+          "start": {
+            "at": "2026-12-11T12:00:00+09:00",
+            "timeZone": "Asia/Tokyo"
+          },
+          "end": {
+            "at": "2026-12-11T13:00:00+09:00",
+            "timeZone": "Asia/Tokyo"
+          },
+          "timingStatus": "ESTIMATED",
+          "evidence": {
+            "status": "UNVERIFIED",
+            "sourceIds": [],
+            "checkedAt": null
+          },
+          "placeId": "place_1",
+          "costItemIds": [],
+          "details": {
+            "category": "OTHER",
+            "reservationStatus": "UNKNOWN",
+            "openingHoursNote": null
+          }
+        }
+      ],
+      "continuingEventIds": [
+        "event_outbound"
+      ]
+    },
+    {
+      "id": "day_3",
+      "dayNumber": 3,
+      "date": "2026-12-12",
+      "timeZone": "Asia/Tokyo",
+      "title": "Day 3",
+      "summary": "Estimated plan; transfers and opening hours require verification.",
+      "walkingDistanceMeters": null,
+      "events": [
+        {
+          "id": "event_2026-12-12_1",
+          "type": "MEAL",
+          "title": "Fixture stop",
+          "description": "Unverified stop",
+          "imageIds": [],
+          "start": {
+            "at": "2026-12-12T12:00:00+09:00",
+            "timeZone": "Asia/Tokyo"
+          },
+          "end": {
+            "at": "2026-12-12T13:00:00+09:00",
+            "timeZone": "Asia/Tokyo"
+          },
+          "timingStatus": "ESTIMATED",
+          "evidence": {
+            "status": "UNVERIFIED",
+            "sourceIds": [],
+            "checkedAt": null
+          },
+          "placeId": "place_1",
+          "costItemIds": [],
+          "details": {
+            "mealType": "UNKNOWN",
+            "cuisine": "Not verified",
+            "dietaryStatus": "UNVERIFIED",
+            "reservationStatus": "UNKNOWN"
+          }
+        }
+      ],
+      "continuingEventIds": []
+    },
+    {
+      "id": "day_4",
+      "dayNumber": 4,
+      "date": "2026-12-13",
+      "timeZone": "Asia/Tokyo",
+      "title": "Day 4",
+      "summary": "Estimated plan; transfers and opening hours require verification.",
+      "walkingDistanceMeters": null,
+      "events": [
+        {
+          "id": "event_2026-12-13_1",
+          "type": "FREE_TIME",
+          "title": "Fixture stop",
+          "description": "Unverified stop",
+          "imageIds": [],
+          "start": {
+            "at": "2026-12-13T12:00:00+09:00",
+            "timeZone": "Asia/Tokyo"
+          },
+          "end": {
+            "at": "2026-12-13T13:00:00+09:00",
+            "timeZone": "Asia/Tokyo"
+          },
+          "timingStatus": "ESTIMATED",
+          "evidence": {
+            "status": "UNVERIFIED",
+            "sourceIds": [],
+            "checkedAt": null
+          },
+          "placeId": null,
+          "costItemIds": []
+        },
+        {
+          "id": "event_inbound",
+          "type": "TRANSPORT",
+          "title": "Inbound flights",
+          "description": "Fixture flights",
+          "imageIds": [],
+          "transportGroupId": "inbound"
+        }
+      ],
+      "continuingEventIds": []
+    },
+    {
+      "id": "day_5",
+      "dayNumber": 5,
+      "date": "2026-12-14",
+      "timeZone": "Australia/Sydney",
+      "title": "Day 5",
+      "summary": "Estimated plan; transfers and opening hours require verification.",
+      "walkingDistanceMeters": null,
+      "events": [],
+      "continuingEventIds": [
+        "event_inbound"
+      ]
+    }
+  ],
+  "money": {
+    "displayCurrency": "AUD",
+    "currencies": [
+      {
+        "code": "AUD",
+        "minorUnitDigits": 2
+      },
+      {
+        "code": "JPY",
+        "minorUnitDigits": 0
+      }
+    ],
+    "exchangeRates": [],
+    "exchangeAdvice": []
+  },
+  "entryRequirements": [],
+  "budget": {
+    "scope": "ENTIRE_PARTY_WHOLE_TRIP",
+    "lineItems": [
+      {
+        "id": "cost_flight_1",
+        "category": "INTERCITY_TRANSPORT",
+        "label": "Return airfare option 1 \u00b7 entire party",
+        "unit": "PARTY",
+        "quantity": 1,
+        "unitPrice": {
+          "currency": "AUD",
+          "lowMinor": 120000,
+          "expectedMinor": 120000,
+          "highMinor": 120000
+        },
+        "originalTotal": {
+          "currency": "AUD",
+          "lowMinor": 120000,
+          "expectedMinor": 120000,
+          "highMinor": 120000
+        },
+        "displayTotal": {
+          "currency": "AUD",
+          "lowMinor": 120000,
+          "expectedMinor": 120000,
+          "highMinor": 120000
+        },
+        "exchangeRateId": null,
+        "taxesAndFees": "UNKNOWN",
+        "evidence": {
+          "status": "SOURCED",
+          "sourceIds": [
+            "source_1"
+          ],
+          "checkedAt": "2026-10-30T00:00:00+00:00"
+        }
+      },
+      {
+        "id": "cost_stay_1",
+        "category": "ACCOMMODATION",
+        "label": "Fixture Hotel 0 \u00b7 2 rooms \u00b7 whole stay",
+        "unit": "PARTY",
+        "quantity": 1,
+        "unitPrice": {
+          "currency": "JPY",
+          "lowMinor": 20000,
+          "expectedMinor": 20000,
+          "highMinor": 20000
+        },
+        "originalTotal": {
+          "currency": "JPY",
+          "lowMinor": 20000,
+          "expectedMinor": 20000,
+          "highMinor": 20000
+        },
+        "displayTotal": null,
+        "exchangeRateId": null,
+        "taxesAndFees": "UNKNOWN",
+        "evidence": {
+          "status": "SOURCED",
+          "sourceIds": [
+            "source_2"
+          ],
+          "checkedAt": "2026-10-30T00:00:00+00:00"
+        }
+      },
+      {
+        "id": "cost_stay_2",
+        "category": "ACCOMMODATION",
+        "label": "Fixture Hotel 1 \u00b7 2 rooms \u00b7 whole stay",
+        "unit": "PARTY",
+        "quantity": 1,
+        "unitPrice": {
+          "currency": "AUD",
+          "lowMinor": 20000,
+          "expectedMinor": 20000,
+          "highMinor": 20000
+        },
+        "originalTotal": {
+          "currency": "AUD",
+          "lowMinor": 20000,
+          "expectedMinor": 20000,
+          "highMinor": 20000
+        },
+        "displayTotal": {
+          "currency": "AUD",
+          "lowMinor": 20000,
+          "expectedMinor": 20000,
+          "highMinor": 20000
+        },
+        "exchangeRateId": null,
+        "taxesAndFees": "UNKNOWN",
+        "evidence": {
+          "status": "SOURCED",
+          "sourceIds": [
+            "source_3"
+          ],
+          "checkedAt": "2026-10-30T00:00:00+00:00"
+        }
+      }
+    ],
+    "tripCostItemIds": [],
+    "activeCostItemIds": [
+      "cost_flight_1",
+      "cost_stay_1"
+    ],
+    "completeness": "PARTIAL",
+    "subtotal": {
+      "currency": "AUD",
+      "lowMinor": 120000,
+      "expectedMinor": 120000,
+      "highMinor": 120000
+    },
+    "contingency": {
+      "currency": "AUD",
+      "lowMinor": 0,
+      "expectedMinor": 0,
+      "highMinor": 0
+    },
+    "total": {
+      "currency": "AUD",
+      "lowMinor": 120000,
+      "expectedMinor": 120000,
+      "highMinor": 120000
+    },
+    "excludedCategories": [
+      "FOOD",
+      "ACTIVITIES",
+      "LOCAL_TRANSPORT",
+      "DOCUMENTS",
+      "Unverified fees"
+    ],
+    "notes": [
+      "Partial quote subtotal only; meals, activities, local transfers and unverified fees are excluded.",
+      "No exchange rates or contingency allowance have been applied.",
+      "Accommodation room type/capacity, entry requirements and self-transfer status are unverified.",
+      "Foreign-currency quotes retain their original totals and are excluded from the display subtotal."
+    ]
+  },
+  "quality": {
+    "sources": [
+      {
+        "id": "source_1",
+        "title": "Flight quote",
+        "url": "https://example.com/flight",
+        "retrievedAt": "2026-10-30T00:00:00+00:00"
+      },
+      {
+        "id": "source_2",
+        "title": "Fixture Hotel 0",
+        "url": "https://example.com/hotel",
+        "retrievedAt": "2026-10-30T00:00:00+00:00"
+      },
+      {
+        "id": "source_3",
+        "title": "Fixture Hotel 1",
+        "url": "https://example.com/hotel",
+        "retrievedAt": "2026-10-30T00:00:00+00:00"
+      },
+      {
+        "id": "source_4",
+        "title": "Fixture Park",
+        "url": "https://example.com/park",
+        "retrievedAt": "2026-10-30T00:00:00+00:00"
+      }
+    ],
+    "assumptions": [],
+    "notices": [
+      {
+        "code": "PARTIAL_RESEARCH",
+        "severity": "WARNING",
+        "message": "Some facts and costs remain unverified; no bookings have been made.",
+        "relatedIds": []
+      }
+    ],
+    "constraintChecks": [
+      {
+        "constraintId": "constraint_1",
+        "status": "UNVERIFIED",
+        "explanation": "Not independently verified.",
+        "relatedIds": []
+      }
+    ]
+  }
+}

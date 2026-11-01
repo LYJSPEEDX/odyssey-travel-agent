@@ -49,6 +49,9 @@ Use an earlier stepId only when the user explicitly requests a change to that fa
 Do not jump to later steps. Other contextual facts can be discussed without confirming them.
 For ORIGIN/DESTINATION, return locationQueries (up to 3 city names) and answer=null;
 these are unverified suggestions pending server geocoding and user confirmation.
+Use clean city queries such as "Park City, Utah, United States". Preserve any state/country
+specified by the user; never include conversational prefixes such as "Lets do" in a query.
+Spell out state names rather than abbreviations where possible.
 For other steps, answer must match that step's schema or be null for clarification.
 Never infer adult counts, child ages, currency, budget scope or flight inclusion from labels.
 Profile data is optional context, not confirmed travel facts. Ask about ambiguous relative

@@ -29,6 +29,7 @@ public class ItineraryIntegrationTest {
         assertEquals(2, saved.getInt("schema"));
         JSONObject contract = saved.getJSONObject("contract");
         assertEquals("2.0", contract.getString("schemaVersion"));
+        assertEquals("odyssey.frontend.itinerary", contract.getString("contractId"));
         assertEquals(10, contract.getJSONArray("days").length());
         assertTrue(contract.getJSONObject("requestSnapshot").getJSONArray("notes").toString().contains("Avoid stairs"));
         assertEquals(saved.toString(), SavedTrip.fromJson(saved.toString()).toJson().toString());

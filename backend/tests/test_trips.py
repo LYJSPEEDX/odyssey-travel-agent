@@ -153,9 +153,10 @@ class DatabaseApiTests(unittest.IsolatedAsyncioTestCase):
     async def create(self):
         """Generate a deterministic v2 itinerary and persist it in the test transaction."""
         from unittest.mock import AsyncMock, patch
-        from test_itinerary_v2 import sample
+        from test_itinerary_contract import research_fixture, schedule_fixture
 
-        payload, research, schedule = sample()
+        research, schedule = research_fixture(), schedule_fixture()
+        payload = research.request.model_dump(mode="json")
 
         async def fake_research(payload, response, max_tool_turns):
             """Return deterministic specialist results for the real route."""
@@ -168,6 +169,7 @@ class DatabaseApiTests(unittest.IsolatedAsyncioTestCase):
             status, headers, itinerary = await http(self.app, "POST", "/trips", payload)
         self.assertEqual(status, 201)
         self.assertEqual(itinerary["schemaVersion"], "2.0")
+        self.assertEqual(itinerary["contractId"], "odyssey.frontend.itinerary")
         self.assertEqual(headers[b"location"].decode(), f"/trips/{itinerary['id']}")
         status, _, trip = await http(self.app, "GET", f"/trips/{itinerary['id']}")
         self.assertEqual(status, 200)

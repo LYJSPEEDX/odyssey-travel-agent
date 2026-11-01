@@ -40,8 +40,8 @@ public class HomeFlowTest {
         try (ActivityScenario<HomeActivity> scenario = ActivityScenario.launch(HomeActivity.class)) {
             awaitHome(scenario);
             onView(withId(R.id.createTripBanner)).perform(click());
-            onView(withId(R.id.stepText)).check(matches(withText("START")));
-            onView(withId(R.id.backButton)).perform(click());
+            onView(withId(R.id.liveToolbar)).check(matches(isDisplayed()));
+            pressBack();
             onView(withId(R.id.createTripBanner)).check(matches(isDisplayed()));
         }
     }

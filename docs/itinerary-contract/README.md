@@ -1,3 +1,8 @@
+# Current contract
+
+New backend output uses the [shared frontend v2 contract](v2.md), identified by both contractId and schemaVersion.
+Android retains v1 support. The following is the legacy v1 field guide; use the canonical v2 schema for new integrations.
+
 # Odyssey 行程 JSON 协议 v1
 
 状态：Android 已接入本地 JSON 解析、详情绘制和保存；尚未连接真实模型接口。
