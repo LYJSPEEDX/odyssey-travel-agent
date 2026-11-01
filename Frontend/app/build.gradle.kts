@@ -28,7 +28,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "BACKEND_URL", "\"${providers.gradleProperty("odysseyBackendUrl").getOrElse("")}\"")
+        buildConfigField("String", "BACKEND_URL", "\"${providers.gradleProperty("odysseyBackendUrl").getOrElse("http://203.164.245.226:8000")}\"")
     }
 
     buildTypes {

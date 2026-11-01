@@ -8,14 +8,10 @@ import java.util.UUID;
 /** Endpoint and anonymous ownership are private and excluded from backup. */
 final class BackendConfig {
     static final String FILE = "live_backend";
-    static final String DEFAULT_URL = "http://10.0.2.2:8000";
     final SharedPreferences preferences;
     BackendConfig(Context context) { preferences = context.getSharedPreferences(FILE, Context.MODE_PRIVATE); }
-    /** 优先用户在设置里填的地址，其次打包时配置的地址（gradle 属性 odysseyBackendUrl），调试版默认连本机。 */
-    String url() {
-        String packaged = BuildConfig.BACKEND_URL.isEmpty() && BuildConfig.DEBUG ? DEFAULT_URL : BuildConfig.BACKEND_URL;
-        return preferences.getString("base_url", packaged);
-    }
+    /** 优先用户在设置里填的地址，否则用打包时配置的地址（gradle 属性 odysseyBackendUrl）。 */
+    String url() { return preferences.getString("base_url", BuildConfig.BACKEND_URL); }
     /** 局域网地址（含模拟器的 10.0.2.2）在 Android 17 上需要 ACCESS_LOCAL_NETWORK 权限。 */
     static boolean isLocalNetwork(String url) {
         String host;

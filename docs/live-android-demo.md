@@ -1,7 +1,9 @@
-# Android live HTTP demo
+# Android live planning
 
-The home **Create my trip** banner opens the live planner. **Try the offline demo** opens
-the existing local mock flow. The app never falls back to mock planning after a network failure.
+The home **Create my trip** banner opens the live planner, the only planning flow in the app.
+It connects as soon as it opens. The default server is set at build time with the Gradle
+property `odysseyBackendUrl` and can be changed in Settings → **Server**. Android 17 requires
+the Local network permission for LAN addresses such as `10.0.2.2`; the app asks when needed.
 
 ## Run a live demo
 
@@ -9,11 +11,10 @@ the existing local mock flow. The app never falls back to mock planning after a 
    dependencies (`uv sync`), then start `uv run uvicorn app.main:app --host 0.0.0.0 --port 8000`.
    Startup must succeed; `/healthz` must report both server and database `ok`.
 2. Build/install the Android debug app from `Frontend` (`./gradlew :app:installDebug`).
-3. In Settings → **Live demo server**, use `http://10.0.2.2:8000` for an Android emulator.
+3. In Settings → **Server**, use `http://10.0.2.2:8000` for an Android emulator.
    On a phone, use the computer's LAN IP, e.g. `http://192.168.1.20:8000`, on the same trusted
    Wi-Fi network. Allow the backend port through the local firewall. No trailing `/docs`.
-4. Open Create my trip → **Check connection** → **Start live planning**. The health check
-   checks reachability/database, not model/provider credentials or search availability.
+4. Open Create my trip. Planning starts automatically.
 5. Send a message for each step. Read the returned structured proposal and explicitly tap
    **Confirm this answer**. A chat response never silently confirms facts. Earlier answers
    can be reviewed/revised; backend revision and proposal IDs prevent stale confirmations.
@@ -90,7 +91,7 @@ With an emulator running, from Frontend:
 
 ```sh
 ./gradlew :app:connectedDebugAndroidTest \
-  -Pandroid.testInstrumentationRunnerArguments.class=com.example.odyssey.LiveHttpDemoTest,com.example.odyssey.HomeFlowTest,com.example.odyssey.FrontendItineraryV2Test
+  -Pandroid.testInstrumentationRunnerArguments.class=com.example.odyssey.LiveHttpTest,com.example.odyssey.HomeFlowTest,com.example.odyssey.FrontendItineraryV2Test
 ./gradlew :app:assembleDebug :app:testDebugUnitTest :app:lintDebug
 ```
 

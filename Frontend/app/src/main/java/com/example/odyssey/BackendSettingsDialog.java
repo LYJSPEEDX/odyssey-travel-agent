@@ -17,10 +17,10 @@ final class BackendSettingsDialog {
         int pad = Math.round(24 * activity.getResources().getDisplayMetrics().density); form.setPadding(pad, 0, pad, 0);
         AppCompatEditText url = new AppCompatEditText(activity); url.setSingleLine();
         url.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_URI);
-        url.setHint(BuildConfig.DEBUG ? BackendConfig.DEFAULT_URL : "https://your-server.example");
+        url.setHint(BuildConfig.BACKEND_URL);
         url.setContentDescription("Backend server URL"); url.setTag("backend-url"); url.setText(config.url()); form.addView(url);
         AlertDialog dialog = new MaterialAlertDialogBuilder(activity).setTitle("Server")
-                .setMessage(BuildConfig.DEBUG ? "Android emulator: http://10.0.2.2:8000. On a phone, use your computer’s address on the same Wi-Fi." : "Enter your server’s HTTPS address.")
+                .setMessage("Odyssey plans trips using this server.")
                 .setView(form).setNegativeButton("Cancel", null).setPositiveButton("Save server", null).create();
         dialog.setOnShowListener(ignored -> dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             try {

@@ -203,6 +203,8 @@ final class LivePlannerModel {
     static String friendly(Exception exception) {
         if (exception instanceof BackendHttp.ApiError) {
             BackendHttp.ApiError error = (BackendHttp.ApiError) exception;
+            // 服务器端故障的原文是给开发者看的；保留错误码，方便排查。
+            if (error.status >= 500) return "The planning service is having trouble right now. Please try again in a moment. (" + error.code + ")";
             return error.getMessage() + " (" + error.code + ")";
         }
         if (exception instanceof java.net.SocketTimeoutException) return "The server took too long to reply. Restore planning or check saved server trips. No automatic retry was sent.";
