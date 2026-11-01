@@ -21,6 +21,7 @@
         <item name="colorSurface">@color/surface</item>
         <item name="colorOnSurface">@color/text_primary</item>
         <item name="colorOutline">@color/outline</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.Odyssey.Dialog</item>
 
         <!-- 系统状态栏 -->
         <item name="android:statusBarColor">@android:color/transparent</item>
@@ -29,6 +30,29 @@
 
     </style>
 
-    <style name="Theme.Odyssey" parent="Base.Theme.Odyssey" />
+    <!-- 主题 colorPrimary 是荧光绿，对话框文字按钮在白底上看不见，这里单独改深色。 -->
+    <style name="ThemeOverlay.Odyssey.Dialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="colorPrimary">@color/text_primary</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorSurfaceContainerHigh">@color/surface</item>
+    </style>
+
+    <style name="Theme.Odyssey" parent="Base.Theme.Odyssey">
+        <!-- 放在这里而不是 Base，浅色和深色主题共用同一份字体配置 -->
+        <!-- 不要同时设 app 命名空间的 fontFamily：AppCompat 优先读它，会盖掉布局里的 android:fontFamily -->
+        <item name="android:fontFamily">@font/plus_jakarta_sans</item>
+        <item name="textAppearanceHeadlineLarge">@style/TextAppearance.Odyssey.HeadlineLarge</item>
+        <item name="textAppearanceHeadlineMedium">@style/TextAppearance.Odyssey.HeadlineMedium</item>
+        <item name="textAppearanceHeadlineSmall">@style/TextAppearance.Odyssey.HeadlineSmall</item>
+        <item name="textAppearanceTitleLarge">@style/TextAppearance.Odyssey.TitleLarge</item>
+        <item name="textAppearanceTitleMedium">@style/TextAppearance.Odyssey.TitleMedium</item>
+        <item name="textAppearanceTitleSmall">@style/TextAppearance.Odyssey.TitleSmall</item>
+        <item name="textAppearanceBodyLarge">@style/TextAppearance.Odyssey.BodyLarge</item>
+        <item name="textAppearanceBodyMedium">@style/TextAppearance.Odyssey.BodyMedium</item>
+        <item name="textAppearanceBodySmall">@style/TextAppearance.Odyssey.BodySmall</item>
+        <item name="textAppearanceLabelLarge">@style/TextAppearance.Odyssey.LabelLarge</item>
+        <item name="textAppearanceLabelMedium">@style/TextAppearance.Odyssey.LabelMedium</item>
+        <item name="textAppearanceLabelSmall">@style/TextAppearance.Odyssey.LabelSmall</item>
+    </style>
 
 </resources>

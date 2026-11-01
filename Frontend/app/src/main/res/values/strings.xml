@@ -23,8 +23,6 @@
     <string name="destination_tokyo">Tokyo</string>
     <string name="destination_tokyo_description">Neighbourhoods · Design · Night views</string>
 
-    <string name="live_trip_label">LIVE TRIP</string>
-    <string name="live_trip_status">Destination saved · Planning preferences next</string>
 
     <string name="navigation_back">Back</string>
     <string name="navigation_next">Next</string>

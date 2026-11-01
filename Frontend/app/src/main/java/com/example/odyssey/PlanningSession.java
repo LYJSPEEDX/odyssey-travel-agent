@@ -93,7 +93,7 @@ final class PlanningSession implements Serializable {
         if (index < 2) {
             steps[index].question.options.clear();
             steps[index].question.options.add(new Option("custom", value,
-                    "Local demo suggestion · confirm to use", value, "Custom", "Explore", "Demo"));
+                    "", value, "Custom", "Explore", "Demo"));
         } else {
             dateDraft.useFlexibleDates();
             steps[index].question.description = "Demo suggestion for: " + value + ". Confirm flexible dates to continue.";
@@ -140,7 +140,7 @@ final class PlanningSession implements Serializable {
         step.state = "CONFIRMED";
         step.draft = ""; step.chatCandidate = "";
         step.keywords.clear(); step.keywords.addAll(keywords);
-        feedback = "Understood: " + String.join(" · ", keywords);
+        feedback = "";
         revision++;
         rebuildQuestions();
         if (index < 7) {
@@ -178,7 +178,7 @@ final class PlanningSession implements Serializable {
             if (i == 0) {
                 if (!residence.isEmpty()) q.options.add(new Option("home", residence, "From your profile", residence, "Departure"));
                 for (String city : new String[]{"Sydney", "Melbourne", "Brisbane"})
-                    if (!city.equalsIgnoreCase(residence)) q.options.add(new Option(city, city, "Departure city", city, "Departure"));
+                    if (!city.equalsIgnoreCase(residence)) q.options.add(new Option(city, city, "", city, "Departure"));
             } else if (i == 1) {
                 q.options.add(new Option("tokyo", "Tokyo", "City discovery", "Tokyo", "Food", "Culture", "Neon"));
                 q.options.add(new Option("bali", "Bali", "Island escape", "Bali", "Beach", "Nature", "Relax"));
@@ -196,7 +196,7 @@ final class PlanningSession implements Serializable {
                 String city = answer(1).isEmpty() ? "your destination" : answer(1);
                 int tier = 0;
                 for (TripOptions.Option budget : TripOptions.budgets(city))
-                    q.options.add(new Option("budget-" + tier++, budget.title, "For " + city + ": " + budget.description, budget.title, budget.title));
+                    q.options.add(new Option("budget-" + tier++, budget.title, budget.description, budget.title, budget.title));
             } else if (i == 5) {
                 q.maxSelections = 6;
                 int constraintIndex = 0;

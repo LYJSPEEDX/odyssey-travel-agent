@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<androidx.core.widget.NestedScrollView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background"
+    android:orientation="vertical">
+
+<androidx.core.widget.NestedScrollView
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1"
     android:background="@color/background"
     android:fillViewport="true"
     tools:context=".MainActivity">
@@ -62,7 +69,8 @@
                 android:layout_height="@dimen/touch_target_min"
                 android:layout_marginHorizontal="@dimen/space_xs"
                 android:background="@drawable/bg_step_indicator"
-                android:fontFamily="sans-serif-black"
+                android:fontFamily="@font/plus_jakarta_sans"
+                android:textStyle="bold"
                 android:gravity="center"
                 android:includeFontPadding="false"
                 android:minWidth="64dp"
@@ -183,7 +191,7 @@
             tools:visibility="visible">
 
             <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/tripBoardPhoto" android:layout_width="56dp" android:layout_height="56dp"
+                android:id="@+id/tripBoardPhoto" android:layout_width="88dp" android:layout_height="88dp"
                 android:layout_marginEnd="12dp" android:scaleType="centerCrop" android:visibility="gone"
                 android:importantForAccessibility="no" app:shapeAppearanceOverlay="@style/EditorialThumbnail" />
 
@@ -191,23 +199,13 @@
                 android:layout_weight="1" android:orientation="vertical">
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:includeFontPadding="false"
-                android:letterSpacing="0.08"
-                android:text="@string/live_trip_label"
-                android:textColor="@color/on_trip_board"
-                android:textSize="@dimen/text_label"
-                android:textStyle="bold" />
-
-            <TextView
                 android:id="@+id/tripBoardDestination"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/space_sm"
                 android:includeFontPadding="false"
                 android:textColor="@color/on_trip_board"
                 android:textSize="@dimen/text_title"
+                android:fontFamily="@font/plus_jakarta_sans"
                 android:textStyle="bold"
                 tools:text="Kyoto" />
 
@@ -217,13 +215,9 @@
                 android:layout_marginTop="@dimen/space_xs"
                 android:includeFontPadding="false"
                 android:id="@+id/tripBoardStatus"
-                android:text="@string/live_trip_status"
+                android:visibility="gone"
                 android:textColor="@color/on_trip_board"
                 android:textSize="@dimen/text_label" />
-
-            <TextView android:id="@+id/tripBoardPhotoCredit" android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:textSize="11sp"
-                android:textColor="@color/on_trip_board" android:visibility="gone" />
 
             </LinearLayout>
 
@@ -239,7 +233,7 @@
             android:text="@string/plan_headline"
             android:textColor="@color/text_primary"
             android:textSize="@dimen/text_display"
-            android:textStyle="bold" />
+            android:fontFamily="@font/fraunces" />
 
         <!-- AI 对话气泡 -->
         <LinearLayout
@@ -250,6 +244,7 @@
             android:background="@android:color/transparent"
             android:orientation="vertical"
             android:paddingVertical="@dimen/space_sm"
+            android:visibility="gone"
             >
 
             <TextView
@@ -371,3 +366,19 @@
     </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>
+
+    <!-- 行程生成完成后不能再回退，用标签栏离开本页 -->
+    <LinearLayout
+        android:id="@+id/plannerNavigationBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/outline" />
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/plannerNavigation" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:background="@color/surface" app:elevation="0dp" app:menu="@menu/home_navigation"
+            app:itemIconTint="@color/bottom_nav_icon" app:itemTextColor="@color/bottom_nav_text"
+            app:itemActiveIndicatorStyle="@style/HomeNavigationIndicator" app:labelVisibilityMode="labeled" />
+    </LinearLayout>
+</LinearLayout>

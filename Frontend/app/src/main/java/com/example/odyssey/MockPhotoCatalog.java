@@ -23,8 +23,7 @@ final class MockPhotoCatalog {
                 .put("status", "READY").put("provider", "UNSPLASH").put("providerAssetId", JSONObject.NULL)
                 .put("assetKey", JSONObject.NULL).put("url", url).put("thumbnailUrl", url(city, true))
                 .put("altText", city + " atmosphere photo; illustrative")
-                .put("attributions", new JSONArray().put(new JSONObject().put("text", "Photo: Unsplash · illustrative")
-                        .put("url", "https://unsplash.com/license"))).put("expiresAt", JSONObject.NULL);
+                .put("attributions", new JSONArray()).put("expiresAt", JSONObject.NULL);
     }
     private MockPhotoCatalog() { }
 }

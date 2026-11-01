@@ -47,25 +47,6 @@ public class CurrencyUiTest {
             assertEquals("AU", store.load().getString("residence_country_code"));
         }
     }
-    @Test public void sampleRateConvertsAndLabelsDemo() throws Exception {
-        australiaProfile();
-        Intent intent = new Intent(context(), TripDetailActivity.class).putExtra(TripDetailActivity.EXTRA_SAMPLE, true)
-                .putExtra(TripDetailActivity.EXTRA_ID, "contract_new_york");
-        try (ActivityScenario<TripDetailActivity> scenario = ActivityScenario.launch(intent)) {
-            onView(withText("Currency converter")).perform(scrollTo(), click());
-            // 资料读取在后台完成，等待对话框出现。
-            long end = SystemClock.uptimeMillis() + 5000; boolean shown = false;
-            while (!shown && SystemClock.uptimeMillis() < end) {
-                try { onView(withContentDescription("Amount to convert")).check(matches(isDisplayed())); shown = true; }
-                catch (androidx.test.espresso.NoMatchingViewException absent) { SystemClock.sleep(50); }
-            }
-            assertTrue(shown);
-            onView(withContentDescription("Amount to convert")).perform(typeText("100"), androidx.test.espresso.action.ViewActions.closeSoftKeyboard());
-            onView(withText("Convert")).perform(click());
-            onView(withText(org.hamcrest.Matchers.containsString("150.00 AUD"))).check(matches(isDisplayed()));
-            onView(withText(org.hamcrest.Matchers.containsString("Demo rate · Not current"))).check(matches(isDisplayed()));
-        }
-    }
     private void ready(ActivityScenario<RegistrationActivity> scenario) {
         long end = SystemClock.uptimeMillis() + 5000;
         java.util.concurrent.atomic.AtomicBoolean loaded = new java.util.concurrent.atomic.AtomicBoolean();

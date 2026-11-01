@@ -21,6 +21,7 @@ import java.util.List;
  */
 public class HomeActivity extends AppCompatActivity {
     static final String EXTRA_OPEN_MY = "open_my";
+    static final String EXTRA_OPEN_TAB = "open_tab";
     static final String EXTRA_RETURN_TO_DEMO = "return_to_demo";
     private BottomNavigationView navigation;
     private NestedScrollView scroll;
@@ -49,6 +50,7 @@ public class HomeActivity extends AppCompatActivity {
             int[] positions = savedInstanceState.getIntArray("home_scroll");
             if (positions != null && positions.length == 3) scrollPositions = positions;
         } else if (getIntent().getBooleanExtra(EXTRA_OPEN_MY, false)) selected = R.id.nav_my;
+        else selected = getIntent().getIntExtra(EXTRA_OPEN_TAB, R.id.nav_home);
         backToHome = new OnBackPressedCallback(selected != R.id.nav_home) {
             @Override public void handleOnBackPressed() { navigation.setSelectedItemId(R.id.nav_home); }
         };
@@ -76,9 +78,9 @@ public class HomeActivity extends AppCompatActivity {
         // 生成页用 CLEAR_TOP/SINGLE_TOP 复用已有首页时，新参数从这里接收而不是 onCreate。
         super.onNewIntent(intent);
         setIntent(intent);
-        if (intent.getBooleanExtra(EXTRA_OPEN_MY, false)) {
+        if (intent.getBooleanExtra(EXTRA_OPEN_MY, false) || intent.hasExtra(EXTRA_OPEN_TAB)) {
             if (launchWelcome != null) launchWelcome.dismiss();
-            navigation.setSelectedItemId(R.id.nav_my);
+            navigation.setSelectedItemId(intent.getIntExtra(EXTRA_OPEN_TAB, R.id.nav_my));
         }
     }
     @Override protected void onResume() {
@@ -112,15 +114,15 @@ public class HomeActivity extends AppCompatActivity {
     }
     private void home() {
         // 品牌栏保持轻量；主要视觉焦点留给下方照片，而不是重复的彩色面板。
-        ui.text(getString(R.string.editorial_wordmark), 28, true);
+        AppFonts.style(ui.text(getString(R.string.editorial_wordmark), 30, true), android.graphics.Typeface.BOLD);
         if (getIntent().getBooleanExtra(EXTRA_RETURN_TO_DEMO, false)) {
             ui.card("A demo trip is in progress", "Return to see the simulated updates.", R.color.mint, this::finish);
         }
         View banner = LayoutInflater.from(this).inflate(R.layout.home_banner, ui.content, false);
         banner.setOnClickListener(view -> startPlanner());
         ui.content.addView(banner);
-        ui.text(getString(R.string.editorial_inspiration), 23, true).setPadding(0, ui.dp(28), 0, ui.dp(8));
-        ui.text(getString(R.string.editorial_inspiration_subtitle), 12, false);
+        ui.text(getString(R.string.editorial_inspiration), 23, true).setPadding(0, ui.dp(28), 0, 0);
+        ui.text(getString(R.string.editorial_inspiration_subtitle), 12, false).setPadding(0, ui.dp(2), 0, ui.dp(12));
         List<SavedTrip> examples = ExampleTrips.all(this);
         for (int i = 0; i < examples.size(); i++) {
             SavedTrip trip = examples.get(i);
@@ -128,13 +130,10 @@ public class HomeActivity extends AppCompatActivity {
                     .setTag("example-" + trip.id);
         }
         ui.text(getString(R.string.editorial_sample_note), 12, false);
-        ui.text(getString(R.string.editorial_photo_credit), 11, false);
     }
     private void myTrips() {
-        ui.text(getString(R.string.editorial_wordmark), 28, true);
-        ui.text(getString(R.string.editorial_collection), 11, false);
-        ui.title(R.string.editorial_my_title, R.string.editorial_my_subtitle);
-        ui.button(R.string.profile_edit, () -> startActivity(new Intent(this, RegistrationActivity.class)
+        ui.text(getString(R.string.editorial_my_title), 28, true);
+        new HomeUi(ui.group()).actionRow(getString(R.string.profile_edit), "", () -> startActivity(new Intent(this, RegistrationActivity.class)
                 .putExtra(RegistrationActivity.EXTRA_EDIT_PROFILE, true))).setId(R.id.editProfile);
         try {
             List<SavedTrip> trips = new TripStore(this).list();

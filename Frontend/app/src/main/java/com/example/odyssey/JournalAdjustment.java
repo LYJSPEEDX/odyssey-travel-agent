@@ -35,10 +35,10 @@ final class JournalAdjustment {
         content.setPadding(ui.dp(24), ui.dp(20), ui.dp(24), ui.dp(24));
         content.setBackgroundColor(ui.color(R.color.background));
         scroll.addView(content);
-        journal.tag(content, "Offline preview · Not sent", R.color.mint);
-        journal.heading(content, "Make it your kind of trip", 24).setPadding(0, ui.dp(16), 0, 0);
+        journal.heading(content, "Make it your kind of trip", 24);
         journal.text(content, "AI is not connected yet. Your draft stays on this screen only and is cleared when you leave the trip. Your itinerary will not change.", 14, false);
-        ChipGroup options = new ChipGroup(context); options.setChipSpacingHorizontal(ui.dp(8));
+        ChipGroup options = new ChipGroup(context); options.setChipSpacingHorizontal(ui.dp(8)); options.setChipSpacingVertical(ui.dp(8));
+        options.setPadding(0, ui.dp(8), 0, 0);
         content.addView(options);
         TextInputLayout field = new TextInputLayout(context);
         field.setHint("What would you change?"); field.setBoxBackgroundMode(TextInputLayout.BOX_BACKGROUND_OUTLINE);
@@ -57,9 +57,13 @@ final class JournalAdjustment {
                 "Please suggest a lower-cost version of this trip.", "Please leave more free time between activities."};
         for (int i = 0; i < labels.length; i++) {
             String request = requests[i]; Chip chip = new Chip(context);
-            chip.setText(labels[i]); chip.setEnsureMinTouchTargetSize(true); chip.setCheckable(false);
-            chip.setChipBackgroundColor(ColorStateList.valueOf(ui.color(R.color.surface)));
-            chip.setTextColor(ui.color(R.color.text_primary));
+            chip.setText(labels[i]); chip.setCheckable(false);
+            // 与行程摘要的标签同一样式；不补足隐形触控区，否则两行之间的空隙会明显大于左右间距。
+            chip.setEnsureMinTouchTargetSize(false); chip.setChipMinHeight(ui.dp(36)); chip.setChipStrokeWidth(0); chip.setTextSize(13);
+            chip.setChipBackgroundColor(ColorStateList.valueOf(ui.color(R.color.purple)));
+            chip.setTextColor(ui.color(R.color.on_accent));
+            chip.setShapeAppearanceModel(chip.getShapeAppearanceModel().toBuilder().setAllCornerSizes(ui.dp(18)).build());
+            AppFonts.style(chip, android.graphics.Typeface.BOLD);
             // 点击替换当前草稿并将光标放到末尾，不直接“发送请求”。
             chip.setOnClickListener(view -> { input.setText(request); input.setSelection(request.length()); });
             options.addView(chip);

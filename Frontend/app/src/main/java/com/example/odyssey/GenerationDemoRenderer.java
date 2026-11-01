@@ -23,7 +23,6 @@ final class GenerationDemoRenderer {
     }
     void render(int stage, boolean offline, boolean expanded) {
         ui.content.removeAllViews();
-        ui.text("LIVE TRIP · DEMO", 11, true);
         ui.card(trip.getDeparture() + "  →  " + trip.getDestination(),
                 trip.isFlexibleDates() ? "Flexible dates · Demo" : TripDates.format(trip.getStartDate()) + " – " + TripDates.format(trip.getEndDate()),
                 R.color.lime, null);
@@ -39,7 +38,7 @@ final class GenerationDemoRenderer {
         status.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
         ui.text(offline ? "This is a simulated disconnection. Reconnect to see the latest demo status."
                 : "Simulated updates · No request has been sent.", 12, false);
-        button(expanded ? "Hide trip details" : "View trip details", actions::toggleSummary);
+        button(expanded ? "Hide trip details" : "View trip details", R.color.red, actions::toggleSummary);
         if (expanded) {
             ui.text("WITH  " + trip.getCompanion() + "\nBUDGET  " + trip.getBudget() + "\nPREFERENCES  "
                     + (trip.getConstraints().isEmpty() ? "None selected" : String.join(" · ", trip.getConstraints())), 14, false);
@@ -48,19 +47,14 @@ final class GenerationDemoRenderer {
         for (int i = 0; i <= stage; i++) {
             boolean current = i == stage;
             ui.card((current ? "NOW  ·  " : "DONE  ·  ") + GenerationDemo.TITLES[i],
-                    GenerationDemo.DETAILS[i], R.color.surface, null);
+                    GenerationDemo.DETAILS[i], current ? R.color.peach : R.color.mint, null);
         }
-        button(offline ? "Reconnect demo" : "Simulate disconnect", actions::toggleConnection);
-        button("Finish demo now", actions::finishDemo);
-        button("Return to home", actions::returnHome);
+        button(offline ? "Reconnect demo" : "Simulate disconnect", R.color.mint, actions::toggleConnection);
+        button("Finish demo now", R.color.lime, actions::finishDemo);
+        button("Return to home", R.color.purple, actions::returnHome);
         ui.text("The demo continues only while this app session is available. No real background job or SSE connection is running.", 12, false);
     }
-    private void button(String text, Runnable click) {
-        MaterialButton button = new MaterialButton(ui.context, null, com.google.android.material.R.attr.materialButtonOutlinedStyle);
-        button.setText(text); button.setAllCaps(false); button.setCornerRadius(ui.dp(20));
-        button.setTextColor(ui.color(R.color.text_primary));
-        button.setStrokeColor(ColorStateList.valueOf(ui.color(R.color.outline)));
-        button.setMinHeight(ui.dp(48)); button.setOnClickListener(view -> click.run());
-        ui.content.addView(button, new LinearLayout.LayoutParams(-1, -2));
+    private void button(String text, int background, Runnable click) {
+        ui.button(text, click).setBackgroundTintList(ColorStateList.valueOf(ui.color(background)));
     }
 }

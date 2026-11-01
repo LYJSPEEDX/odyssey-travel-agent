@@ -1,10 +1,9 @@
 <resources>
     <string name="registration_brand">Odyssey</string>
-    <string name="registration_welcome">Your next chapter starts here.</string>
     <string name="registration_title">Make it your journey</string>
-    <string name="registration_subtitle">Tell us a little about yourself before you start exploring.</string>
+    <string name="registration_optional">Optional</string>
     <string name="registration_age">Age</string>
-    <string name="registration_location">Current residential location</string>
+    <string name="registration_location">Location</string>
     <string name="registration_preferences">Travel preferences (optional)</string>
     <string name="registration_privacy">Your profile is saved on this device. No username or password is needed.</string>
     <string name="registration_continue">Save profile and explore</string>

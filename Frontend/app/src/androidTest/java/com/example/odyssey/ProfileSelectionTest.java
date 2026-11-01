@@ -130,7 +130,7 @@ public class ProfileSelectionTest {
             });
         }
     }
-    @Test public void whiteInputsRemainReadableInDarkTheme() {
+    @Test public void inputsRemainReadableInDarkTheme() {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         try (ActivityScenario<RegistrationActivity> scenario = ActivityScenario.launch(
                 new Intent(context, RegistrationActivity.class).putExtra(RegistrationActivity.EXTRA_EDIT_PROFILE, true))) {
@@ -139,24 +139,13 @@ public class ProfileSelectionTest {
             InstrumentationRegistry.getInstrumentation().waitForIdleSync();
             awaitReady(scenario);
             scenario.onActivity(activity -> {
+                int surface = activity.getColor(R.color.surface);
                 EditText input = activity.findViewById(R.id.registrationGender);
-                View parent = input;
-                while (!(parent instanceof com.google.android.material.textfield.TextInputLayout)) parent = (View) parent.getParent();
-                com.google.android.material.textfield.TextInputLayout box = (com.google.android.material.textfield.TextInputLayout) parent;
-                assertEquals(android.graphics.Color.WHITE, box.getBoxBackgroundColor());
-                View location = activity.findViewById(R.id.registrationLocation);
-                while (!(location instanceof com.google.android.material.textfield.TextInputLayout)) location = (View) location.getParent();
-                android.widget.ImageButton icon = location.findViewById(com.google.android.material.R.id.text_input_end_icon);
-                // Material 把 tint 直接应用到 Drawable，ImageView 的 tint 属性可以是 null。
-                android.graphics.Bitmap bitmap = android.graphics.Bitmap.createBitmap(24, 24, android.graphics.Bitmap.Config.ARGB_8888);
-                android.graphics.drawable.Drawable drawable = icon.getDrawable();
-                android.graphics.Rect bounds = new android.graphics.Rect(drawable.getBounds());
-                drawable.setBounds(0, 0, 24, 24); drawable.draw(new android.graphics.Canvas(bitmap));
-                drawable.setBounds(bounds);
-                assertTrue(androidx.core.graphics.ColorUtils.calculateContrast(bitmap.getPixel(12, 12), android.graphics.Color.WHITE) >= 4.5);
-                bitmap.recycle();
-                assertTrue(androidx.core.graphics.ColorUtils.calculateContrast(input.getCurrentTextColor(), android.graphics.Color.WHITE) >= 4.5);
-                assertTrue(androidx.core.graphics.ColorUtils.calculateContrast(box.getDefaultHintTextColor().getDefaultColor(), android.graphics.Color.WHITE) >= 4.5);
+                android.view.ViewGroup locationRow = (android.view.ViewGroup) activity.findViewById(R.id.registrationLocation).getParent();
+                android.widget.ImageView icon = (android.widget.ImageView) locationRow.getChildAt(2);
+                assertTrue(androidx.core.graphics.ColorUtils.calculateContrast(icon.getImageTintList().getDefaultColor(), surface) >= 4.5);
+                assertTrue(androidx.core.graphics.ColorUtils.calculateContrast(input.getCurrentTextColor(), surface) >= 4.5);
+                assertTrue(androidx.core.graphics.ColorUtils.calculateContrast(input.getCurrentHintTextColor(), surface) >= 4.5);
             });
             EditorialLayoutTest.saveScreen(context, "profile-dark-preview.png");
         }

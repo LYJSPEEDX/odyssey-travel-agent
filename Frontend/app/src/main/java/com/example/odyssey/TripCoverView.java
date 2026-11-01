@@ -34,7 +34,7 @@ final class TripCoverView {
         TextView heading = new TextView(ui.context);
         heading.setText(title);
         heading.setTextSize(34);
-        heading.setTypeface(null, android.graphics.Typeface.BOLD);
+        AppFonts.heading(heading);
         heading.setTextColor(ui.color(R.color.on_photo));
         heading.setIncludeFontPadding(false);
         heading.setPadding(ui.dp(20), ui.dp(20), ui.dp(20), ui.dp(24));
@@ -43,9 +43,7 @@ final class TripCoverView {
         ViewCompat.setAccessibilityHeading(heading, true);
         FrameLayout.LayoutParams titleParams = new FrameLayout.LayoutParams(-1, -2, Gravity.BOTTOM);
         layers.addView(heading, titleParams);
-        TextView credit = new TextView(ui.context); credit.setTextSize(10); credit.setTextColor(ui.color(R.color.text_secondary));
-        parent.addView(credit, new LinearLayout.LayoutParams(-1, -2));
-        TripPhotos.showResponse(image, ResponseImage.cover(root, false, System.currentTimeMillis()), TripPhotos.fallbackCity(root, city), credit);
+        TripPhotos.showResponse(image, ResponseImage.cover(root, false, System.currentTimeMillis()), TripPhotos.fallbackCity(root, city));
     }
     private TripCoverView() {}
 }

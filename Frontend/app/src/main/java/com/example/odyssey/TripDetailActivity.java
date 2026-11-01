@@ -63,11 +63,10 @@ public class TripDetailActivity extends AppCompatActivity {
                 // 先成功画出结构化详情，再显示只适用于新版详情的底部调整入口。
                 renderItinerary();
                 findViewById(R.id.journalFooter).setVisibility(android.view.View.VISIBLE);
-                updateDraftStatus();
                 // 外层回调响应按钮点击；内层 draft -> ... 响应弹层输入变化，是两种不同事件。
                 findViewById(R.id.journalAdjust).setOnClickListener(view -> adjustment.show(this, adjustmentDraft, draft -> {
                     // 将新文字保存在 Activity 字段里，并同步底部“草稿已保留”的提示。
-                    adjustmentDraft = draft; updateDraftStatus();
+                    adjustmentDraft = draft;
                 }));
                 // 已显示新版 JSON 页面，不再执行下面的旧版纯文本布局。
                 return;
@@ -79,8 +78,16 @@ public class TripDetailActivity extends AppCompatActivity {
             ui.card(getString(sample ? R.string.sample_badge : R.string.trip_saved),
                     getString(sample ? R.string.sample_description : R.string.saved_trip_notice),
                     R.color.mint, null);
-            ui.text(trip.brief, 14, false);
-            ui.text(trip.itinerary, 16, false);
+            // 示例行程的 brief 与上方提示相同，不重复显示。
+            if (!trip.brief.equals(getString(R.string.sample_description))) ui.text(trip.brief, 14, false);
+            // 旧版纯文本以空行分段：每段首行作标题，合并进一张白色卡片。
+            HomeUi days = new HomeUi(ui.group());
+            days.content.setPadding(ui.dp(16), ui.dp(8), ui.dp(16), ui.dp(8));
+            for (String section : trip.itinerary.split("\n\n")) {
+                int lineEnd = section.indexOf('\n');
+                days.text(lineEnd < 0 ? section : section.substring(0, lineEnd), 15, true).setPadding(0, ui.dp(8), 0, ui.dp(4));
+                if (lineEnd >= 0) days.text(section.substring(lineEnd + 1), 14, false).setPadding(0, 0, 0, ui.dp(8));
+            }
         } catch (JSONException | ClassCastException exception) {
             // 解析/存储类型出错时清掉可能只画了一半的内容；不删除或覆盖原记录。
             ui.content.removeAllViews();
@@ -107,11 +114,6 @@ public class TripDetailActivity extends AppCompatActivity {
         outState.putInt("itinerary_day", selectedDay);
         outState.putString("adjustment_draft", adjustmentDraft);
         super.onSaveInstanceState(outState);
-    }
-    private void updateDraftStatus() {
-        // 空白归一化统一由 InputValidation 处理；这里只选择草稿状态文案。
-        ((android.widget.TextView) findViewById(R.id.journalDraftStatus)).setText(InputValidation.text(adjustmentDraft).isEmpty()
-                ? R.string.journal_offline : R.string.journal_draft_kept);
     }
     // 页面销毁时关闭持有 Activity 的弹层，避免旧窗口继续挂在已销毁的页面上。
     @Override protected void onDestroy() { adjustment.dismiss(); super.onDestroy(); }

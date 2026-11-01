@@ -120,6 +120,14 @@ final class ProfileStore {
         }
         return profile.put("preference_tags", normalized);
     }
+    /** 删除本机注册资料（含 AtomicFile 的备份），下次启动会重新进入注册页。 */
+    static boolean delete(Context context) {
+        AtomicFile target = new AtomicFile(new File(context.getFilesDir(), "profile.json"));
+        synchronized (IO_LOCK) {
+            target.delete();
+            return !target.getBaseFile().exists() && !new File(target.getBaseFile() + ".bak").exists();
+        }
+    }
     private void write(JSONObject profile) throws IOException, JSONException {
         byte[] encoded = profile.toString(2).getBytes(StandardCharsets.UTF_8);
         synchronized (IO_LOCK) { writeAtomic(encoded); }

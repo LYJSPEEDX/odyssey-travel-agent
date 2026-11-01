@@ -17,16 +17,13 @@
     <LinearLayout android:id="@+id/journalFooter" android:layout_width="match_parent"
         android:layout_height="wrap_content" android:orientation="vertical"
         android:paddingHorizontal="@dimen/space_lg" android:paddingTop="4dp"
-        android:paddingBottom="4dp" android:visibility="gone" android:background="@color/background">
+        android:paddingBottom="@dimen/space_md" android:visibility="gone" android:background="@color/background">
         <com.google.android.material.button.MaterialButton
             android:id="@+id/journalAdjust" android:tag="journal-adjust"
             android:layout_width="match_parent" android:layout_height="wrap_content"
             android:minHeight="52dp" android:text="@string/journal_adjust"
             android:textAllCaps="false" android:textColor="@color/on_accent"
+            android:fontFamily="@font/plus_jakarta_sans" android:textStyle="bold"
             app:backgroundTint="@color/lime" app:cornerRadius="24dp" />
-        <TextView android:id="@+id/journalDraftStatus" android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:gravity="center"
-            android:includeFontPadding="false" android:text="@string/journal_offline"
-            android:textSize="11sp" android:textColor="@color/text_secondary" />
     </LinearLayout>
 </LinearLayout>

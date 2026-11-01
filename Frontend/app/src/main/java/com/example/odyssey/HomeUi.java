@@ -5,6 +5,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.core.content.ContextCompat;
@@ -31,7 +32,8 @@ final class HomeUi {
         text.setLineSpacing(dp(4), 1);
         text.setPadding(0, dp(8), 0, dp(12));
         if (heading) {
-            text.setTypeface(null, Typeface.BOLD);
+            // 20sp 及以上才算页面标题，小号的加粗文字仍用正文字体。
+            if (size >= 20) AppFonts.heading(text); else AppFonts.style(text, Typeface.BOLD);
             ViewCompat.setAccessibilityHeading(text, true);
         }
         content.addView(text);
@@ -55,15 +57,17 @@ final class HomeUi {
         if (background != R.color.surface) {
             name.setTextColor(color(R.color.on_accent));
             body.setTextColor(color(R.color.on_accent));
-            card.setStrokeWidth(0);
         }
+        // 卡片不描边，靠页面底色与卡片底色的差别分层。
+        card.setStrokeWidth(0);
         card.setContentDescription(title + ". " + description);
         card.setClickable(click != null);
         if (click != null) card.setOnClickListener(view -> click.run());
         content.addView(card);
         return card;
     }
-    MaterialButton button(int label, Runnable action) {
+    MaterialButton button(int label, Runnable action) { return button(context.getString(label), action); }
+    MaterialButton button(String label, Runnable action) {
         MaterialButton button = new MaterialButton(context);
         button.setText(label);
         button.setAllCaps(false);
@@ -71,9 +75,72 @@ final class HomeUi {
         button.setCornerRadius(dp(24));
         button.setBackgroundTintList(ColorStateList.valueOf(color(R.color.lime)));
         button.setTextColor(color(R.color.on_accent));
+        AppFonts.style(button, Typeface.BOLD);
         button.setOnClickListener(view -> action.run());
         content.addView(button, new LinearLayout.LayoutParams(-1, -2));
         return button;
+    }
+    /** 白色合并卡片：同组内容放在一张无描边圆角卡片上，页面底色作为分隔。 */
+    LinearLayout group() {
+        LinearLayout group = new LinearLayout(context);
+        group.setOrientation(LinearLayout.VERTICAL);
+        group.setBackgroundResource(R.drawable.bg_group);
+        group.setClipToOutline(true);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-1, -2);
+        params.bottomMargin = dp(16);
+        content.addView(group, params);
+        return group;
+    }
+    /** 合并卡片中的一行，只放左侧标题；右侧内容由调用方追加。 */
+    LinearLayout row(String label) {
+        LinearLayout row = new LinearLayout(context);
+        row.setOrientation(LinearLayout.HORIZONTAL);
+        row.setGravity(android.view.Gravity.CENTER_VERTICAL);
+        row.setMinimumHeight(dp(56));
+        row.setPadding(dp(16), 0, dp(4), 0);
+        row.setBackgroundResource(attr(android.R.attr.selectableItemBackground));
+        TextView name = new TextView(context);
+        name.setText(label);
+        name.setTextSize(15);
+        name.setTextColor(color(R.color.text_secondary));
+        row.addView(name);
+        content.addView(row, new LinearLayout.LayoutParams(-1, -2));
+        return row;
+    }
+    /** 设置类的操作行：左侧标题、右侧当前值；click 为 null 时只读展示。 */
+    LinearLayout actionRow(String label, String value, Runnable click) {
+        LinearLayout row = row(label);
+        ((TextView) row.getChildAt(0)).setTextColor(color(R.color.text_primary));
+        TextView current = new TextView(context);
+        current.setText(value);
+        current.setTextSize(14);
+        current.setTextColor(color(R.color.text_secondary));
+        current.setGravity(android.view.Gravity.END);
+        current.setSingleLine(true);
+        current.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        current.setPadding(dp(12), 0, click == null ? dp(12) : 0, 0);
+        row.addView(current, new LinearLayout.LayoutParams(0, -2, 1f));
+        if (click == null) row.setBackground(null);
+        else {
+            rowIcon(row, R.drawable.ic_chevron_right);
+            row.setOnClickListener(view -> click.run());
+        }
+        return row;
+    }
+    /** 行尾的装饰图标，不拦截点击，由整行响应。 */
+    ImageView rowIcon(LinearLayout row, int icon) {
+        ImageView image = new ImageView(context);
+        image.setImageResource(icon);
+        image.setImageTintList(ColorStateList.valueOf(color(R.color.text_secondary)));
+        image.setPadding(dp(14), dp(14), dp(14), dp(14));
+        image.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+        row.addView(image, new LinearLayout.LayoutParams(dp(48), dp(48)));
+        return image;
+    }
+    int attr(int id) {
+        android.util.TypedValue value = new android.util.TypedValue();
+        context.getTheme().resolveAttribute(id, value, true);
+        return value.resourceId;
     }
     void section(int title) { text(context.getString(title), 18, true); }
     int color(int id) { return ContextCompat.getColor(context, id); }

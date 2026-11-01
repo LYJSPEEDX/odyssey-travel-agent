@@ -51,7 +51,7 @@ final class TripCalendarView extends LinearLayout {
         monthFormat.setTimeZone(month.getTimeZone());
         TextView label = text(monthFormat.format(month.getTime()));
         label.setTextSize(18);
-        label.setTypeface(null, Typeface.BOLD);
+        AppFonts.heading(label);
         header.addView(label, new LayoutParams(0, dp(48), 1));
         header.addView(monthButton(R.drawable.ic_arrow_forward, R.string.next_month, 1),
                 new LayoutParams(dp(48), dp(48)));
@@ -87,9 +87,12 @@ final class TripCalendarView extends LinearLayout {
             boolean inRange = state.getEndDate() != 0 && key > state.getStartDate()
                     && key < state.getEndDate();
             if (endpoint || inRange) {
-                date.setBackground(shape(endpoint ? R.color.lime : R.color.mint, endpoint ? 24 : 4));
+                boolean range = state.getEndDate() != 0 && state.getStartDate() != state.getEndDate();
+                int side = !range ? 0 : key == state.getStartDate() ? 1 : -1;
+                if (endpoint) date.setBackground(new EndpointBackground(color(R.color.purple), color(R.color.mint), side));
+                else date.setBackground(shape(R.color.mint, 0));
                 date.setTextColor(color(R.color.on_accent));
-                date.setTypeface(null, endpoint ? Typeface.BOLD : Typeface.NORMAL);
+                AppFonts.style(date, endpoint ? Typeface.BOLD : Typeface.NORMAL);
                 date.setSelected(true);
                 int desc = key == state.getStartDate() ? R.string.calendar_departure
                         : key == state.getEndDate() ? R.string.calendar_return : R.string.calendar_selected_day;
@@ -102,6 +105,26 @@ final class TripCalendarView extends LinearLayout {
                 date.setOnClickListener(view -> onDateSelected.accept(key));
             }
         }
+    }
+
+    /** 区间端点：朝区间一侧先铺半格底色接上相邻日期，再画圆，圆外不留空角。side：1 右、-1 左、0 无区间。 */
+    private static final class EndpointBackground extends android.graphics.drawable.Drawable {
+        private final android.graphics.Paint paint = new android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG);
+        private final int circle, band, side;
+        EndpointBackground(int circle, int band, int side) { this.circle = circle; this.band = band; this.side = side; }
+        @Override public void draw(android.graphics.Canvas canvas) {
+            android.graphics.Rect bounds = getBounds();
+            float x = bounds.exactCenterX(), y = bounds.exactCenterY();
+            if (side != 0) {
+                paint.setColor(band);
+                canvas.drawRect(side > 0 ? x : bounds.left, bounds.top, side > 0 ? bounds.right : x, bounds.bottom, paint);
+            }
+            paint.setColor(circle);
+            canvas.drawCircle(x, y, Math.min(bounds.width(), bounds.height()) / 2f, paint);
+        }
+        @Override public void setAlpha(int alpha) { paint.setAlpha(alpha); }
+        @Override public void setColorFilter(android.graphics.ColorFilter filter) { paint.setColorFilter(filter); }
+        @Override public int getOpacity() { return android.graphics.PixelFormat.TRANSLUCENT; }
     }
 
     private MaterialButton monthButton(int icon, int description, int direction) {

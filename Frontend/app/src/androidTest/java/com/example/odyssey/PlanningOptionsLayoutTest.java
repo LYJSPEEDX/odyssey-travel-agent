@@ -47,9 +47,10 @@ public class PlanningOptionsLayoutTest {
                     MaterialCardView selected = card(friends), normal = card(solo);
                     assertTrue("Selected state stays available to accessibility", selected.isSelected());
                     assertFalse(normal.isSelected());
-                    assertEquals(ContextCompat.getColor(context, R.color.surface), selected.getCardBackgroundColor().getDefaultColor());
-                    assertEquals(normal.getCardBackgroundColor().getDefaultColor(), selected.getCardBackgroundColor().getDefaultColor());
-                    assertEquals(normal.getStrokeColor(), selected.getStrokeColor());
+                    assertEquals(ContextCompat.getColor(context, R.color.purple), selected.getCardBackgroundColor().getDefaultColor());
+                    assertEquals(ContextCompat.getColor(context, R.color.surface), normal.getCardBackgroundColor().getDefaultColor());
+                    assertEquals("Unselected options have no border", 0, normal.getStrokeWidth());
+                    assertTrue("Selected option shows a border", selected.getStrokeWidth() > 0);
                     assertTrue(selected.getHeight() >= dp(context, 48)); assertTrue(normal.getHeight() >= dp(context, 48));
                     if (scale == 1) assertTrue("Compact companion card stays at most 76dp high", selected.getHeight() <= dp(context, 76));
                     assertRenderedTextFits(root);
@@ -98,7 +99,8 @@ public class PlanningOptionsLayoutTest {
                     <= text.getHeight() - text.getCompoundPaddingTop() - text.getCompoundPaddingBottom());
             for (int line = 0; line < text.getLayout().getLineCount(); line++) {
                 assertEquals(0, text.getLayout().getEllipsisCount(line));
-                assertTrue(text.getText().toString(), text.getLayout().getLineWidth(line)
+                // getLineWidth 含换行处的尾部空格，空格本来就可以悬在行尾；要量可见文字用 getLineMax。
+                assertTrue(text.getText().toString(), text.getLayout().getLineMax(line)
                         <= text.getWidth() - text.getCompoundPaddingLeft() - text.getCompoundPaddingRight() + 1);
             }
         }

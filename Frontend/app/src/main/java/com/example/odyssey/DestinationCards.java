@@ -32,7 +32,7 @@ final class DestinationCards {
             card.setCardElevation(0);
             card.setCardBackgroundColor(ui.color(R.color.surface));
             card.setStrokeColor(ui.color(selected ? R.color.purple : R.color.outline));
-            card.setStrokeWidth(ui.dp(selected ? 2 : 1));
+            card.setStrokeWidth(selected ? ui.dp(2) : 0);
             card.setSelected(selected); // 恢复/旋转时从 state 重画，而不是依赖卡片旧状态。
             card.setClickable(true);
             card.setFocusable(true);
@@ -69,7 +69,7 @@ final class DestinationCards {
             }
             TextView title = new TextView(ui.context);
             title.setText(destination.city); title.setTextSize(18);
-            title.setTypeface(null, android.graphics.Typeface.BOLD);
+            AppFonts.heading(title);
             title.setTextColor(ui.color(R.color.text_primary));
             title.setPadding(ui.dp(12), ui.dp(12), ui.dp(12), ui.dp(4));
             body.addView(title);

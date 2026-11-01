@@ -45,7 +45,7 @@
     <string name="settings_subtitle">Make yourself at home.</string>
     <string name="settings_account_section">Account and profile</string>
     <string name="settings_login">Sign in</string>
-    <string name="settings_login_subtitle">Not signed in · Local demo mode</string>
+    <string name="settings_login_subtitle">Not signed in</string>
     <string name="settings_login_message">Sign-in is not connected yet. You can generate and save trips on this device without an account. No profile data is uploaded and no passwords are collected.</string>
     <string name="settings_edit_profile">Edit profile</string>
     <string name="settings_nickname">Display name</string>
@@ -66,6 +66,11 @@
     <string name="settings_about">About us</string>
     <string name="settings_about_subtitle">Odyssey · From inspiration to itinerary</string>
     <string name="settings_about_message">Odyssey is a travel planning prototype guided by conversation and simple choices.\n\nThis version uses local sample data. Live pricing, bookings and AI services are not connected.</string>
+    <string name="settings_reset_profile">Reset registration</string>
+    <string name="settings_reset_profile_subtitle">Delete your profile on this device and register again</string>
+    <string name="settings_reset_profile_message">This deletes your saved profile (name, birth date, location, currency and interests) from this device. You will be taken back to the registration page. Saved trips are not affected.</string>
+    <string name="settings_reset_profile_confirm">Delete</string>
+    <string name="settings_reset_profile_failed">Could not delete your profile. Please try again.</string>
     <string name="settings_storage">Data and privacy</string>
     <string name="settings_storage_description">Your saved trips, display name and appearance preferences stay on this device and are excluded from system backups. There is no cloud sync. Uninstalling or clearing app data removes this local data.</string>
     <string name="settings_version">Version</string>

@@ -1,9 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/registrationRoot" android:layout_width="match_parent"
     android:layout_height="match_parent" android:fillViewport="true"
     android:background="@color/background" android:clipToPadding="true">
     <LinearLayout android:id="@+id/registrationContent" android:layout_width="match_parent"
         android:layout_height="wrap_content" android:orientation="vertical"
-        android:padding="@dimen/space_lg" />
+        android:padding="@dimen/space_lg">
+        <!-- 与行程规划一致的返回按钮、分段进度和步骤胶囊 -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="@dimen/composer_height"
+            android:layout_marginBottom="@dimen/space_sm" android:gravity="center_vertical"
+            android:orientation="horizontal">
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/registrationPrevious"
+                style="@style/Widget.Material3.Button"
+                android:layout_width="@dimen/navigation_button_width"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/profile_back"
+                android:gravity="center"
+                android:insetLeft="@dimen/space_xs"
+                android:insetTop="@dimen/navigation_button_vertical_inset"
+                android:insetRight="@dimen/space_xs"
+                android:insetBottom="@dimen/navigation_button_vertical_inset"
+                android:minWidth="0dp" android:padding="0dp"
+                app:backgroundTint="@color/navigation_back_background"
+                app:cornerRadius="@dimen/navigation_button_radius"
+                app:icon="@drawable/ic_arrow_back"
+                app:iconGravity="textStart" app:iconPadding="0dp" app:iconSize="20dp"
+                app:iconTint="@color/navigation_next_content" />
+            <View android:id="@+id/registrationProgressStep1"
+                android:layout_width="0dp" android:layout_height="@dimen/space_xs"
+                android:layout_marginStart="@dimen/space_sm" android:layout_weight="1"
+                android:background="@color/lime" />
+            <View android:id="@+id/registrationProgressStep2"
+                android:layout_width="0dp" android:layout_height="@dimen/space_xs"
+                android:layout_marginStart="@dimen/space_xs" android:layout_weight="1"
+                android:background="@color/outline" />
+            <TextView android:id="@+id/registrationStepText"
+                android:layout_width="wrap_content" android:layout_height="@dimen/touch_target_min"
+                android:layout_marginStart="@dimen/space_md"
+                android:background="@drawable/bg_step_indicator"
+                android:fontFamily="@font/plus_jakarta_sans" android:textStyle="bold" android:gravity="center"
+                android:includeFontPadding="false" android:minWidth="48dp"
+                android:paddingHorizontal="@dimen/space_md"
+                android:textColor="@color/step_indicator_text"
+                android:textSize="@dimen/text_body" />
+        </LinearLayout>
+    </LinearLayout>
 </androidx.core.widget.NestedScrollView>

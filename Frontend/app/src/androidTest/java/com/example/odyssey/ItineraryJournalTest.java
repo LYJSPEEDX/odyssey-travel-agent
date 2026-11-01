@@ -19,15 +19,11 @@ import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
 public class ItineraryJournalTest {
-    @Test public void overviewAndDayNotesRemainAccessible() {
+    @Test public void dayNotesRemainAccessible() {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         Intent intent = new Intent(context, TripDetailActivity.class)
                 .putExtra(TripDetailActivity.EXTRA_SAMPLE, true).putExtra(TripDetailActivity.EXTRA_ID, "contract_new_york");
         try (ActivityScenario<TripDetailActivity> scenario = ActivityScenario.launch(intent)) {
-            onView(withText("Overview ↗")).perform(click());
-            onView(withText(org.hamcrest.Matchers.containsString("A sample plan for two travellers")))
-                    .check(matches(withText(org.hamcrest.Matchers.containsString("Time to explore"))));
-            onView(withText("Close")).perform(click());
             scenario.onActivity(activity -> {
                 View day = activity.findViewById(R.id.tripDetailContent).findViewWithTag("contract-day-0");
                 assertTrue(day.getContentDescription().toString().contains("10 Nov"));
@@ -49,7 +45,6 @@ public class ItineraryJournalTest {
             scenario.recreate();
             onView(withTagValue(is("journal-adjust"))).perform(click());
             onView(withTagValue(is("adjustment-input"))).check(matches(withText("Please reduce walking and allow more breaks.")));
-            onView(withText("Offline preview · Not sent")).check(matches(withText("Offline preview · Not sent")));
         }
     }
     @Test public void journalUsesCompactHeaderTimelineAndHotelRail() {

@@ -13,7 +13,6 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -33,14 +32,14 @@ public class RegistrationActivity extends AppCompatActivity {
     private RegionCatalog regions;
     private RegionCatalog.Country locationCountry;
     private boolean needsRegion;
-    private TextInputLayout locationBox;
+    private android.widget.ImageView locationAction;
     private CurrentLocation currentLocation;
     private boolean editing, readFailed, opening;
     private org.json.JSONObject restoredDraft;
     private final java.util.List<android.view.View> controls = new java.util.ArrayList<>();
     private MaterialButton submit, previous;
     private LinearLayout personalPage, interestsPage;
-    private TextView stepLabel;
+    private TextView stepText;
     private int profileStep;
     private Integer legacyAge;
     private String residenceCountry = "", currencyOverride = "";
@@ -76,85 +75,93 @@ public class RegistrationActivity extends AppCompatActivity {
                 if (profileStep == 1) showStep(0); else if (editing) finish(); else finishAffinity();
             }
         });
-        ui.card(getString(R.string.registration_brand), getString(R.string.registration_welcome), R.color.lime, null);
-        ui.title(R.string.registration_title, R.string.registration_subtitle);
-        stepLabel = ui.text("Step 1 of 2 · About you", 14, true);
-        ui.text("Every field is optional. Share only what you are comfortable with.", 14, false);
+        // 黄框同时承担品牌与页面标题，不再单独放副标题。
+        com.google.android.material.card.MaterialCardView hero = ui.card(getString(R.string.registration_brand), getString(R.string.registration_title), R.color.lime, null);
+        TextView heroTitle = hero.findViewById(R.id.optionDescription);
+        heroTitle.setTextSize(28); AppFonts.heading(heroTitle);
+        ((LinearLayout.LayoutParams) hero.getLayoutParams()).bottomMargin = ui.dp(16);
+        stepText = findViewById(R.id.registrationStepText);
         HomeUi outerUi = ui;
         personalPage = new LinearLayout(this); personalPage.setOrientation(LinearLayout.VERTICAL);
         outerUi.content.addView(personalPage);
         ui = new HomeUi(personalPage);
-        name = field(ui, R.id.registrationName, R.string.profile_name, InputType.TYPE_CLASS_TEXT, 200);
-        privateAction(ui, name, () -> name.setText(PRIVATE));
-        gender = field(ui, R.id.registrationGender, R.string.profile_gender, InputType.TYPE_CLASS_TEXT, 200);
-        gender.setHint("Select gender (optional)");
+        HomeUi aboutYou = new HomeUi(ui.group());
+        name = field(aboutYou, R.id.registrationName, R.string.profile_name, InputType.TYPE_CLASS_TEXT, 200);
+        gender = field(aboutYou, R.id.registrationGender, R.string.profile_gender, InputType.TYPE_CLASS_TEXT, 200);
         selectionField(gender, () -> new com.google.android.material.dialog.MaterialAlertDialogBuilder(this, R.style.ThemeOverlay_Odyssey_ProfilePicker)
                 .setTitle("Gender").setItems(GENDERS, (dialog, which) -> gender.setText(GENDERS[which]))
                 .setNegativeButton("Cancel", null).show());
-        birthDate = field(ui, R.id.registrationBirthDate, R.string.profile_birth_date, InputType.TYPE_CLASS_TEXT, 30);
-        birthDate.setHint("Select date (optional)");
+        birthDate = field(aboutYou, R.id.registrationBirthDate, R.string.profile_birth_date, InputType.TYPE_CLASS_TEXT, 30);
         selectionField(birthDate, () -> BirthDatePicker.show(this, value(birthDate), date -> {
             legacyAge = null;
             birthDate.setText(date.isEmpty() ? PRIVATE : date);
         }));
-        nationality = field(ui, R.id.registrationNationality, R.string.profile_nationality, InputType.TYPE_CLASS_TEXT, 200);
-        nationality.setHint("Select nationality (optional)");
+        nationality = field(aboutYou, R.id.registrationNationality, R.string.profile_nationality, InputType.TYPE_CLASS_TEXT, 200);
         selectionField(nationality, () -> chooseCountry(true));
         // 第一页与偏好页各自保留控件，前后切换不会清空输入或已选标签。
         interestsPage = new LinearLayout(this); interestsPage.setOrientation(LinearLayout.VERTICAL);
         outerUi.content.addView(interestsPage);
         ui = new HomeUi(interestsPage);
-        location = field(ui, R.id.registrationLocation, R.string.registration_location,
+        HomeUi place = new HomeUi(ui.group());
+        location = field(place, R.id.registrationLocation, R.string.registration_location,
                 InputType.TYPE_CLASS_TEXT, 200);
-        location.setHint("Choose location (optional)");
         // 框内文字打开国家→地区选择，右侧独立图标只负责主动定位。
         location.setFocusable(false); location.setShowSoftInputOnFocus(false);
         location.setOnClickListener(view -> { if (needsRegion) chooseRegion(); else chooseCountry(false); });
-        locationBox = (TextInputLayout) location.getParent().getParent();
-        locationBox.setEndIconMode(TextInputLayout.END_ICON_CUSTOM);
-        locationBox.setEndIconDrawable(R.drawable.ic_my_location);
-        locationBox.setEndIconCheckable(false);
-        locationBox.setEndIconContentDescription(R.string.profile_use_location);
-        locationBox.setEndIconTintList(android.content.res.ColorStateList.valueOf(ui.color(R.color.profile_field_text)));
-        locationBox.setEndIconOnClickListener(view -> { if (location.isEnabled()) currentLocation.start(); });
-        privateAction(ui, location, () -> { currentLocation.cancel(); needsRegion = false; locationCountry = null; location.setText(PRIVATE); residenceCountry = ""; refreshCurrency(); setLocationStatus(""); });
+        locationAction = (android.widget.ImageView) ((LinearLayout) location.getParent()).getChildAt(2);
+        locationAction.setImageResource(R.drawable.ic_my_location);
+        locationAction.setImageTintList(android.content.res.ColorStateList.valueOf(ui.color(R.color.text_primary)));
+        locationAction.setImportantForAccessibility(android.view.View.IMPORTANT_FOR_ACCESSIBILITY_YES);
+        locationAction.setContentDescription(getString(R.string.profile_use_location));
+        locationAction.setBackgroundResource(ui.attr(android.R.attr.selectableItemBackgroundBorderless));
+        locationAction.setOnClickListener(view -> { if (location.isEnabled()) currentLocation.start(); });
+        controls.add(locationAction);
+        currency = field(place, R.id.profileCurrency, R.string.profile_currency, InputType.TYPE_CLASS_TEXT, 100);
+        selectionField(currency, this::chooseCurrency);
         locationStatus = ui.text("", 13, false);
         locationStatus.setVisibility(android.view.View.GONE);
         locationStatus.setAccessibilityLiveRegion(android.view.View.ACCESSIBILITY_LIVE_REGION_POLITE);
-        currency = field(ui, R.id.profileCurrency, R.string.profile_currency, InputType.TYPE_CLASS_TEXT, 100);
-        currency.setHint("Choose a currency (optional)");
-        selectionField(currency, this::chooseCurrency);
         refreshCurrency();
-        ui.text("Travel interests · tap to explore", 16, true);
+        HomeUi interests = new HomeUi(ui.group());
+        interests.content.setPadding(ui.dp(16), ui.dp(8), ui.dp(16), ui.dp(8));
+        interests.text("Travel interests", 16, true);
         tags = new com.google.android.material.chip.ChipGroup(this);
         tags.setSingleSelection(false);
-        tags.setChipSpacingHorizontal(ui.dp(2)); tags.setChipSpacingVertical(0);
+        tags.setChipSpacingHorizontal(ui.dp(6)); tags.setChipSpacingVertical(0);
         // 先放全部根标签，再放衍生标签：展开时始终出现在初始标签的下方。
-        for (String root : InterestGroups.all().keySet()) addInterest(ui, root, tags);
-        ui.content.addView(tags);
+        for (String root : InterestGroups.all().keySet()) addInterest(interests, root, tags);
+        interests.content.addView(tags);
         // 单独一组保证相关选项从下一行开始，不挤进初始标签的最后一行。
         relatedTags = new com.google.android.material.chip.ChipGroup(this);
-        relatedTags.setChipSpacingHorizontal(ui.dp(2)); relatedTags.setChipSpacingVertical(0);
+        relatedTags.setChipSpacingHorizontal(ui.dp(6)); relatedTags.setChipSpacingVertical(0);
         for (String[] children : InterestGroups.all().values())
-            for (String child : children) addInterest(ui, child, relatedTags);
-        ui.content.addView(relatedTags);
+            for (String child : children) addInterest(interests, child, relatedTags);
+        interests.content.addView(relatedTags);
         updateInterestVisibility();
         ui = outerUi;
-        ui.text(getString(R.string.registration_privacy), 12, false);
+        // 隐私说明紧贴表单；弹性空白把主按钮固定在屏幕底部，内容超过一屏时高度为 0。
+        TextView privacy = ui.text(getString(R.string.registration_privacy), 13, false);
+        privacy.setTextColor(ui.color(R.color.text_primary));
+        privacy.setGravity(android.view.Gravity.CENTER);
+        ui.content.addView(new android.widget.Space(this), new LinearLayout.LayoutParams(-1, 0, 1f));
         status = ui.text("", 14, false);
         status.setAccessibilityLiveRegion(android.view.View.ACCESSIBILITY_LIVE_REGION_POLITE);
-        previous = ui.button(R.string.profile_back, () -> showStep(0));
-        previous.setId(R.id.registrationPrevious); controls.add(previous);
+        previous = findViewById(R.id.registrationPrevious);
+        previous.setOnClickListener(view -> getOnBackPressedDispatcher().onBackPressed());
         submit = ui.button(R.string.profile_next, () -> {
             if (readFailed) loadProfile();
             else if (profileStep == 0) showStep(1);
             else save();
         });
-        submit.setId(R.id.registrationNext);
+        submit.setId(R.id.registrationNext); submit.setTextSize(17);
+        submit.setMinHeight(ui.dp(56)); submit.setInsetTop(0); submit.setInsetBottom(0);
+        submit.setCornerRadius(getResources().getDimensionPixelSize(R.dimen.radius_medium));
         showStep(profileStep);
         if (editing) {
             MaterialButton cancel = ui.button(R.string.profile_cancel, this::finish);
             cancel.setId(R.id.registrationCancel); controls.add(cancel);
+            cancel.setBackgroundTintList(android.content.res.ColorStateList.valueOf(ui.color(R.color.surface)));
+            cancel.setTextColor(ui.color(R.color.text_primary)); cancel.setTextSize(17);
         }
         // 首次启动接续首页的票券；从个人页编辑资料不播放欢迎动画。
         launchWelcome = new LaunchWelcome(this, state, R.id.registrationRoot,
@@ -166,8 +173,10 @@ public class RegistrationActivity extends AppCompatActivity {
         profileStep = step == 1 ? 1 : 0;
         personalPage.setVisibility(profileStep == 0 ? android.view.View.VISIBLE : android.view.View.GONE);
         interestsPage.setVisibility(profileStep == 1 ? android.view.View.VISIBLE : android.view.View.GONE);
-        stepLabel.setText(profileStep == 0 ? "Step 1 of 2 · About you" : "Step 2 of 2 · Your travel style");
-        previous.setVisibility(profileStep == 1 ? android.view.View.VISIBLE : android.view.View.GONE);
+        // 与行程规划共用分段进度：已到达的段为 lime，未到达的段为 outline。
+        stepText.setText(profileStep == 0 ? "1/2" : "2/2");
+        stepText.setContentDescription(profileStep == 0 ? "Step 1 of 2, about you" : "Step 2 of 2, your travel style");
+        findViewById(R.id.registrationProgressStep2).setBackgroundColor(getColor(profileStep == 1 ? R.color.lime : R.color.outline));
         submit.setText(profileStep == 0 ? R.string.profile_next : (editing ? R.string.profile_save : R.string.registration_continue));
         if (status != null) status.setText("");
         android.view.View focus = getCurrentFocus();
@@ -180,19 +189,9 @@ public class RegistrationActivity extends AppCompatActivity {
     }
     /** 不透露与留空在存档中都表示未提供，避免把提示词当作真实姓名或国籍。 */
     private String disclosed(TextInputEditText input) { return PRIVATE.equals(value(input)) ? "" : value(input); }
-    private void privateAction(HomeUi ui, TextInputEditText input, Runnable action) {
-        MaterialButton button = new MaterialButton(this, null, com.google.android.material.R.attr.materialButtonOutlinedStyle);
-        button.setText(PRIVATE); button.setAllCaps(false);
-        button.setTextColor(ui.color(R.color.text_secondary));
-        button.setContentDescription(input.getContentDescription() + ": " + PRIVATE);
-        button.setOnClickListener(view -> action.run()); controls.add(button);
-        ui.content.addView(button);
-    }
-    /** 选择框仍使用同一白底输入样式，但禁止唤出键盘。 */
+    /** 选择框沿用同一行样式，但禁止唤出键盘。 */
     private void selectionField(TextInputEditText input, Runnable action) {
         input.setFocusable(false); input.setShowSoftInputOnFocus(false);
-        input.setCompoundDrawablesWithIntrinsicBounds(0, 0, android.R.drawable.arrow_down_float, 0);
-        input.setCompoundDrawableTintList(android.content.res.ColorStateList.valueOf(getColor(R.color.profile_field_icon)));
         input.setOnClickListener(view -> action.run());
     }
     private void addInterest(HomeUi ui, String id, com.google.android.material.chip.ChipGroup container) {
@@ -200,18 +199,18 @@ public class RegistrationActivity extends AppCompatActivity {
         chip.setId(android.view.View.generateViewId()); chip.setText(PreferenceTags.ALL.get(id)); chip.setTag(id);
         chip.setCheckable(true); chip.setEnsureMinTouchTargetSize(true);
         chip.setCheckedIconVisible(false); chip.setChipIconVisible(false);
-        chip.setTextSize(13); chip.setChipMinHeight(ui.dp(44));
-        chip.setChipStartPadding(ui.dp(8)); chip.setChipEndPadding(ui.dp(8));
+        chip.setTextSize(13); chip.setChipMinHeight(ui.dp(34));
+        chip.setChipStartPadding(ui.dp(12)); chip.setChipEndPadding(ui.dp(12));
         chip.setTextStartPadding(ui.dp(2)); chip.setTextEndPadding(ui.dp(2));
-        // 选中只加粗标题，不添加勾选图标或改变背景色。
-        chip.setChipBackgroundColor(android.content.res.ColorStateList.valueOf(ui.color(R.color.surface)));
-        chip.setTextColor(ui.color(R.color.text_primary));
-        chip.setTypeface(null, android.graphics.Typeface.NORMAL);
+        // 选中后纯色填充并加粗；触控区仍由 ensureMinTouchTargetSize 保证 48dp。
+        chip.setChipBackgroundColorResource(R.color.chip_background);
+        chip.setTextColor(androidx.core.content.ContextCompat.getColorStateList(this, R.color.chip_text));
+        AppFonts.style(chip, android.graphics.Typeface.NORMAL);
         chip.setShapeAppearanceModel(chip.getShapeAppearanceModel().toBuilder().setAllCornerSizes(ui.dp(24)).build());
         chip.setChipStrokeWidth(ui.dp(1));
-        chip.setChipStrokeColor(android.content.res.ColorStateList.valueOf(ui.color(R.color.outline)));
+        chip.setChipStrokeColor(androidx.core.content.ContextCompat.getColorStateList(this, R.color.chip_stroke));
         chip.setOnCheckedChangeListener((button, checked) -> {
-            chip.setTypeface(null, checked ? android.graphics.Typeface.BOLD : android.graphics.Typeface.NORMAL);
+            AppFonts.style(chip, checked ? android.graphics.Typeface.BOLD : android.graphics.Typeface.NORMAL);
             if (!restoringInterests) updateInterestVisibility();
         });
         interestChips.put(id, chip); container.addView(chip); controls.add(chip);
@@ -351,30 +350,33 @@ public class RegistrationActivity extends AppCompatActivity {
         updateInterestVisibility();
         restoringInterests = false;
     }
+    /** 左侧标题、右侧取值的合并行；整行都可点击，取值控件仍是原来的输入框。 */
     private TextInputEditText field(HomeUi ui, int id, int hint, int type, int limit) {
-        // 标题放在白色输入框之外，浅/深色背景都使用对应正文色，避免浮动标签跨越深色背景时看不清。
-        TextView label = ui.text(getString(hint), 14, true);
-        label.setPadding(0, ui.dp(2), 0, ui.dp(4));
-        TextInputLayout wrapper = new TextInputLayout(this);
-        wrapper.setHintEnabled(false);
-        wrapper.setBoxBackgroundMode(TextInputLayout.BOX_BACKGROUND_OUTLINE);
-        wrapper.setBoxBackgroundColor(android.graphics.Color.WHITE);
-        // 品牌 lime 适合按钮填充，但在米白底上不足以作为小号标签文字；使用语义正文色。
-        android.content.res.ColorStateList labelColor = android.content.res.ColorStateList.valueOf(android.graphics.Color.rgb(33, 31, 29));
-        wrapper.setHintTextColor(labelColor);
-        wrapper.setDefaultHintTextColor(labelColor);
-        wrapper.setBoxStrokeColor(ui.color(R.color.text_primary));
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-1, -2);
-        params.bottomMargin = ui.dp(16);
-        ui.content.addView(wrapper, params);
-        TextInputEditText input = new TextInputEditText(wrapper.getContext());
+        LinearLayout row = ui.row(getString(hint));
+        TextInputEditText input = new TextInputEditText(this);
         input.setId(id); input.setInputType(type);
         input.setContentDescription(getString(hint));
-        input.setTextColor(android.graphics.Color.rgb(33, 31, 29));
-        input.setHintTextColor(getColor(R.color.profile_field_icon));
+        input.setBackground(null);
+        input.setPadding(ui.dp(12), ui.dp(8), 0, ui.dp(8));
+        input.setGravity(android.view.Gravity.END | android.view.Gravity.CENTER_VERTICAL);
+        input.setTextSize(15);
+        AppFonts.medium(input);
+        input.setTextColor(ui.color(R.color.text_primary));
+        input.setHint(R.string.registration_optional);
+        input.setHintTextColor(ui.color(R.color.text_secondary));
         input.setFilters(new InputFilter[]{new InputFilter.LengthFilter(limit)});
         input.setSingleLine(true);
-        wrapper.addView(input, new LinearLayout.LayoutParams(-1, -2));
+        input.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        // 品牌 lime 的光标在白色行上几乎看不见。
+        if (android.os.Build.VERSION.SDK_INT >= 29) input.setTextCursorDrawable(R.drawable.profile_cursor);
+        row.addView(input, new LinearLayout.LayoutParams(0, -2, 1f));
+        ui.rowIcon(row, R.drawable.ic_edit);
+        row.setOnClickListener(view -> {
+            if (!input.isEnabled()) return;
+            if (!input.isFocusable()) { input.performClick(); return; }
+            input.requestFocus();
+            ((android.view.inputmethod.InputMethodManager) getSystemService(INPUT_METHOD_SERVICE)).showSoftInput(input, 0);
+        });
         controls.add(input);
         return input;
     }
@@ -417,8 +419,8 @@ public class RegistrationActivity extends AppCompatActivity {
     }
     private void busy(boolean busy) {
         submit.setEnabled(!busy);
-        locationBox.setEnabled(!busy);
         for (android.view.View control : controls) control.setEnabled(!busy);
+        previous.setEnabled(!busy);
     }
     /** 旋转只保存未提交草稿，动态标签使用稳定业务 ID 而非生成的 View ID。 */
     @Override protected void onSaveInstanceState(Bundle state) {

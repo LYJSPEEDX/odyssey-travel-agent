@@ -20,6 +20,55 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RunWith(AndroidJUnit4.class)
 public class PlannerFlowTest {
     @org.junit.Rule public final ProfileTestFixture profile = new ProfileTestFixture();
+    /** 生成完成页没有返回按钮：标签栏和系统返回键都必须能离开，否则用户会被困住。 */
+    @Test public void generatedTripLeavesThroughTabsAndSystemBack() {
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        SharedPreferences library = context.getSharedPreferences(TripStore.FILE, Context.MODE_PRIVATE);
+        java.util.Map<String, ?> previous = library.getAll();
+        try {
+            try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
+                generateTrip(scenario);
+                scenario.onActivity(a -> ((com.google.android.material.bottomnavigation.BottomNavigationView) a.findViewById(R.id.plannerNavigation))
+                        .setSelectedItemId(R.id.nav_settings));
+                assertHomeTab(R.id.nav_settings);
+            }
+            try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
+                generateTrip(scenario);
+                scenario.onActivity(a -> a.getOnBackPressedDispatcher().onBackPressed());
+                assertHomeTab(R.id.nav_home);
+            }
+        } finally {
+            SharedPreferences.Editor restore = library.edit().clear();
+            for (java.util.Map.Entry<String, ?> entry : previous.entrySet())
+                if (entry.getValue() instanceof String) restore.putString(entry.getKey(), (String) entry.getValue());
+            restore.commit();
+        }
+    }
+    private static void generateTrip(ActivityScenario<MainActivity> scenario) {
+        choose(scenario, "Sydney", "1/7"); choose(scenario, "Kyoto", "2/7");
+        choose(scenario, "Flexible dates", "3/7");
+        scenario.onActivity(a -> { clickText(a, "Friends"); clickText(a, "Continue"); });
+        awaitStep(scenario, "4/7"); choose(scenario, "Comfort", "5/7");
+        scenario.onActivity(a -> { clickText(a, "Vegetarian"); clickText(a, "Continue"); });
+        awaitStep(scenario, "6/7"); choose(scenario, "Relaxed", "7/7"); choose(scenario, "Local discoveries", "DEMO");
+        scenario.onActivity(a -> clickText(a, "Finish demo now"));
+        awaitStep(scenario, "Trip generated");
+    }
+    private static void assertHomeTab(int tab) {
+        java.util.concurrent.atomic.AtomicInteger selected = new java.util.concurrent.atomic.AtomicInteger();
+        long deadline = SystemClock.uptimeMillis() + 5000;
+        do {
+            InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
+                for (android.app.Activity activity : androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry.getInstance()
+                        .getActivitiesInStage(androidx.test.runner.lifecycle.Stage.RESUMED))
+                    if (activity instanceof HomeActivity) selected.set(((com.google.android.material.bottomnavigation.BottomNavigationView)
+                            activity.findViewById(R.id.bottomNavigation)).getSelectedItemId());
+            });
+            if (selected.get() == tab) return;
+            SystemClock.sleep(25);
+        } while (SystemClock.uptimeMillis() < deadline);
+        fail("Expected Home tab " + tab + " but was " + selected.get());
+    }
     @Test public void sevenRoundsSaveCompanionsAndFollowupsWithoutDuplicates() throws Exception {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         SharedPreferences library = context.getSharedPreferences(TripStore.FILE, Context.MODE_PRIVATE);
@@ -34,6 +83,12 @@ public class PlannerFlowTest {
             scenario.onActivity(a -> clickText(a, "Finish demo now"));
             await(scenario, a -> a.findViewById(R.id.saveTripStatus) instanceof TextView
                     && value(a, R.id.saveTripStatus).equals("Saved to My Trips · On this device"));
+            scenario.onActivity(a -> {
+                // 生成完成后不再回退，只能经标签栏离开。
+                assertEquals("Trip generated", value(a, R.id.stepText));
+                assertFalse(a.findViewById(R.id.backButton).isShown());
+                assertTrue(a.findViewById(R.id.plannerNavigation).isShown());
+            });
             SavedTrip saved = new TripStore(context).list().get(0);
             assertEquals("Sydney → Kyoto", saved.route);
             assertTrue(saved.brief.contains("Friends · Family"));

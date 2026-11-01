@@ -27,7 +27,7 @@ final class JournalTransport {
             journal.text(card, label(first.getString("mode")) + "  ·  " + JournalTime.duration(minutes)
                     + (legs.length() > 1 ? " moving time" : ""), 13, true);
             journal.text(card, doc.place(first.getString("fromPlaceId")) + " → " + doc.place(last.getString("toPlaceId")), 13, false);
-            journal.text(card, "Route details  ↗", 11, false);
+            journal.tag(card, "Route details  ↗", R.color.mint);
             return;
         }
         for (int i = 0; i < legs.length(); i++) {
@@ -49,7 +49,7 @@ final class JournalTransport {
                     + (detail.isNull("flightNumber") ? "to confirm" : detail.getString("flightNumber")), 12, false);
             if (detail.getBoolean("isSelfTransfer")) journal.text(card, "Self-transfer · Check entry and connection", 12, true);
         }
-        journal.text(card, "Flight & baggage details  ↗", 12, true);
+        journal.tag(card, "Flight & baggage details  ↗", R.color.mint);
     }
     /** 出发/到达各自显示当地日期和时区，不用两端钟表读数相减来估算飞行时长。 */
     private void endpoint(LinearLayout row, JSONObject moment, String label) throws JSONException {

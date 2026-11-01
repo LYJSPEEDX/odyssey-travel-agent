@@ -38,19 +38,6 @@ final class ItineraryRenderer {
         TripCoverView.add(ui, ui.content, coverCity, summary.getString("title"), root);
         // column 创建竖排容器；setTag 是测试/查找标记，不是屏幕上显示的文字。
         LinearLayout header = journal.column(); header.setTag("journal-header"); ui.content.addView(header);
-        LinearLayout headerActions = journal.row(); header.addView(headerActions);
-        if (journal.stacked()) headerActions.setOrientation(LinearLayout.VERTICAL);
-        headerActions.setGravity(android.view.Gravity.START | android.view.Gravity.CENTER_VERTICAL);
-        journal.tag(headerActions, root.getString("dataMode").equals("MOCK") ? "DEMO · NOT BOOKED" : "PROPOSED · NOT BOOKED", R.color.mint);
-        android.view.View spacer = new android.view.View(ui.context);
-        // 横排时用 weight=1 的空 View 撑开两端；竖排时不需要这个占位。
-        if (!journal.stacked()) headerActions.addView(spacer, new LinearLayout.LayoutParams(0, 1, 1));
-        // StringBuilder 逐段追加内容；\n 是换行，toString 才得到最终展示的字符串。
-        StringBuilder overview = new StringBuilder(summary.getString("title"))
-                .append("\n\n").append(summary.getString("subtitle"));
-        JSONArray highlights = summary.getJSONArray("highlights");
-        for (int i = 0; i < highlights.length(); i++) overview.append("\n\n• ").append(highlights.getString(i));
-        journal.textAction(headerActions, "Overview ↗", () -> dialog("Trip overview", overview.toString()));
         JSONObject request = root.getJSONObject("requestSnapshot");
         JSONArray destinations = request.getJSONArray("destinationPlaceIds");
         StringBuilder destination = new StringBuilder();
@@ -60,12 +47,15 @@ final class ItineraryRenderer {
             destination.append(doc.place(destinations.getString(i)));
         }
         android.widget.TextView title = journal.heading(header, destination.toString(), 34);
-        title.setPadding(0, ui.dp(14), 0, 0);
         journal.text(header, "From " + doc.place(request.getString("originPlaceId")) + " · "
-                + JournalTime.date(summary.getString("startDate")) + " – " + JournalTime.date(summary.getString("endDate"), "d MMM yyyy"), 14, false);
+                + JournalTime.date(summary.getString("startDate")) + " – " + JournalTime.date(summary.getString("endDate"), "d MMM yyyy"), 14, false)
+                .setTextColor(ui.color(R.color.text_primary));
         JSONObject budget = root.getJSONObject("budget");
-        journal.text(header, summary.getInt("dayCount") + " days  ·  " + label(request.getString("companions"))
-                + "  ·  " + label(root.getString("status")), 12, false);
+        com.google.android.material.chip.ChipGroup facts = new com.google.android.material.chip.ChipGroup(ui.context);
+        facts.setChipSpacingHorizontal(ui.dp(8)); facts.setChipSpacingVertical(ui.dp(8));
+        facts.setPadding(0, ui.dp(4), 0, ui.dp(10)); header.addView(facts);
+        for (String fact : new String[]{summary.getInt("dayCount") + " days", label(request.getString("companions")), label(root.getString("status"))})
+            journal.tag(facts, fact, R.color.purple);
         if (budget.getJSONArray("activeCostItemIds").length() > 0)
             journal.text(header, money(budget.getJSONObject("total"), false) + " est. · Entire party"
                     + (budget.getString("completeness").equals("PARTIAL") ? " · Partial" : ""), 14, true);
@@ -82,15 +72,15 @@ final class ItineraryRenderer {
             }
         }
         // 普通警告可点开查看；BLOCKING 内容必须直接展示，不能只藏在折叠详情中。
-        if (warnings.length() > 0) {
-            String warningText = warnings.toString().trim();
-            LinearLayout notice = journal.card(ui.content, blocking.length() > 0 ? R.color.red : R.color.surface,
-                    () -> dialog("Travel warnings", warningText));
+        String warningText = warnings.toString().trim();
+        if (warnings.length() > 0 && blocking.length() == 0) {
+            ui.button(warningCount + (warningCount == 1 ? " travel check" : " travel checks") + " to review", () -> dialog("Travel warnings", warningText))
+                    .setBackgroundTintList(ColorStateList.valueOf(ui.color(R.color.peach)));
+        } else if (blocking.length() > 0) {
+            LinearLayout notice = journal.card(ui.content, R.color.red, () -> dialog("Travel warnings", warningText));
             android.widget.TextView warningTitle = journal.text(notice, warningCount + " travel checks to review  ↗", 13, true);
-            if (blocking.length() > 0) {
-                warningTitle.setTextColor(ui.color(R.color.on_accent));
-                journal.text(notice, blocking.toString().trim(), 13, false).setTextColor(ui.color(R.color.on_accent));
-            }
+            warningTitle.setTextColor(ui.color(R.color.on_accent));
+            journal.text(notice, blocking.toString().trim(), 13, false).setTextColor(ui.color(R.color.on_accent));
         }
         journal.rule(ui.content);
         journal.heading(ui.content, "Your itinerary", 20);
@@ -106,13 +96,16 @@ final class ItineraryRenderer {
             // 点击回调捕获本次循环的下标；数组下标从 0 开始，展示给用户的 Day 从 1 开始。
             final int dayIndex = i;
             MaterialButton button = new MaterialButton(ui.context);
-            button.setText(ui.context.getString(R.string.itinerary_day_tab, i + 1) + "\n"
-                    + JournalTime.date(days.getJSONObject(i).getString("date"), "EEE d")); button.setAllCaps(false);
+            String dayLabel = ui.context.getString(R.string.itinerary_day_tab, i + 1);
+            android.text.SpannableString dayText = new android.text.SpannableString(dayLabel + "\n"
+                    + JournalTime.date(days.getJSONObject(i).getString("date"), "EEE d"));
+            dayText.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 0, dayLabel.length(), 0);
+            button.setAllCaps(false); button.setText(dayText);
             button.setTextSize(12); button.setMinWidth(ui.dp(68)); button.setMinHeight(ui.dp(64));
             button.setTag("contract-day-" + i);
             button.setCornerRadius(ui.dp(16));
             button.setTextColor(ui.color(i == selectedDay ? R.color.on_accent : R.color.text_primary));
-            button.setBackgroundTintList(ColorStateList.valueOf(ui.color(i == selectedDay ? R.color.lime : R.color.surface)));
+            button.setBackgroundTintList(ColorStateList.valueOf(ui.color(i == selectedDay ? R.color.purple : R.color.surface)));
             button.setSelected(i == selectedDay);
             button.setContentDescription("Day " + (i + 1) + ", "
                     + JournalTime.date(days.getJSONObject(i).getString("date"), "d MMM yyyy")
@@ -131,7 +124,7 @@ final class ItineraryRenderer {
         ui.text(day.getString("title"), 20, true);
         String dayNotes = day.getString("summary") + "\n\nTime zone: " + day.getString("timeZone");
         journal.textAction(ui.content, JournalTime.date(day.getString("date"), "EEEE, d MMM") + " · "
-                + day.getJSONArray("events").length() + " stops  ↗", () -> dialog("Day notes", dayNotes))
+                + day.getJSONArray("events").length() + (day.getJSONArray("events").length() == 1 ? " stop  ↗" : " stops  ↗"), () -> dialog("Day notes", dayNotes))
                 .setTag("journal-day-notes");
         if (!day.isNull("walkingDistanceMeters")) ui.text("Walking · " + distance(day.getLong("walkingDistanceMeters")), 14, false);
         // 跨日交通只引用原事件，不复制事件或费用；在后续日期标为 In transit。
@@ -201,7 +194,7 @@ final class ItineraryRenderer {
             // 列表摘要最多三行并显示省略号；完整正文仍保留在详情中，不改原数据。
             description.setMaxLines(3); description.setEllipsize(android.text.TextUtils.TruncateAt.END);
             if (event.has("placeId") && !event.isNull("placeId")) journal.text(card, doc.place(event.getString("placeId")), 12, false);
-            journal.text(card, "View details  ↗", 12, true);
+            journal.tag(card, "View details  ↗", R.color.mint);
         }
     }
     /** 全程交通候选默认折叠，避免十天的换乘列表占满页面；这里只比较，不切换已排入的方案。 */
@@ -235,9 +228,10 @@ final class ItineraryRenderer {
                         .append(costs(option.getJSONArray("costItemIds")));
             }
             String title = group.getString("title"), all = comparison.toString();
-            LinearLayout comparisonCard = journal.card(comparisons, R.color.surface, () -> dialog(title, all));
-            journal.text(comparisonCard, title + "  ↗", 16, true);
-            journal.text(comparisonCard, options.length() + (options.length() == 1 ? " option" : " options") + " · Compare routes & fares", 12, false);
+            LinearLayout comparisonCard = journal.card(comparisons, R.color.mint, () -> dialog(title, all));
+            journal.text(comparisonCard, title + "  ↗", 16, true).setTextColor(ui.color(R.color.on_accent));
+            journal.text(comparisonCard, options.length() + (options.length() == 1 ? " option" : " options") + " · Compare routes & fares", 12, false)
+                    .setTextColor(ui.color(R.color.on_accent));
         }
     }
     /** 公共路段字段先统一展示，再按 mode 读取航班/驾车/步行特有的 details。 */
@@ -309,7 +303,7 @@ final class ItineraryRenderer {
                 reason.setMaxLines(2); reason.setEllipsize(android.text.TextUtils.TruncateAt.END);
                 journal.rule(card);
                 journal.text(card, option.getInt("roomCount") + " room(s) · " + group.getInt("nights") + " nights", 12, false);
-                journal.text(card, "Not booked · Details & price  ↗", 12, true);
+                journal.tag(card, "Not booked · Details & price  ↗", R.color.mint);
             }
         }
     }
@@ -374,8 +368,6 @@ final class ItineraryRenderer {
         for (int i = 0; i < advice.length(); i++) exchange.append("\n\n").append(advice.getJSONObject(i).getString("title"))
                 .append("\n").append(advice.getJSONObject(i).getString("description"));
         disclosure("Currency & exchange", exchange.toString());
-        ui.card("Currency converter", "Convert using rates included in this itinerary", R.color.surface,
-                () -> CurrencyConverter.show(ui.context, money));
         JSONArray entries = doc.root.getJSONArray("entryRequirements");
         StringBuilder entry = new StringBuilder("Entry requirements depend on each traveler and transit route. Verify with official sources.");
         if (entries.length() == 0) entry.append("\nNo verified requirements supplied.");

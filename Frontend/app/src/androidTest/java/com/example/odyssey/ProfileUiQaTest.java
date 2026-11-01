@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import androidx.core.graphics.ColorUtils;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.platform.app.InstrumentationRegistry;
-import com.google.android.material.textfield.TextInputLayout;
 import org.json.JSONObject;
 import org.junit.Test;
 
@@ -35,17 +34,14 @@ public class ProfileUiQaTest {
         }
     }
 
-    @Test public void fieldsStayInsideSafeAreaAndFocusedLabelsAreReadable() {
+    @Test public void fieldsStayInsideSafeAreaAndHintsAreReadable() {
         try (ActivityScenario<RegistrationActivity> scenario = openEditor()) {
             awaitReady(scenario);
             scenario.onActivity(activity -> {
                 assertTrue(((ViewGroup) activity.findViewById(R.id.registrationRoot)).getClipToPadding());
-                View view = activity.findViewById(R.id.registrationName);
-                while (!(view instanceof TextInputLayout)) view = (View) view.getParent();
-                TextInputLayout field = (TextInputLayout) view;
-                assertNotNull("Focus label needs an explicit readable color", field.getHintTextColor());
-                assertTrue(ColorUtils.calculateContrast(field.getHintTextColor().getDefaultColor(),
-                        activity.getColor(R.color.background)) >= 4.5);
+                android.widget.EditText field = activity.findViewById(R.id.registrationName);
+                assertTrue(ColorUtils.calculateContrast(field.getCurrentHintTextColor(),
+                        activity.getColor(R.color.surface)) >= 4.5);
             });
         }
     }

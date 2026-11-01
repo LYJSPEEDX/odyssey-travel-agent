@@ -215,38 +215,28 @@ final class PlannerFormRenderer {
             progress.setTrackColor(color(R.color.outline));
             content.addView(progress, new LinearLayout.LayoutParams(-1, dp(4)));
         }
-        label(R.string.trip_summary);
-        paragraph(context.getString(R.string.summary_route,
-                context.getString(R.string.trip_route, state.getDeparture(), state.getDestination())));
-        paragraph(context.getString(R.string.summary_dates, dateSummary()));
-        paragraph(context.getString(R.string.summary_companion, state.getCompanion()));
-        String budget = TripOptions.budgetDescription(state);
-        paragraph(context.getString(R.string.summary_budget, budget));
-        paragraph(context.getString(budget.equals(state.getBudget())
-                ? R.string.custom_budget_disclaimer : R.string.budget_disclaimer));
-        paragraph(context.getString(R.string.summary_constraints, state.getConstraints().isEmpty()
-                ? context.getString(R.string.no_restrictions) : String.join(" · ", state.getConstraints())));
-        String[] steps = context.getResources().getStringArray(R.array.step_names);
-        for (int step = 1; step <= 5; step++) {
-            if (!state.getNote(step).isEmpty()) paragraph(context.getString(R.string.summary_note,
-                    steps[step - 1], state.getNote(step)));
-        }
+        TripBriefView.add(content, state, dateSummary(), state.isGenerating());
         if (state.isGenerated()) {
             // Actions 查询 Activity 中真实的存储结果，而不是只看 state.isGenerated()。
+            if (actions.saveStatus() == 1) {
+                button(R.string.open_itinerary, actions::viewItinerary).setId(R.id.openItinerary);
+                LinearLayout row = new LinearLayout(context);
+                content.addView(row, new LinearLayout.LayoutParams(-1, -2));
+                secondaryButton(row, R.string.view_my_trips, actions::viewSavedTrips, 0).setId(R.id.viewMyTrips);
+                secondaryButton(row, R.string.edit_trip, actions::back, dp(10));
+            } else {
+                if (actions.saveStatus() == 2) button(R.string.trip_save_retry, actions::saveTrip);
+                button(R.string.edit_trip, actions::back);
+            }
             TextView saved = paragraph(context.getString(actions.saveStatus() == 1
                     ? R.string.trip_saved : actions.saveStatus() == 2
                     ? R.string.trip_save_failed : R.string.trip_saving));
             saved.setId(R.id.saveTripStatus);
+            saved.setTextSize(12); saved.setGravity(android.view.Gravity.CENTER); saved.setPadding(0, dp(8), 0, 0);
             // 保存结果变化时，读屏工具可在合适时机播报，不强行打断当前朗读。
             saved.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
-            if (actions.saveStatus() == 1) {
-                button(R.string.open_itinerary, actions::viewItinerary).setId(R.id.openItinerary);
-                button(R.string.view_my_trips, actions::viewSavedTrips).setId(R.id.viewMyTrips);
-            } else if (actions.saveStatus() == 2) {
-                button(R.string.trip_save_retry, actions::saveTrip);
-            }
-            paragraph(context.getString(R.string.itinerary_draft_notice));
-            button(R.string.edit_trip, actions::back);
+            TextView notice = paragraph(context.getString(R.string.brief_disclaimer));
+            notice.setTextSize(12); notice.setGravity(android.view.Gravity.CENTER); notice.setPadding(0, dp(2), 0, dp(12));
         }
     }
 
@@ -270,10 +260,11 @@ final class PlannerFormRenderer {
         heading.setText(selected ? context.getString(R.string.selected_option, title) : title);
         body.setText(description);
         // 根据 selected 设置本次渲染的背景、文字和描边；不会因此自动更改 state。
-        card.setCardBackgroundColor(color(selected ? R.color.lime : R.color.surface));
+        card.setCardBackgroundColor(color(selected ? R.color.purple : R.color.surface));
         heading.setTextColor(color(selected ? R.color.on_accent : R.color.text_primary));
         body.setTextColor(color(selected ? R.color.on_accent : R.color.text_secondary));
         card.setStrokeColor(color(selected ? R.color.on_accent : R.color.outline));
+        card.setStrokeWidth(selected ? dp(1) : 0);
         // 同步控件自身的选中状态，供无障碍和状态样式读取。
         card.setSelected(selected);
         card.setContentDescription(context.getString(selected ? R.string.selected_accessibility
@@ -287,7 +278,7 @@ final class PlannerFormRenderer {
     }
     private void label(int string) {
         TextView label = paragraph(context.getString(string));
-        label.setTypeface(null, android.graphics.Typeface.BOLD);
+        AppFonts.style(label, android.graphics.Typeface.BOLD);
         ViewCompat.setAccessibilityHeading(label, true);
     }
     private TextView paragraph(String text) {
@@ -306,12 +297,24 @@ final class PlannerFormRenderer {
         // 不把英文标题自动转换为全大写。
         button.setAllCaps(false);
         button.setMinHeight(dp(48));
-        button.setCornerRadius(dp(20));
-        button.setBackgroundTintList(ColorStateList.valueOf(color(R.color.mint)));
+        button.setCornerRadius(dp(24));
+        button.setBackgroundTintList(ColorStateList.valueOf(color(R.color.lime)));
         button.setTextColor(color(R.color.on_accent));
+        AppFonts.style(button, android.graphics.Typeface.BOLD);
         button.setOnClickListener(view -> action.run());
         // 宽 -1=填满父容器，高 -2=根据文字/内边距自适应；不是负像素尺寸。
         content.addView(button, new LinearLayout.LayoutParams(-1, -2));
+        return button;
+    }
+    /** 并排的次要按钮：白底黑字，把主操作的荧光绿留给 Open itinerary。 */
+    private MaterialButton secondaryButton(LinearLayout row, int title, Runnable action, int startMargin) {
+        MaterialButton button = button(title, action);
+        content.removeView(button);
+        button.setBackgroundTintList(ColorStateList.valueOf(color(R.color.surface)));
+        button.setTextColor(color(R.color.text_primary));
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, -2, 1f);
+        params.setMarginStart(startMargin);
+        row.addView(button, params);
         return button;
     }
     private int color(int id) { return ContextCompat.getColor(context, id); }

@@ -37,7 +37,7 @@ final class JournalUi {
         view.setTextColor(ui.color(bold ? R.color.text_primary : R.color.text_secondary));
         // 每行额外增加 3dp 行距，倍数 1 表示不再乘倍数拉大。
         view.setLineSpacing(ui.dp(3), 1);
-        if (bold) view.setTypeface(null, Typeface.BOLD);
+        if (bold) AppFonts.style(view, Typeface.BOLD);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-1, -2); params.bottomMargin = ui.dp(6);
         // 加入页面后返回控件引用，调用方仍可继续改 padding、颜色或最大行数。
         parent.addView(view, params); return view;
@@ -50,16 +50,24 @@ final class JournalUi {
         button.setText(value); button.setAllCaps(false); button.setTextSize(12);
         button.setMinHeight(ui.dp(48)); button.setMinWidth(0);
         button.setPadding(ui.dp(8), 0, ui.dp(8), 0);
-        button.setBackgroundTintList(android.content.res.ColorStateList.valueOf(android.graphics.Color.TRANSPARENT));
-        button.setTextColor(ui.color(R.color.text_primary)); button.setElevation(0);
+        button.setBackgroundTintList(android.content.res.ColorStateList.valueOf(ui.color(R.color.mint)));
+        button.setTextColor(ui.color(R.color.on_accent)); button.setElevation(0);
         button.setOnClickListener(view -> click.run());
         parent.addView(button, new LinearLayout.LayoutParams(-2, -2)); return button;
+    }
+    /** 放进自动换行容器（如 ChipGroup）的标签；样式与 LinearLayout 版相同。 */
+    TextView tag(android.view.ViewGroup parent, String value, int background) {
+        LinearLayout holder = column();
+        TextView view = tag(holder, value, background);
+        holder.removeView(view);
+        parent.addView(view, new android.view.ViewGroup.MarginLayoutParams(-2, -2));
+        return view;
     }
     TextView tag(LinearLayout parent, String value, int background) {
         TextView view = text(parent, value, 11, true);
         view.setTextColor(ui.color(background == R.color.surface || background == R.color.background ? R.color.text_secondary : R.color.on_accent));
-        view.setPadding(ui.dp(10), ui.dp(5), ui.dp(10), ui.dp(5));
-        view.setBackground(shape(background, 10));
+        view.setPadding(ui.dp(12), ui.dp(6), ui.dp(12), ui.dp(6));
+        view.setBackground(shape(background, 14));
         view.setLayoutParams(new LinearLayout.LayoutParams(-2, -2)); return view;
     }
     GradientDrawable shape(int color, int radius) {
@@ -116,8 +124,8 @@ final class JournalUi {
     }
     void disclosure(String title, String subtitle, Runnable click) {
         // 这里只画可点击摘要；到底打开弹窗还是展开列表，由传入的 click 决定。
-        LinearLayout body = card(ui.content, R.color.surface, click);
-        text(body, title + "  ↗", 16, true);
-        if (!subtitle.isEmpty()) text(body, subtitle, 12, false);
+        LinearLayout body = card(ui.content, R.color.mint, click);
+        text(body, title + "  ↗", 16, true).setTextColor(ui.color(R.color.on_accent));
+        if (!subtitle.isEmpty()) text(body, subtitle, 12, false).setTextColor(ui.color(R.color.on_accent));
     }
 }

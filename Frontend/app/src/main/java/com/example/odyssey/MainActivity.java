@@ -121,12 +121,22 @@ public class MainActivity extends AppCompatActivity implements PlannerFormRender
             if (action != EditorInfo.IME_ACTION_SEND) return false;
             submitMessage(); return true;
         });
-        backCallback = new OnBackPressedCallback(false) { @Override public void handleOnBackPressed() { back(); } };
+        // 已生成的行程已保存，系统返回键直接回首页；重新修改走页面内的 Edit my choices。
+        backCallback = new OnBackPressedCallback(false) { @Override public void handleOnBackPressed() {
+            if (state.isGenerated()) openHomeTab(R.id.nav_home); else back();
+        } };
         getOnBackPressedDispatcher().addCallback(this, backCallback);
         ViewCompat.setOnApplyWindowInsetsListener(scroll, (view, insets) -> {
             Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.ime());
-            view.setPadding(bars.left, bars.top, bars.right, bars.bottom); return insets;
+            // 标签栏显示时由它自己避开系统导航条，这里只需让出键盘。
+            boolean tabs = findViewById(R.id.plannerNavigationBar).getVisibility() == View.VISIBLE;
+            view.setPadding(bars.left, bars.top, bars.right, tabs ? insets.getInsets(WindowInsetsCompat.Type.ime()).bottom : bars.bottom); return insets;
         });
+        com.google.android.material.bottomnavigation.BottomNavigationView tabs = findViewById(R.id.plannerNavigation);
+        // 行程刚存入 My Trips，所以高亮它；点任何一项（包括已高亮的）都离开本页。
+        tabs.setSelectedItemId(R.id.nav_my);
+        tabs.setOnItemSelectedListener(item -> { openHomeTab(item.getItemId()); return false; });
+        tabs.setOnItemReselectedListener(item -> openHomeTab(item.getItemId()));
         render(false);
         if (state.isGenerated() && saveStatus != 1) saveTrip();
     }
@@ -134,9 +144,13 @@ public class MainActivity extends AppCompatActivity implements PlannerFormRender
     private void render(boolean top) {
         boolean generation = state.isGenerating() || state.isGenerated();
         text(R.id.planHeadline, generation ? getString(state.isGenerating() ? R.string.generation_loading_title : R.string.generation_done_title) : session.step().question.title);
-        text(R.id.assistantTitle, generation ? getString(state.isGenerating() ? R.string.generation_loading_prompt : R.string.generation_done_prompt) : "Let’s shape your trip");
-        text(R.id.assistantMessage, generation ? getString(state.isGenerating() ? R.string.generation_loading_help : R.string.generation_done_help) : session.step().question.description);
-        text(R.id.stepText, generation ? "DEMO" : session.progress());
+        // 只有生成中才需要提示；生成完成后由摘要卡片说明，不再堆叠文字。
+        findViewById(R.id.assistantBubble).setVisibility(state.isGenerating() ? View.VISIBLE : View.GONE);
+        if (state.isGenerating()) {
+            text(R.id.assistantTitle, getString(R.string.generation_loading_prompt));
+            text(R.id.assistantMessage, getString(R.string.generation_loading_help));
+        }
+        text(R.id.stepText, state.isGenerated() ? "Trip generated" : generation ? "DEMO" : session.progress());
         int[] ids = {R.id.progressStep1, R.id.progressStep2, R.id.progressStep3, R.id.progressStep4, R.id.progressStep5, R.id.progressStep6, R.id.progressStep7};
         // current=0 是 START，没有亮段；current=1 对应第一轮目的地，亮第一段。
         for (int i = 0; i < ids.length; i++) findViewById(ids[i]).setBackgroundColor(ContextCompat.getColor(this,
@@ -149,19 +163,23 @@ public class MainActivity extends AppCompatActivity implements PlannerFormRender
             String imageUrl = null;
             for (PlanningSession.Option option : session.steps[1].question.options)
                 if (option.value.equals(session.answer(1))) imageUrl = option.imageUrl;
-            String credit = imageUrl != null && imageUrl.equals(MockPhotoCatalog.url(session.answer(1), true)) ? "Photo: Unsplash · illustrative" : "";
-            TripPhotos.showResponse(photo, new ResponseImage(imageUrl, session.answer(1) + " atmosphere photo", credit),
-                    session.answer(1), findViewById(R.id.tripBoardPhotoCredit));
+            TripPhotos.showResponse(photo, new ResponseImage(imageUrl, session.answer(1) + " atmosphere photo", ""),
+                    session.answer(1));
         } else SafeImageLoader.SHARED.cancel(photo);
         text(R.id.tripBoardDestination, session.answer(1).isEmpty() ? "Depart from " + session.answer(0) : session.answer(0) + " → " + session.answer(1));
-        text(R.id.tripBoardStatus, "Local demo · " + (session.answer(2).isEmpty() ? "Dates to choose" : session.answer(2)));
+        findViewById(R.id.tripBoardStatus).setVisibility(session.answer(2).isEmpty() ? View.GONE : View.VISIBLE);
+        text(R.id.tripBoardStatus, session.answer(2));
         View next = findViewById(R.id.nextButton);
-        next.setVisibility(generation ? View.INVISIBLE : View.VISIBLE);
+        next.setVisibility(state.isGenerated() ? View.GONE : generation ? View.INVISIBLE : View.VISIBLE);
         // NEEDS_REVIEW 不允许用浏览箭头静默确认；用户必须点击当前选项或明确确认按钮。
         next.setEnabled(!loading && !session.step().state.equals("NEEDS_REVIEW") && (session.step().state.equals("CONFIRMED") || !session.step().selected.isEmpty()
                 || session.current == 2 && session.dateDraft.isStepComplete(2) || !session.step().draft.isEmpty() || !session.step().chatCandidate.isEmpty()));
         next.setContentDescription(session.current == 7 ? "Generate demo trip" : "Next step");
         findViewById(R.id.backButton).setEnabled(true);
+        findViewById(R.id.backButton).setVisibility(state.isGenerated() ? View.GONE : View.VISIBLE);
+        View tabBar = findViewById(R.id.plannerNavigationBar);
+        int tabVisibility = state.isGenerated() ? View.VISIBLE : View.GONE;
+        if (tabBar.getVisibility() != tabVisibility) { tabBar.setVisibility(tabVisibility); ViewCompat.requestApplyInsets(scroll); }
         backCallback.setEnabled(session.current > 0 || generation);
         if (state.isGenerating()) {
             new GenerationDemoRenderer(findViewById(R.id.stepContent), state, this).render(demoStage, demoOffline, demoSummary);
@@ -324,6 +342,10 @@ public class MainActivity extends AppCompatActivity implements PlannerFormRender
     }
     @Override public void viewSavedTrips() {
         startActivity(new Intent(this, HomeActivity.class).putExtra(HomeActivity.EXTRA_OPEN_MY, true)
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP)); finish();
+    }
+    private void openHomeTab(int tab) {
+        startActivity(new Intent(this, HomeActivity.class).putExtra(HomeActivity.EXTRA_OPEN_TAB, tab)
                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP)); finish();
     }
     @Override public void viewItinerary() {

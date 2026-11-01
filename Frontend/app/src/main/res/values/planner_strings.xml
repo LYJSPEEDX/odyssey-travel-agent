@@ -87,7 +87,11 @@
     <string name="generation_done_prompt">A little inspiration to get you started.</string>
     <string name="generation_done_help">MOCK RESULT · Sample activities only. Opening hours, prices and suitability are not verified. Free-text answers are saved, not interpreted.</string>
     <string name="demo_badge">DEMO</string>
-    <string name="trip_summary">YOUR TRIP BRIEF</string>
+    <string name="brief_with">WITH</string>
+    <string name="brief_budget">BUDGET</string>
+    <string name="brief_budget_unit">per person, per day</string>
+    <string name="brief_preferences">YOUR PREFERENCES</string>
+    <string name="brief_disclaimer">Sample plan. Prices, hours and routes aren’t verified.</string>
     <string name="summary_route">Route: %1$s</string>
     <string name="summary_dates">Dates: %1$s</string>
     <string name="summary_companion">With: %1$s</string>

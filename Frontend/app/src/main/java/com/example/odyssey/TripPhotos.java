@@ -53,7 +53,7 @@ final class TripPhotos {
 
     /** 旧调用默认列表尺寸；详情明确请求完整图。 */
     static void showCover(ImageView view, JSONObject root, String fallbackCity) {
-        showResponse(view, ResponseImage.cover(root, true, System.currentTimeMillis()), fallbackCity(root, fallbackCity), null);
+        showResponse(view, ResponseImage.cover(root, true, System.currentTimeMillis()), fallbackCity(root, fallbackCity));
     }
     static String fallbackCity(JSONObject root, String city) {
         JSONObject summary = root == null ? null : root.optJSONObject("summary");
@@ -68,15 +68,10 @@ final class TripPhotos {
         }
         return city;
     }
-    static void showResponse(ImageView view, ResponseImage image, String city, android.widget.TextView credit) {
+    static void showResponse(ImageView view, ResponseImage image, String city) {
         show(view, city);
-        if (credit != null) { credit.setText(""); credit.setVisibility(android.view.View.GONE); }
         if (image == null) return;
-        java.lang.ref.WeakReference<android.widget.TextView> label = new java.lang.ref.WeakReference<>(credit);
-        SafeImageLoader.SHARED.load(view, image.url, image.alt, () -> {
-            android.widget.TextView text = label.get();
-            if (text != null && !image.credit.isEmpty()) { text.setText(image.credit); text.setVisibility(android.view.View.VISIBLE); }
-        });
+        SafeImageLoader.SHARED.load(view, image.url, image.alt, () -> { });
     }
 
     static String keywords(String city) {

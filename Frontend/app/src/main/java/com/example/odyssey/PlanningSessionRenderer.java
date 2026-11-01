@@ -30,42 +30,71 @@ final class PlanningSessionRenderer {
         else if (!step.answer.isEmpty()) paragraph((step.state.equals("CONFIRMED") ? "Confirmed: " : "Previous answer: ") + step.answer);
         if (session.current == 2) {
             content.addView(new TripCalendarView(content.getContext(), session.dateDraft, month, actions::date, actions::redraw));
-            if (session.dateDraft.getStartDate() != 0) paragraph("Start: " + TripDates.format(session.dateDraft.getStartDate())
-                    + (session.dateDraft.getEndDate() == 0 ? " · Choose your return date" : " → " + TripDates.format(session.dateDraft.getEndDate())));
             if (session.dateDraft.isStepComplete(2) && !session.dateDraft.isFlexibleDates()) button("Confirm dates", actions::confirm, !loading);
         }
-        for (PlanningSession.Option option : step.question.options) {
+        // 第 5 步选项多，两列排列；同一行的卡片等高。
+        boolean twoColumns = session.current == 5;
+        LinearLayout gridRow = null;
+        for (int index = 0; index < step.question.options.size(); index++) {
+            PlanningSession.Option option = step.question.options.get(index);
             MaterialCardView card = new MaterialCardView(content.getContext());
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-1, -2);
-            params.setMargins(0, dp(3), 0, dp(3)); card.setLayoutParams(params);
+            LinearLayout.LayoutParams params = twoColumns ? new LinearLayout.LayoutParams(0, -1, 1f) : new LinearLayout.LayoutParams(-1, -2);
+            params.setMargins(0, dp(6), 0, dp(6)); card.setLayoutParams(params);
+            if (twoColumns && index % 2 == 1) params.setMarginStart(dp(10));
             card.setRadius(dp(20)); card.setCardElevation(0);
             boolean selected = step.selected.contains(option.id);
-            // 选中只改变标题字重；背景/边框保持一致，selected 属性仍供读屏识别。
+            // 未选中无边框；选中时紫色填充加边框，selected 属性仍供读屏识别。日期页的灵活选项用薄荷绿与日历区分。
             card.setSelected(selected); card.setMinimumHeight(dp(48));
-            card.setCardBackgroundColor(color(R.color.surface));
-            card.setStrokeColor(color(R.color.outline)); card.setStrokeWidth(dp(1));
+            card.setCardBackgroundColor(color(selected ? R.color.purple : session.current == 2 ? R.color.mint : R.color.surface));
+            card.setStrokeColor(color(R.color.text_primary)); card.setStrokeWidth(selected ? dp(1) : 0);
             LinearLayout body = new LinearLayout(content.getContext()); body.setOrientation(LinearLayout.VERTICAL); body.setPadding(dp(12), dp(8), dp(12), dp(8));
             if (session.current == 1) {
-                ImageView image = new ImageView(content.getContext()); image.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                // 图片四周留足间隙，圆角比外层卡片小一档，看起来才是同心的。
+                body.setPadding(dp(14), dp(14), dp(14), dp(12));
+                com.google.android.material.imageview.ShapeableImageView image = new com.google.android.material.imageview.ShapeableImageView(content.getContext());
+                image.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                image.setShapeAppearanceModel(com.google.android.material.shape.ShapeAppearanceModel.builder().setAllCornerSizes(dp(12)).build());
                 image.setContentDescription(option.title + " demo photo");
-                body.addView(image, new LinearLayout.LayoutParams(-1, dp(72)));
-                TextView credit = paragraphView("", 10); body.addView(credit);
-                TripPhotos.showResponse(image, new ResponseImage(option.imageUrl, option.title + " atmosphere photo",
-                        MockPhotoCatalog.url(option.value, true) != null && MockPhotoCatalog.url(option.value, true).equals(option.imageUrl)
-                                ? "Photo: Unsplash · illustrative" : ""), option.value, credit);
+                LinearLayout.LayoutParams imageParams = new LinearLayout.LayoutParams(-1, dp(72)); imageParams.bottomMargin = dp(8);
+                body.addView(image, imageParams);
+                TripPhotos.showResponse(image, new ResponseImage(option.imageUrl, option.title + " atmosphere photo", ""), option.value);
             }
             TextView title = paragraphView(option.title, 17);
-            title.setTypeface(null, selected ? Typeface.BOLD : Typeface.NORMAL); body.addView(title);
-            body.addView(paragraphView(option.description, 13));
+            AppFonts.style(title, selected || session.current == 1 ? Typeface.BOLD : Typeface.NORMAL);
+            // 预算把描述开头的价格放到标题行右上角；其他步骤标题独占一行。
+            int priceAt = session.current == 4 ? option.description.indexOf("AUD ") : -1;
+            int priceEnd = priceAt < 0 ? -1 : option.description.indexOf(" · ", priceAt);
+            String caption = option.description;
+            if (priceEnd > 0) {
+                LinearLayout row = new LinearLayout(content.getContext()); row.setGravity(android.view.Gravity.CENTER_VERTICAL);
+                row.addView(title, new LinearLayout.LayoutParams(0, -2, 1f));
+                TextView price = paragraphView(option.description.substring(priceAt, priceEnd), 14);
+                AppFonts.style(price, Typeface.BOLD); row.addView(price);
+                body.addView(row);
+                caption = option.description.substring(priceEnd + 3);
+            } else body.addView(title);
+            if (!caption.isEmpty()) {
+                TextView description = paragraphView(caption, 13);
+                if (session.current == 1) AppFonts.style(description, Typeface.BOLD);
+                body.addView(description);
+            }
             if (session.current == 1) body.addView(paragraphView(String.join(" · ", option.keywords), 13));
+            if (selected) tintText(body, color(R.color.on_accent));
             card.addView(body); card.setEnabled(!loading); card.setClickable(true);
-            card.setOnClickListener(view -> actions.option(option.id)); content.addView(card);
+            card.setOnClickListener(view -> actions.option(option.id));
+            if (!twoColumns) { content.addView(card); continue; }
+            if (index % 2 == 0) {
+                gridRow = new LinearLayout(content.getContext()); gridRow.setBaselineAligned(false);
+                content.addView(gridRow, new LinearLayout.LayoutParams(-1, -2));
+            }
+            gridRow.addView(card);
+            // 奇数个选项时补一个空位，最后一张卡片不会撑满整行。
+            if (index % 2 == 0 && index == step.question.options.size() - 1)
+                gridRow.addView(new android.view.View(content.getContext()), new LinearLayout.LayoutParams(0, 0, 1f));
         }
         if (session.current < 2) button(session.current == 0 ? "Confirm departure" : "Confirm destination",
                 actions::confirm, !loading && !step.selected.isEmpty());
         if (session.current == 3 || session.current == 5) button("Continue", actions::confirm, !loading && !step.selected.isEmpty());
-        paragraph("Chat about this step · Demo");
-        if (step.messages.isEmpty()) paragraph("Ask a question or describe what you need.");
         for (PlanningSession.Message message : step.messages) {
             TextView bubble = paragraphView((message.role.equals("USER") ? "You · " : "AI demo · ") + message.text, 14);
             bubble.setPadding(dp(12), dp(10), dp(12), dp(10));
@@ -80,13 +109,21 @@ final class PlanningSessionRenderer {
     }
     private void button(String title, Runnable action, boolean enabled) {
         MaterialButton button = new MaterialButton(content.getContext()); button.setText(title); button.setEnabled(enabled);
-        button.setBackgroundTintList(ColorStateList.valueOf(color(R.color.lime))); button.setTextColor(color(R.color.on_accent));
-        button.setOnClickListener(view -> action.run()); content.addView(button);
+        button.setBackgroundTintList(ColorStateList.valueOf(color(R.color.lime))); button.setTextColor(color(R.color.on_accent)); AppFonts.style(button, Typeface.BOLD);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-1, -2); params.topMargin = dp(6);
+        button.setOnClickListener(view -> action.run()); content.addView(button, params);
+    }
+    private void tintText(android.view.ViewGroup group, int value) {
+        for (int i = 0; i < group.getChildCount(); i++) {
+            View child = group.getChildAt(i);
+            if (child instanceof TextView) ((TextView) child).setTextColor(value);
+            else if (child instanceof android.view.ViewGroup) tintText((android.view.ViewGroup) child, value);
+        }
     }
     private void paragraph(String value) { content.addView(paragraphView(value, 15)); }
     private TextView paragraphView(String value, int size) {
         TextView view = new TextView(content.getContext()); view.setText(value); view.setTextSize(size);
-        view.setTypeface(null, Typeface.NORMAL);
+        AppFonts.style(view, Typeface.NORMAL);
         view.setTextColor(color(R.color.text_primary)); view.setPadding(0, dp(2), 0, dp(2)); return view;
     }
     private int color(int id) { return ContextCompat.getColor(content.getContext(), id); }

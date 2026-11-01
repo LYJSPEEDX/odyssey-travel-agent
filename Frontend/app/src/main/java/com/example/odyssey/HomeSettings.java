@@ -26,24 +26,28 @@ final class HomeSettings {
         preferences = new AppPreferences(activity);
     }
     void render() {
-        ui.title(R.string.settings_title, R.string.settings_subtitle);
-        ui.section(R.string.settings_account_section);
-        ui.card(activity.getString(R.string.settings_login), activity.getString(R.string.settings_login_subtitle),
-                R.color.surface, () -> info(R.string.settings_login, R.string.settings_login_message))
-                .setId(R.id.settingsLogin);
-        ui.card(activity.getString(R.string.settings_edit_profile), preferences.nickname(activity),
-                R.color.surface, this::editProfile).setId(R.id.settingsProfile);
-        ui.section(R.string.settings_preferences);
+        ui.text(activity.getString(R.string.settings_title), 28, true);
+        section(R.string.settings_account_section);
+        HomeUi account = new HomeUi(ui.group());
+        account.actionRow(activity.getString(R.string.settings_login), activity.getString(R.string.settings_login_subtitle),
+                () -> info(R.string.settings_login, R.string.settings_login_message)).setId(R.id.settingsLogin);
+        account.actionRow(activity.getString(R.string.settings_edit_profile), preferences.nickname(activity),
+                this::editProfile).setId(R.id.settingsProfile);
+        account.actionRow(activity.getString(R.string.settings_reset_profile), "", this::confirmResetProfile);
+        section(R.string.settings_preferences);
         String[] themes = activity.getResources().getStringArray(R.array.settings_theme_options);
-        ui.card(activity.getString(R.string.settings_theme), themes[preferences.themeIndex()],
-                R.color.surface, this::chooseTheme).setId(R.id.settingsTheme);
-        ui.section(R.string.settings_about_section);
-        ui.card(activity.getString(R.string.settings_about), activity.getString(R.string.settings_about_subtitle),
-                R.color.surface, () -> info(R.string.settings_about, R.string.settings_about_message));
-        ui.card(activity.getString(R.string.settings_storage), activity.getString(R.string.local_only_notice),
-                R.color.surface, () -> info(R.string.settings_storage, R.string.settings_storage_description));
-        ui.card(activity.getString(R.string.settings_version), version(), R.color.surface, null)
-                .setId(R.id.settingsVersion);
+        new HomeUi(ui.group()).actionRow(activity.getString(R.string.settings_theme), themes[preferences.themeIndex()],
+                this::chooseTheme).setId(R.id.settingsTheme);
+        section(R.string.settings_about_section);
+        HomeUi about = new HomeUi(ui.group());
+        about.actionRow(activity.getString(R.string.settings_about), "",
+                () -> info(R.string.settings_about, R.string.settings_about_message));
+        about.actionRow(activity.getString(R.string.settings_storage), "",
+                () -> info(R.string.settings_storage, R.string.settings_storage_description));
+        about.actionRow(activity.getString(R.string.settings_version), version(), null).setId(R.id.settingsVersion);
+    }
+    private void section(int title) {
+        ui.text(activity.getString(title), 13, false).setPadding(ui.dp(4), ui.dp(8), 0, ui.dp(8));
     }
     private void info(int title, int message) {
         new MaterialAlertDialogBuilder(activity).setTitle(title).setMessage(message)
@@ -79,6 +83,29 @@ final class HomeSettings {
             Toast.makeText(activity, R.string.settings_saved, Toast.LENGTH_SHORT).show();
         }));
         dialog.show();
+    }
+    private void confirmResetProfile() {
+        new MaterialAlertDialogBuilder(activity).setTitle(R.string.settings_reset_profile)
+                .setMessage(R.string.settings_reset_profile_message)
+                .setNegativeButton(R.string.settings_cancel, null)
+                .setPositiveButton(R.string.settings_reset_profile_confirm, (dialog, which) -> resetProfile()).show();
+    }
+    private void resetProfile() {
+        android.content.Context app = activity.getApplicationContext();
+        new Thread(() -> {
+            boolean deleted = ProfileStore.delete(app);
+            activity.runOnUiThread(() -> {
+                if (activity.isFinishing() || activity.isDestroyed()) return;
+                if (!deleted) {
+                    Toast.makeText(activity, R.string.settings_reset_profile_failed, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                // 清空任务栈后重新打开首页：首页检查到没有资料，会自动进入注册页。
+                activity.startActivity(new android.content.Intent(activity, HomeActivity.class)
+                        .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK | android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                activity.finish();
+            });
+        }, "profile-reset").start();
     }
     private void chooseTheme() {
         new MaterialAlertDialogBuilder(activity).setTitle(R.string.settings_theme)
