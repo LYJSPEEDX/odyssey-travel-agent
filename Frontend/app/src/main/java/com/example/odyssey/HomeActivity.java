@@ -124,7 +124,16 @@ public class HomeActivity extends AppCompatActivity {
         View banner = LayoutInflater.from(this).inflate(R.layout.home_banner, ui.content, false);
         banner.setOnClickListener(view -> startPlanner());
         ui.content.addView(banner);
-        ui.stamps();
+        ui.text(getString(R.string.editorial_inspiration), 23, true).setPadding(0, ui.dp(28), 0, 0);
+        ui.text(getString(R.string.editorial_inspiration_subtitle), 12, false).setPadding(0, ui.dp(2), 0, ui.dp(12));
+        String[] titles = {"A slower kind\nof Kyoto.", "Tokyo, a fresh\nperspective.", "Bali, on\nisland time."};
+        String[] keywords = {"Temples · Tea · Slow travel", "Design · Food · Nightlife", "Beaches · Nature · Relaxation"};
+        List<SavedTrip> samples = SampleTrips.all(this);
+        for (int i = 0; i < samples.size(); i++) {
+            SavedTrip trip = samples.get(i);
+            TripCardView.addSample(ui, trip, titles[i], keywords[i], () -> startActivity(new Intent(this, TripDetailActivity.class)
+                    .putExtra(TripDetailActivity.EXTRA_ID, trip.id).putExtra(TripDetailActivity.EXTRA_SAMPLE, true))).setTag("sample-" + trip.id);
+        }
     }
     private void myTrips() {
         ui.text(getString(R.string.editorial_my_title), 28, true);

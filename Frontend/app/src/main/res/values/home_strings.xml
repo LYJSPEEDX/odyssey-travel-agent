@@ -32,6 +32,16 @@
     <string-array name="settings_theme_options">
         <item>System default</item><item>Light</item><item>Dark</item>
     </string-array>
+    <string name="sample_badge">Sample trip</string>
+    <string name="sample_kyoto_title">Kyoto, at your own pace</string>
+    <string name="sample_kyoto_meta">3 days · Temples / Matcha / Walks</string>
+    <string name="sample_kyoto_detail">DAY 01 · Hello, Kyoto\nSettle in, wander along the river and stop for matcha.\n\nDAY 02 · Temples and little lanes\nVisit a temple, then leave the afternoon for exploring neighbourhood streets.\n\nDAY 03 · Room to wander\nBrowse a market, pick up a keepsake and head home at an easy pace.</string>
+    <string name="sample_tokyo_title">Tokyo, a fresh perspective</string>
+    <string name="sample_tokyo_meta">5 days · Design / Food / Night views</string>
+    <string name="sample_tokyo_detail">DAY 01 · Arrive and unwind\nGet to know the neighbourhood around your stay.\n\nDAY 02 · A day of design\nExplore an art museum, design shops and a cosy cafe.\n\nDAY 03 · Follow your appetite\nTry market snacks and neighbourhood restaurants.\n\nDAY 04 · Green spaces, city lights\nSlow down in a park, then watch the skyline light up.\n\nDAY 05 · One last discovery\nRevisit a favourite shop before heading home.</string>
+    <string name="sample_bali_title">Bali, on island time</string>
+    <string name="sample_bali_meta">4 days · Beaches / Nature / Relaxation</string>
+    <string name="sample_bali_detail">DAY 01 · Meet the ocean\nCheck in, rest and catch the sunset.\n\nDAY 02 · Into nature\nExplore a natural landmark and keep the afternoon free.\n\nDAY 03 · The slow life\nEnjoy a cafe, local crafts and a walk by the sea.\n\nDAY 04 · Until next time\nHave a leisurely breakfast, pack up and head home.</string>
     <string name="settings_server_section">Connection</string>
     <string name="settings_server">Server</string>
     <string name="settings_about_section">About</string>

@@ -15,6 +15,7 @@ import org.json.JSONException;
  */
 public class TripDetailActivity extends AppCompatActivity {
     // 与调用页 putExtra 的键名一致；static final 常量避免两处手写字符串造成拼写不匹配。
+    static final String EXTRA_SAMPLE = "sample";
     static final String EXTRA_ID = "trip_id";
     private int selectedDay; // 数组下标从 0 开始，界面 Day 1 对应下标 0。
     // 解析后的完整数据，既有 root JSON，也有方便按 ID 查找对象的索引。
@@ -28,7 +29,8 @@ public class TripDetailActivity extends AppCompatActivity {
         // Toolbar 是详情页顶栏；点击它的导航箭头关闭详情，不等于日程的“前一天”。
         MaterialToolbar toolbar = findViewById(R.id.tripDetailToolbar);
         toolbar.setNavigationOnClickListener(view -> finish());
-        toolbar.setTitle(R.string.my_title);
+        boolean sample = getIntent().getBooleanExtra(EXTRA_SAMPLE, false);
+        toolbar.setTitle(sample ? R.string.sample_badge : R.string.my_title);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.tripDetailRoot), (view, insets) -> {
             Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             view.setPadding(bars.left, bars.top, bars.right, bars.bottom);
@@ -41,7 +43,7 @@ public class TripDetailActivity extends AppCompatActivity {
         try {
             // ID 只是行程的定位符，不包含 JSON 内容；没有 ID 就不会猜测打开哪条记录。
             String id = getIntent().getStringExtra(EXTRA_ID);
-            SavedTrip trip = id == null ? null : new TripStore(this).get(id);
+            SavedTrip trip = id == null ? null : sample ? SampleTrips.get(this, id) : new TripStore(this).get(id);
             // 本地未找到时显示错误并结束加载，避免访问 trip.route 导致空指针。
             if (trip == null) {
                 ui.text(getString(R.string.trip_not_found), 18, true);
@@ -61,7 +63,7 @@ public class TripDetailActivity extends AppCompatActivity {
             TripCoverView.add(ui, ui.content, trip.destination, trip.destination, null);
             ui.text(trip.route, 28, true);
             ui.text(trip.dates, 14, false);
-                        ui.text(trip.brief, 14, false);
+                        if (!trip.brief.isEmpty()) ui.text(trip.brief, 14, false);
             // 旧版纯文本以空行分段：每段首行作标题，合并进一张白色卡片。
             HomeUi days = new HomeUi(ui.group());
             days.content.setPadding(ui.dp(16), ui.dp(8), ui.dp(16), ui.dp(8));

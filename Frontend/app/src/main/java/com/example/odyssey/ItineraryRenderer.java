@@ -335,10 +335,11 @@ final class ItineraryRenderer {
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < ids.length(); i++) {
             JSONObject item = doc.get(ids.getString(i));
-            result.append("\n").append(item.getString("label")).append(" · ")
+            // 每项费用单独成段，详情弹层里各占一张卡片。
+            result.append("\n\n").append(item.getString("label")).append("\nPrice: ")
                     .append(item.isNull("displayTotal") ? "Price pending" : money(item.getJSONObject("displayTotal")))
-                    .append("\n").append(item.getInt("quantity")).append(" × ").append(label(item.getString("unit")))
-                    .append(" · Taxes/fees: ").append(label(item.getString("taxesAndFees")));
+                    .append("\nQuantity: ").append(item.getInt("quantity")).append(" × ").append(label(item.getString("unit")))
+                    .append("\nTaxes & fees: ").append(label(item.getString("taxesAndFees")));
         }
         return result.toString();
     }
@@ -403,10 +404,7 @@ final class ItineraryRenderer {
     private void disclosure(String title, String body) {
         journal.disclosure(title, "", () -> dialog(title, body));
     }
-    private void dialog(String title, String body) {
-        // 原生文本弹窗；Close 的 null 监听器采用默认关闭行为，不执行正文中的 URL/代码。
-        new MaterialAlertDialogBuilder(ui.context).setTitle(title).setMessage(body).setPositiveButton("Close", null).show();
-    }
+    private void dialog(String title, String body) { JournalDetailSheet.show(ui.context, title, body); }
     private String placeDetails(String id) throws JSONException {
         JSONObject place = doc.get(id);
         String value = place.getString("name");
