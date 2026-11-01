@@ -49,6 +49,8 @@ public class TripDetailActivity extends AppCompatActivity {
                 ui.text(getString(R.string.trip_not_found), 18, true);
                 return;
             }
+            if (!sample) toolbar.getMenu().add("Delete").setShowAsActionFlags(android.view.MenuItem.SHOW_AS_ACTION_ALWAYS)
+                    .setOnMenuItemClickListener(item -> { confirmDelete(id); return true; });
             if (trip.contractJson != null) {
                 // 新版结构化行程先校验再绘制；恢复的日期下标需要限制在实际天数内。
                 toolbar.setTitle(R.string.journal_toolbar);
@@ -77,6 +79,14 @@ public class TripDetailActivity extends AppCompatActivity {
             ui.content.removeAllViews();
             ui.text(getString(R.string.trip_read_error), 16, false);
         }
+    }
+    private void confirmDelete(String id) {
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(this).setTitle("Delete this trip?")
+                .setMessage("It will be removed from My Trips. This can’t be undone.")
+                .setNegativeButton("Keep", null).setPositiveButton("Delete", (d, w) -> {
+                    if (new TripStore(this).delete(id)) { LivePlannerModel.get(getApplication()).deleteRemoteTrip(id); finish(); }
+                    else android.widget.Toast.makeText(this, R.string.settings_save_failed, android.widget.Toast.LENGTH_SHORT).show();
+                }).show();
     }
     /** 日期变化后清空并重建动态内容；只改变展示，不修改 document 中的行程数据。 */
     private void renderItinerary() throws JSONException {

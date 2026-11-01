@@ -59,6 +59,35 @@ final class LivePlanningProtocol {
                 return lines.toString();
         }
     }
+    /** 三档预算用澳元定基准，按大致汇率换成用户的货币并取整；只是档位参考，不是报价。 */
+    static String[][] budgetTiers(JSONObject creation) {
+        JSONObject profile = creation == null ? null : creation.optJSONObject("profile");
+        String currency = profile == null || profile.isNull("displayCurrency") ? "USD" : profile.optString("displayCurrency", "USD");
+        double rate = audRate(currency);
+        if (rate == 0) { currency = "USD"; rate = audRate(currency); }
+        String[][] tiers = new String[3][];
+        String[] names = {"Essentials", "Comfort", "Treat yourself"};
+        int[][] aud = {{130, 210, 170}, {210, 350, 280}, {350, 0, 450}};
+        for (int i = 0; i < 3; i++) {
+            String range = aud[i][1] == 0 ? roundTier(aud[i][0] * rate) + "+" : roundTier(aud[i][0] * rate) + "–" + roundTier(aud[i][1] * rate);
+            tiers[i] = new String[]{names[i], currency + " " + range + " · per person, per day",
+                    "About " + currency + " " + roundTier(aud[i][2] * rate) + " per person per day, flights not included."};
+        }
+        return tiers;
+    }
+    private static double audRate(String currency) {
+        switch (currency) {
+            case "AUD": return 1; case "USD": return 0.65; case "EUR": return 0.6; case "GBP": return 0.5; case "NZD": return 1.1;
+            case "CAD": return 0.9; case "SGD": return 0.85; case "HKD": return 5; case "CNY": return 4.7; case "JPY": return 100;
+            case "KRW": return 900; case "INR": return 55; case "THB": return 22; case "MYR": return 3; default: return 0;
+        }
+    }
+    /** 取两位有效数字：84.5 → 85，1645 → 1600。 */
+    static long roundTier(double value) {
+        long step = 1;
+        while (value / step >= 100) step *= 10;
+        return Math.round(value / step) * step;
+    }
     /** 后端行程生成最多支持的成人数，超过时研究阶段会直接失败。 */
     static final int MAX_ADULTS = 9;
     static final String ADULT_LIMIT = "Odyssey can plan for up to " + MAX_ADULTS + " adults per trip.";

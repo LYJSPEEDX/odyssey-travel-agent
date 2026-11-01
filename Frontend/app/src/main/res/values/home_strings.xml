@@ -7,7 +7,6 @@
     <string name="my_title">My Trips</string>
     <string name="my_empty_title">No trips yet</string>
     <string name="my_empty_description">Your next adventure starts here.\nGenerate a trip to save it to your collection.</string>
-    <string name="local_only_notice">Itinerary snapshots are saved on this device. Live plans and generated trips also remain on your configured server.\nClearing app data removes local snapshots and your anonymous server identity.</string>
     <string name="trip_read_error">Could not load saved trips. Your existing data has not been overwritten.</string>
     <string name="trip_not_found">Trip not found. Please return to the list and try again.</string>
     <string name="retry">Retry</string>
@@ -48,7 +47,7 @@
     <string name="settings_about">About us</string>
     <string name="settings_about_message">Odyssey plans your trip through conversation, using AI and real travel data.
 
-Nothing is booked for you. Check prices, opening hours and entry rules before you travel.</string>
+Nothing is booked for you. Check prices, opening hours and entry rules before you travel.\n\nSome destination photos come from Wikipedia and Wikimedia Commons contributors.</string>
     <string name="settings_reset_profile">Reset registration</string>
     <string name="settings_reset_profile_message">This deletes your saved profile (name, birth date, location, currency and interests) from this device. You will be taken back to the registration page. Saved trips are not affected.</string>
     <string name="settings_reset_profile_confirm">Delete</string>

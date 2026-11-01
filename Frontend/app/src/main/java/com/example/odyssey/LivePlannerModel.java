@@ -225,6 +225,29 @@ final class LivePlannerModel {
         editor.commit();
         dates.clear(); skipped.clear();
     }
+    /** 这趟计划是否已经有内容；首页据此询问继续还是重开。 */
+    boolean hasProgress() {
+        if (session == null || !savedTripId.isEmpty()) return false;
+        if (generationUncertain || !generationFailure.isEmpty()) return true;
+        JSONObject steps = session.optJSONObject("steps");
+        if (steps != null) for (String id : LivePlanningProtocol.STEPS) {
+            JSONObject step = steps.optJSONObject(id);
+            if (step != null && (step.optJSONObject("answer") != null || step.optJSONArray("messages") != null && step.optJSONArray("messages").length() > 0)) return true;
+        }
+        return false;
+    }
+    /** 放弃未完成的计划并立即开始新的；服务器上旧的会话不受影响。 */
+    void startOver() { run("Getting things ready…", () -> { resetPlan(); persist(); startInternal(); }); }
+    /** 用户已确认删除本机行程后调用：尽量同步删除服务器上的副本，失败也不影响本机结果。 */
+    void deleteRemoteTrip(String id) {
+        if (transport == null) return;
+        boolean current = id.equals(savedTripId);
+        worker.execute(() -> {
+            try { UUID.fromString(id); transport.call("DELETE", "/trips/" + id, null, false); }
+            catch (Exception ignored) { /* 本机已删除；服务器副本保留时只占空间。 */ }
+            if (current && !busy) try { resetPlan(); persist(); publish(); } catch (Exception ignored) { /* 下次打开时会重新创建计划。 */ }
+        });
+    }
     void newSession() { run("Getting things ready…", () -> {
         if (generationUncertain) throw new IOException("Check saved trips or generate again first.");
         resetPlan(); persist();

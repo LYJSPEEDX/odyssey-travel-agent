@@ -32,9 +32,6 @@ public class LivePlannerActivity extends AppCompatActivity {
     /** 预设选项：标题、说明和发给助手的完整句子。 */
     private static final String[][] COMPANIONS = {{"Solo", "Just me", "One adult, no children."}, {"Partner", "Two of us", "Two adults, no children."},
             {"Friends", "A group of friends", "Travelling with friends, adults only."}, {"Family", "Travelling with family", "Travelling with family."}};
-    private static final String[][] BUDGETS = {{"Essentials", "AUD 130–210 · per person, per day", "About AUD 170 per person per day, flights not included."},
-            {"Comfort", "AUD 210–350 · per person, per day", "About AUD 280 per person per day, flights not included."},
-            {"Treat yourself", "AUD 350+ · per person, per day", "About AUD 450 per person per day, flights not included."}};
     private static final String[][] CONSTRAINTS = {{"Vegetarian", "Meat-free choices"}, {"With pets", "Pet-friendly stays"}, {"With older adults", "More breaks, easier connections"},
             {"Less walking", "Short walking distances"}, {"See more", "Fit more into each day"}, {"Take it slow", "Space to rest"}};
     private static final String[][] PACES = {{"Relaxed", "One main activity, with breaks", "A relaxed pace with regular breaks."},
@@ -45,6 +42,8 @@ public class LivePlannerActivity extends AppCompatActivity {
     private static final String[] DESTINATIONS = {"Tokyo, Japan", "Bali, Indonesia", "Kyoto, Japan", "Paris, France", "New York, United States"};
     /** 从首页横幅进入：上一趟已生成完时开始新计划。 */
     static final String EXTRA_NEW_PLAN = "new_plan";
+    /** 用户在首页选择放弃未完成的计划，从头开始。 */
+    static final String EXTRA_START_OVER = "start_over";
     private LivePlannerModel model;
     private HomeUi ui;
     private AppCompatEditText input;
@@ -53,6 +52,7 @@ public class LivePlannerActivity extends AppCompatActivity {
     private int shownStep = -1;
     private String chosenOption = "", tappedChoice = "";
     private int shownMessages;
+    private boolean startOver;
     private final java.util.Set<String> constraints = new java.util.LinkedHashSet<>();
     private final androidx.activity.result.ActivityResultLauncher<String> localNetwork = registerForActivityResult(
             new androidx.activity.result.contract.ActivityResultContracts.RequestPermission(), granted -> {
@@ -92,7 +92,8 @@ public class LivePlannerActivity extends AppCompatActivity {
         tabs.setOnItemReselectedListener(item -> openHomeTab(item.getItemId()));
         model.updates.observe(this, ignored -> render());
         boolean done = !model.savedTripId.isEmpty();
-        if (state == null && !model.busy && !model.generationUncertain && (!done || getIntent().getBooleanExtra(EXTRA_NEW_PLAN, false))) connect();
+        startOver = state == null && getIntent().getBooleanExtra(EXTRA_START_OVER, false);
+        if (state == null && !model.busy && (startOver || (!model.generationUncertain && (!done || getIntent().getBooleanExtra(EXTRA_NEW_PLAN, false))))) connect();
     }
     /** 打开即连接后端；已有会话时只读恢复，不会自动提交消息或确认提议。 */
     private void connect() {
@@ -101,7 +102,8 @@ public class LivePlannerActivity extends AppCompatActivity {
                 && ContextCompat.checkSelfPermission(this, permission) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
             localNetwork.launch(permission); return;
         }
-        if (!model.savedTripId.isEmpty()) model.newSession();
+        if (startOver) { startOver = false; model.startOver(); }
+        else if (!model.savedTripId.isEmpty()) model.newSession();
         else if (model.session != null) model.restore();
         else model.start();
     }
@@ -178,7 +180,7 @@ public class LivePlannerActivity extends AppCompatActivity {
         if (origin.isEmpty()) return;
         text(R.id.tripBoardDestination, destination.isEmpty() ? "Depart from " + origin : origin + " → " + destination);
         android.widget.ImageView photo = findViewById(R.id.tripBoardPhoto);
-        boolean hasPhoto = TripPhotos.resource(destination) != R.drawable.bg_photo_placeholder;
+        boolean hasPhoto = !destination.isEmpty();
         photo.setVisibility(hasPhoto ? View.VISIBLE : View.GONE);
         if (hasPhoto) TripPhotos.show(photo, destination);
         // 这款字体的空格很窄，箭头两侧用双空格才看得出间隔。
@@ -268,7 +270,7 @@ public class LivePlannerActivity extends AppCompatActivity {
                 ui.text(LivePlanningProtocol.ADULT_LIMIT, 14, false);
                 choices(COMPANIONS);
                 break;
-            case 4: choices(BUDGETS); break;
+            case 4: choices(LivePlanningProtocol.budgetTiers(model.creation)); break;
             case 5: renderConstraints(); break;
             case 6: choices(PACES); skip("A balanced pace."); break;
             case 7: choices(EXPERIENCES); skip("General sightseeing."); break;
@@ -317,8 +319,8 @@ public class LivePlannerActivity extends AppCompatActivity {
         card.setOnClickListener(view -> click.run());
         LinearLayout body = new LinearLayout(this); body.setOrientation(LinearLayout.VERTICAL);
         body.setPadding(ui.dp(14), ui.dp(12), ui.dp(14), ui.dp(12));
-        // 后端不返回图片，只有 App 自带照片的城市才显示。
-        if (!photoCity.isEmpty() && TripPhotos.resource(photoCity) != R.drawable.bg_photo_placeholder) {
+        // 后端不返回图片：优先用 App 自带照片，其他城市查维基百科配图。
+        if (!photoCity.isEmpty()) {
             com.google.android.material.imageview.ShapeableImageView image = new com.google.android.material.imageview.ShapeableImageView(this);
             image.setShapeAppearanceModel(com.google.android.material.shape.ShapeAppearanceModel.builder().setAllCornerSizes(ui.dp(12)).build());
             TripPhotos.show(image, photoCity);

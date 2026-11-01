@@ -35,6 +35,7 @@ final class TripStore {
     }
 
     /** 按创建时间倒序展示；损坏记录向上报错，不静默删除或跳过用户数据。 */
+    boolean delete(String id) { return preferences.edit().remove(PREFIX + id).commit(); }
     List<SavedTrip> list() throws JSONException {
         List<SavedTrip> trips = new ArrayList<>();
         for (Map.Entry<String, ?> entry : preferences.getAll().entrySet()) {

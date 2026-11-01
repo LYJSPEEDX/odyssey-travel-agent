@@ -49,6 +49,8 @@ final class TripPhotos {
         view.setScaleType(ImageView.ScaleType.CENTER_CROP); // 裁掉边缘，不拉伸建筑和人物。
         view.setContentDescription(view.getContext().getString(resource == R.drawable.bg_photo_placeholder
                 ? R.string.editorial_no_photo : R.string.editorial_cover_alt, city));
+        CityPhotos.forget(view);
+        if (resource == R.drawable.bg_photo_placeholder) CityPhotos.load(view, city);
     }
 
     /** 旧调用默认列表尺寸；详情明确请求完整图。 */
@@ -71,6 +73,7 @@ final class TripPhotos {
     static void showResponse(ImageView view, ResponseImage image, String city) {
         show(view, city);
         if (image == null) return;
+        CityPhotos.forget(view);
         SafeImageLoader.SHARED.load(view, image.url, image.alt, () -> { });
     }
 

@@ -118,6 +118,21 @@ public class LiveHttpTest {
             edit.commit(); models.remove(URL); if (previousModel != null) models.put(URL, previousModel);
         }
     }
+    @Test public void budgetChoicesFollowProfileCurrency() throws Exception {
+        JSONObject creation = new JSONObject().put("profile", new JSONObject().put("displayCurrency", "GBP"));
+        assertEquals("GBP 65–100 · per person, per day", LivePlanningProtocol.budgetTiers(creation)[0][1]);
+        assertTrue(LivePlanningProtocol.budgetTiers(creation)[1][2].contains("GBP 140"));
+        creation.getJSONObject("profile").put("displayCurrency", "XXX");
+        assertTrue(LivePlanningProtocol.budgetTiers(creation)[0][1].startsWith("USD"));
+        assertTrue(LivePlanningProtocol.budgetTiers(null)[0][1].startsWith("USD"));
+    }
+    @Test public void cityPhotosRejectAmbiguousAndNonPhotoResults() throws Exception {
+        String photo = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Macau.jpg/330px-Macau.jpg";
+        assertTrue(CityPhotos.pick(new JSONObject().put("type", "standard").put("thumbnail", new JSONObject().put("source", photo))).contains("/960px-"));
+        assertEquals("none", CityPhotos.pick(new JSONObject().put("type", "disambiguation").put("thumbnail", new JSONObject().put("source", photo))));
+        assertEquals("none", CityPhotos.pick(new JSONObject().put("type", "standard").put("thumbnail", new JSONObject().put("source", photo.replace("Macau", "Flag_of_Macau")))));
+        assertEquals("none", CityPhotos.pick(new JSONObject().put("type", "standard")));
+    }
     @Test public void budgetReviewShowsStructuredAmountAndCurrencyPrecision() throws Exception {
         JSONObject answer = new JSONObject().put("description", "Budget description")
                 .put("currency", "AUD").put("amountMinor", 500000)

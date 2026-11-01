@@ -54,11 +54,10 @@ final class ItineraryRenderer {
         com.google.android.material.chip.ChipGroup facts = new com.google.android.material.chip.ChipGroup(ui.context);
         facts.setChipSpacingHorizontal(ui.dp(8)); facts.setChipSpacingVertical(ui.dp(8));
         facts.setPadding(0, ui.dp(4), 0, ui.dp(10)); header.addView(facts);
-        for (String fact : new String[]{summary.getInt("dayCount") + " days", label(request.getString("companions")), label(root.getString("status"))})
+        for (String fact : new String[]{summary.getInt("dayCount") + " days", label(request.getString("companions"))})
             journal.tag(facts, fact, R.color.purple);
         if (hasPricedActiveCosts())
-            journal.text(header, money(budget.getJSONObject("total"), false) + " est. · Entire party"
-                    + (budget.getString("completeness").equals("PARTIAL") ? " · Partial" : ""), 14, true);
+            journal.text(header, money(budget.getJSONObject("total"), false) + " est. · Entire party", 14, true);
         JSONArray notices = root.getJSONObject("quality").getJSONArray("notices");
         StringBuilder warnings = new StringBuilder();
         StringBuilder blocking = new StringBuilder();
@@ -314,12 +313,13 @@ final class ItineraryRenderer {
         JSONObject budget = doc.root.getJSONObject("budget");
         ui.text("Estimated budget", 22, true);
         JSONArray active = budget.getJSONArray("activeCostItemIds");
-        ui.card(!hasPricedActiveCosts() ? "Estimate pending" : money(budget.getJSONObject("total")),
-                "Entire party · whole trip\n" + (budget.getString("completeness").equals("PARTIAL")
-                        ? "Partial estimate — excludes unpriced items." : "Estimate only — not a quote.")
-                        + "\n" + join(budget.getJSONArray("notes")), R.color.surface, null);
+        // 说明文字都放进 Cost breakdown，卡片只留金额和范围。
+        ui.card(!hasPricedActiveCosts() ? "Estimate pending" : money(budget.getJSONObject("total"), false), "Entire party · whole trip", R.color.surface, null);
         StringBuilder details = new StringBuilder("Known subtotal: ").append(money(budget.getJSONObject("subtotal")))
-                .append("\nContingency: ").append(money(budget.getJSONObject("contingency"))).append(costs(active));
+                .append("\nContingency: ").append(money(budget.getJSONObject("contingency")))
+                .append("\n\nAbout this estimate\n").append(budget.getString("completeness").equals("PARTIAL")
+                        ? "Partial estimate — excludes unpriced items." : "Estimate only — not a quote.")
+                .append("\n").append(join(budget.getJSONArray("notes"))).append(costs(active));
         if (budget.getJSONArray("excludedCategories").length() > 0)
             details.append("\nExcluded: ").append(join(budget.getJSONArray("excludedCategories")));
         disclosure("Cost breakdown", details.toString());

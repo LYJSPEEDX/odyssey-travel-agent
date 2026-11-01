@@ -6,5 +6,6 @@
     <item name="profileNickname" type="id" />
     <item name="myEmptyState" type="id" />
     <item name="saveTripStatus" type="id" />
+    <item name="cityPhotoRequest" type="id" />
     <item name="viewMyTrips" type="id" />
 </resources>

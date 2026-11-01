@@ -17,6 +17,7 @@ import java.util.concurrent.*;
 /** 仅缓存位图、不持有 Activity；下载、解码、排队均有上限，失败保留调用者先设置的本地图。 */
 final class SafeImageLoader {
     interface Transport { Bitmap fetch(String url) throws Exception; }
+    static final String USER_AGENT = "OdysseyTravelApp/1.0 (Android)";
     static final SafeImageLoader SHARED = new SafeImageLoader(SafeImageLoader::download);
     private static final int MAX_BYTES = 4 * 1024 * 1024;
     private final Transport transport;
@@ -69,7 +70,7 @@ final class SafeImageLoader {
             HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
             int remaining = (int) Math.max(1, TimeUnit.NANOSECONDS.toMillis(deadline - System.nanoTime()));
             connection.setInstanceFollowRedirects(false); connection.setConnectTimeout(Math.min(4000, remaining)); connection.setReadTimeout(Math.min(2000, remaining));
-            connection.setRequestProperty("Accept", "image/*");
+            connection.setRequestProperty("Accept", "image/*"); connection.setRequestProperty("User-Agent", USER_AGENT);
             try {
                 int code = connection.getResponseCode();
                 if (code >= 300 && code <= 399) { url = ImageUrlPolicy.redirect(url, connection.getHeaderField("Location")); continue; }

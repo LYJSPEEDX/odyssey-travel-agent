@@ -53,4 +53,13 @@ public class TripStoreTest {
             context.deleteSharedPreferences(file);
         }
     }
+    @Test public void deleteRemovesOnlyThatTrip() throws Exception {
+        android.content.Context context = androidx.test.platform.app.InstrumentationRegistry.getInstrumentation().getTargetContext();
+        TripStore store = new TripStore(context);
+        SavedTrip first = new SavedTrip("delete_a", 1, "Kyoto", "A → B", "Dates", 3, "", "Text"), second = new SavedTrip("delete_b", 2, "Tokyo", "A → C", "Dates", 3, "", "Text");
+        assertTrue(store.save(first)); assertTrue(store.save(second));
+        assertTrue(store.delete("delete_a"));
+        assertNull(store.get("delete_a")); assertNotNull(store.get("delete_b"));
+        assertTrue(store.delete("delete_b"));
+    }
 }

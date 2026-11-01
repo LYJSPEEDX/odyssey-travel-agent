@@ -156,7 +156,6 @@ public class HomeActivity extends AppCompatActivity {
             ui.text(getString(R.string.trip_read_error), 14, false);
             ui.button(R.string.retry, this::render);
         }
-        ui.text(getString(R.string.local_only_notice), 12, false);
         ui.stamps();
     }
     /** 行程还在后台生成时给出提示；后端没有进度推送，只能告诉用户正在进行。 */
@@ -165,7 +164,16 @@ public class HomeActivity extends AppCompatActivity {
         if (model.busy && model.generationUncertain) ui.card("Your trip is being built", "Usually takes 2–4 minutes. We’ll add it to My Trips when it’s ready.",
                 R.color.purple_light, () -> startActivity(new Intent(this, LivePlannerActivity.class)));
     }
-    private void startPlanner() { startActivity(new Intent(this, LivePlannerActivity.class).putExtra(LivePlannerActivity.EXTRA_NEW_PLAN, true)); }
+    private void startPlanner() {
+        LivePlannerModel model = LivePlannerModel.get(getApplication());
+        Intent planner = new Intent(this, LivePlannerActivity.class);
+        if (!model.busy && model.hasProgress()) {
+            new com.google.android.material.dialog.MaterialAlertDialogBuilder(this).setTitle("You have a trip in progress")
+                    .setMessage("Pick up where you left off, or start a new trip?")
+                    .setNegativeButton("Start over", (d, w) -> startActivity(planner.putExtra(LivePlannerActivity.EXTRA_START_OVER, true)))
+                    .setPositiveButton("Continue", (d, w) -> startActivity(planner)).show();
+        } else startActivity(planner.putExtra(LivePlannerActivity.EXTRA_NEW_PLAN, true));
+    }
     /** 首页保持桌面入口；资料检查完成后由正确页面接手欢迎层。 */
     private void checkProfile() {
         if (checkingProfile) return;
