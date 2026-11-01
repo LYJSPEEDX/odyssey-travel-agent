@@ -240,6 +240,12 @@ public class LivePlannerActivity extends AppCompatActivity {
             ui.content.addView(optionCard(LivePlanningProtocol.headline(step, answer), LivePlanningProtocol.detail(step, answer),
                     photos ? LivePlanningProtocol.place(answer) : "", id.equals(chosenOption), () -> { chosenOption = id; render(); }), cardParams());
         }
+        // 超过人数上限的提议不能确认，否则要到生成时才失败。
+        if (step.equals("COMPANIONS")) for (JSONObject option : distinct)
+            if (option.getString("id").equals(chosenOption) && LivePlanningProtocol.tooManyAdults(option.getJSONObject("answer"))) {
+                ui.card("Too many travellers", LivePlanningProtocol.ADULT_LIMIT + " Tell us a smaller group.", R.color.peach, null);
+                return;
+            }
         button("Confirm this answer", R.color.lime, () -> model.confirm(chosenOption), "live-confirm")
                 .setEnabled(!chosenOption.isEmpty() && !model.busy && model.pendingTurn == null && !model.generationUncertain);
     }
@@ -258,7 +264,10 @@ public class LivePlannerActivity extends AppCompatActivity {
                     if (!city.equalsIgnoreCase(origin)) choice(place, "", city, "Destination " + place + ".");
                 }
                 break;
-            case 3: choices(COMPANIONS); break;
+            case 3:
+                ui.text(LivePlanningProtocol.ADULT_LIMIT, 14, false);
+                choices(COMPANIONS);
+                break;
             case 4: choices(BUDGETS); break;
             case 5: renderConstraints(); break;
             case 6: choices(PACES); skip("A balanced pace."); break;
@@ -348,7 +357,26 @@ public class LivePlannerActivity extends AppCompatActivity {
             review.text(LivePlanningProtocol.TITLES[LivePlanningProtocol.index(id)], 14, true).setPadding(0, ui.dp(8), 0, ui.dp(2));
             review.text(LivePlanningProtocol.answer(id, steps.getJSONObject(id).getJSONObject("answer")), 14, false).setPadding(0, 0, 0, ui.dp(8));
         }
-        button("Generate my trip", R.color.lime, model::generate, "live-generate");
+        // 旧计划可能已确认了超过上限的人数，先改人数才能生成。
+        if (LivePlanningProtocol.tooManyAdults(steps.getJSONObject("COMPANIONS").optJSONObject("answer"))) {
+            ui.card("Too many travellers", LivePlanningProtocol.ADULT_LIMIT + " Change who’s coming along to continue.", R.color.peach, null);
+            button("Change travellers", R.color.lime, () -> model.select(3), "live-change-travellers");
+            LinearLayout row = new LinearLayout(this);
+            ui.content.addView(row, new LinearLayout.LayoutParams(-1, -2));
+            rowButton(row, "Back to home", R.color.surface, this::abandon, "live-abandon-plan", 0);
+            return;
+        }
+        // 失败或结果不确定时，同一个位置变成 Generate again，不会同时出现两个生成按钮。
+        boolean again = model.generationUncertain || !model.generationFailure.isEmpty();
+        if (!model.generationFailure.isEmpty()) ui.card("We couldn’t build this trip", model.generationFailure, R.color.peach, null);
+        else if (model.generationUncertain) ui.card("We lost track of your trip", "It may still be generating or already saved. Check your saved trips before trying again.", R.color.peach, null);
+        if (again) {
+            button("Generate again", R.color.lime, this::generateAgain, "live-generate");
+            LinearLayout row = new LinearLayout(this);
+            ui.content.addView(row, new LinearLayout.LayoutParams(-1, -2));
+            rowButton(row, "Check saved trips", R.color.mint, model::listTrips, "live-recover", 0);
+            rowButton(row, "Back to home", R.color.surface, this::abandon, "live-abandon-plan", ui.dp(10));
+        } else button("Generate my trip", R.color.lime, model::generate, "live-generate");
     }
     private void renderBlocking(JSONArray blocking) throws JSONException {
         List<String> reasons = new ArrayList<>();
@@ -379,8 +407,8 @@ public class LivePlannerActivity extends AppCompatActivity {
                 .putExtra(TripDetailActivity.EXTRA_ID, model.savedTripId)), "live-open");
         LinearLayout row = new LinearLayout(this);
         ui.content.addView(row, new LinearLayout.LayoutParams(-1, -2));
-        rowButton(row, "View My Trips", () -> openHomeTab(R.id.nav_my), "live-my-trips", 0);
-        rowButton(row, "Plan another trip", model::newSession, "live-fresh", ui.dp(10));
+        rowButton(row, "View My Trips", R.color.surface, () -> openHomeTab(R.id.nav_my), "live-my-trips", 0);
+        rowButton(row, "Plan another trip", R.color.surface, model::newSession, "live-fresh", ui.dp(10));
     }
     /** 回复或生成结果不确定时的找回操作；不会自动重发，避免重复提交和重复消耗额度。 */
     private void renderRecovery() {
@@ -389,14 +417,12 @@ public class LivePlannerActivity extends AppCompatActivity {
             button("Check the reply", R.color.lime, model::replay, "live-replay");
             button("Go back to my answers", R.color.surface, model::abandonTurn, "live-abandon");
         }
-        if (model.generationUncertain && !model.busy) {
-            ui.card("We lost track of your trip", "It may still be generating or already saved. Check your saved trips before trying again.", R.color.peach, null);
-            button("Check saved trips", R.color.lime, model::listTrips, "live-recover");
-            if (!model.resultJson.isEmpty()) button("Save the itinerary again", R.color.lime, model::retrySave, "live-retry-save");
-            button("Generate again", R.color.surface, () -> new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
-                    .setTitle("Generate again?").setMessage("The earlier request may still finish, so you could end up with two copies of this trip.")
-                    .setNegativeButton("Keep checking", null).setPositiveButton("Generate again", (d, w) -> model.allowAnotherGeneration()).show(), "live-new-attempt");
+        if (model.generationUncertain && !model.busy && model.session == null) {
+            ui.card("We lost track of your trip", "It may still be generating or already saved. Check your saved trips.", R.color.peach, null);
+            button("Check saved trips", R.color.mint, model::listTrips, "live-recover");
+            button("Back to home", R.color.surface, this::abandon, "live-abandon-plan");
         }
+        if (!model.resultJson.isEmpty() && model.generationUncertain && !model.busy) button("Save the itinerary again", R.color.lime, model::retrySave, "live-retry-save");
         for (int i = 0; i < model.serverTrips.length(); i++) {
             JSONObject trip = model.serverTrips.optJSONObject(i);
             if (trip == null) continue;
@@ -404,6 +430,14 @@ public class LivePlannerActivity extends AppCompatActivity {
             ui.card(trip.optString("title", "Saved trip"), trip.optString("created_at"), R.color.surface, model.busy ? null : () -> model.recover(id));
         }
     }
+    private void generateAgain() {
+        if (!model.generationUncertain) { model.generateAgain(); return; }
+        // 结果不确定时上一个请求可能还会完成，再生成可能多出一份。
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+                .setTitle("Generate again?").setMessage("The earlier request may still finish, so you could end up with two copies of this trip.")
+                .setNegativeButton("Keep checking", null).setPositiveButton("Generate again", (d, w) -> model.generateAgain()).show();
+    }
+    private void abandon() { model.discardPlan(); openHomeTab(R.id.nav_home); }
     private void openSettings() {
         new BackendSettingsDialog(this, () -> { finish(); startActivity(new Intent(this, LivePlannerActivity.class)); }).show();
     }
@@ -454,8 +488,8 @@ public class LivePlannerActivity extends AppCompatActivity {
         button.setTag(tag); button.setEnabled(!model.busy || tag.equals("live-home"));
         return button;
     }
-    private void rowButton(LinearLayout row, String text, Runnable click, String tag, int margin) {
-        MaterialButton button = button(text, R.color.surface, click, tag);
+    private void rowButton(LinearLayout row, String text, int background, Runnable click, String tag, int margin) {
+        MaterialButton button = button(text, background, click, tag);
         ui.content.removeView(button);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, -2, 1f); params.setMarginStart(margin);
         row.addView(button, params);

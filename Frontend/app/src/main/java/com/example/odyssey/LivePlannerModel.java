@@ -31,6 +31,8 @@ final class LivePlannerModel {
     JSONObject session, creation, pendingTurn;
     JSONArray serverTrips = new JSONArray();
     String error = "", status = "", savedTripId = "", resultJson = "";
+    /** 后端明确报告生成失败时的原因；为空表示没有失败。 */
+    String generationFailure = "";
     boolean busy, generationUncertain;
     int selected;
     final java.util.Set<Integer> skipped = new java.util.HashSet<>();
@@ -52,8 +54,8 @@ final class LivePlannerModel {
             generationUncertain = cached.optBoolean("generationPending");
             savedTripId = cached.optString("savedTripId");
             if (session != null) { LivePlanningProtocol.validate(session); selected = LivePlanningProtocol.index(session.getString("currentStep")); }
-            if (generationUncertain) error = "Generation may have reached the server. Check saved server trips before starting again.";
-            else if (pendingTurn != null) error = "A planning reply was interrupted. Restore the session, then check that reply.";
+            generationFailure = cached.optString("generationFailure");
+            if (pendingTurn != null) error = "A planning reply was interrupted. Restore the session, then check that reply.";
         } catch (Exception exception) { error = friendly(exception); }
     }
     private void publish() { main.post(() -> updates.setValue(++event)); }
@@ -72,7 +74,7 @@ final class LivePlannerModel {
         JSONObject state = new JSONObject().put("session", session == null ? JSONObject.NULL : session)
                 .put("creation", creation == null ? JSONObject.NULL : creation)
                 .put("pendingTurn", pendingTurn == null ? JSONObject.NULL : pendingTurn)
-                .put("generationPending", generationUncertain).put("savedTripId", savedTripId);
+                .put("generationPending", generationUncertain).put("savedTripId", savedTripId).put("generationFailure", generationFailure);
         if (!config.preferences.edit().putString(key + "_state", state.toString()).commit())
             throw new IOException("Cannot save planning state. No further request was sent.");
     }
@@ -177,7 +179,7 @@ final class LivePlannerModel {
                 || session.getInt("revision") != finalized.getInt("revision"))
             throw new IOException("Finalization returned a different session or revision. Restore before generating.");
         JSONObject request = finalized.getJSONObject("generationRequest");
-        generationUncertain = true; savedTripId = ""; resultJson = ""; persist();
+        generationUncertain = true; generationFailure = ""; savedTripId = ""; resultJson = ""; persist();
         status = "Researching and building your itinerary… This can take several minutes."; publish();
         try {
             JSONObject itinerary = transport.call("POST", "/trips", request, true);
@@ -185,8 +187,9 @@ final class LivePlannerModel {
             saveResult(resultJson);
             generationUncertain = false; persist();
         } catch (BackendHttp.ApiError exception) {
-            // Even an HTTP error can follow a commit/proxy failure; use server recovery first.
-            error = exception.getMessage() + " Check server trips before generating again.";
+            // 后端自己的错误码表示确实没有保存；HTTP_ 开头来自代理或网关，结果仍不确定。
+            if (exception.code.startsWith("HTTP_")) error = friendly(exception);
+            else { generationUncertain = false; generationFailure = friendly(exception); }
             persist();
         }
     }); }
@@ -209,16 +212,22 @@ final class LivePlannerModel {
         if (!id.equals(response.getString("id"))) throw new IOException("Server itinerary ID mismatch.");
         resultJson = response.toString(); saveResult(resultJson); generationUncertain = false; persist();
     }); }
-    void allowAnotherGeneration() { if (!busy) { generationUncertain = false; error = "";
-        run("Preparing a new attempt…", this::persist); } }
-    void newSession() { run("Getting things ready…", () -> {
-        if (generationUncertain) throw new IOException("Check saved server trips or explicitly acknowledge a new generation first.");
-        session = null; creation = null; pendingTurn = null; savedTripId = ""; resultJson = "";
+    void generateAgain() { if (!busy) { generationUncertain = false; generationFailure = ""; error = ""; generate(); } }
+    /** 放弃当前计划回到首页；下次从横幅进入时重新开始。服务器上已有的记录不受影响。 */
+    void discardPlan() { run("Getting things ready…", () -> {
+        resetPlan(); persist();
+    }); }
+    private void resetPlan() {
+        session = null; creation = null; pendingTurn = null; savedTripId = ""; resultJson = ""; generationUncertain = false; generationFailure = "";
         serverTrips = new JSONArray(); selected = 0;
         android.content.SharedPreferences.Editor editor = config.preferences.edit();
         for (int i = 0; i < 8; i++) editor.remove(key + "_draft_" + i);
-        editor.commit(); persist();
+        editor.commit();
         dates.clear(); skipped.clear();
+    }
+    void newSession() { run("Getting things ready…", () -> {
+        if (generationUncertain) throw new IOException("Check saved trips or generate again first.");
+        resetPlan(); persist();
         startInternal();
     }); }
     static String friendly(Exception exception) {

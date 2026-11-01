@@ -59,6 +59,10 @@ final class LivePlanningProtocol {
                 return lines.toString();
         }
     }
+    /** 后端行程生成最多支持的成人数，超过时研究阶段会直接失败。 */
+    static final int MAX_ADULTS = 9;
+    static final String ADULT_LIMIT = "Odyssey can plan for up to " + MAX_ADULTS + " adults per trip.";
+    static boolean tooManyAdults(JSONObject companions) { return companions != null && companions.optInt("adults") > MAX_ADULTS; }
     /** 选项和已确认答案的主文字：最重要的事实，用大字加粗。 */
     static String headline(String step, JSONObject a) throws JSONException {
         switch (step) {
