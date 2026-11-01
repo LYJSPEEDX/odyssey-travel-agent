@@ -144,18 +144,12 @@ public class MainActivity extends AppCompatActivity implements PlannerFormRender
     private void render(boolean top) {
         boolean generation = state.isGenerating() || state.isGenerated();
         text(R.id.planHeadline, generation ? getString(state.isGenerating() ? R.string.generation_loading_title : R.string.generation_done_title) : session.step().question.title);
-        // 只有生成中才需要提示；生成完成后由摘要卡片说明，不再堆叠文字。
-        findViewById(R.id.assistantBubble).setVisibility(state.isGenerating() ? View.VISIBLE : View.GONE);
-        if (state.isGenerating()) {
-            text(R.id.assistantTitle, getString(R.string.generation_loading_prompt));
-            text(R.id.assistantMessage, getString(R.string.generation_loading_help));
-        }
         text(R.id.stepText, state.isGenerated() ? "Trip generated" : generation ? "DEMO" : session.progress());
         int[] ids = {R.id.progressStep1, R.id.progressStep2, R.id.progressStep3, R.id.progressStep4, R.id.progressStep5, R.id.progressStep6, R.id.progressStep7};
         // current=0 是 START，没有亮段；current=1 对应第一轮目的地，亮第一段。
         for (int i = 0; i < ids.length; i++) findViewById(ids[i]).setBackgroundColor(ContextCompat.getColor(this,
                 generation || i < session.current ? R.color.lime : R.color.outline));
-        findViewById(R.id.tripBoard).setVisibility(state.isGenerating() || session.answer(0).isEmpty() ? View.GONE : View.VISIBLE);
+        findViewById(R.id.tripBoard).setVisibility(session.answer(0).isEmpty() ? View.GONE : View.VISIBLE);
         android.widget.ImageView photo = findViewById(R.id.tripBoardPhoto);
         photo.setVisibility(session.answer(1).isEmpty() ? View.GONE : View.VISIBLE);
         if (!session.answer(1).isEmpty()) {
@@ -168,7 +162,8 @@ public class MainActivity extends AppCompatActivity implements PlannerFormRender
         } else SafeImageLoader.SHARED.cancel(photo);
         text(R.id.tripBoardDestination, session.answer(1).isEmpty() ? "Depart from " + session.answer(0) : session.answer(0) + " → " + session.answer(1));
         findViewById(R.id.tripBoardStatus).setVisibility(session.answer(2).isEmpty() ? View.GONE : View.VISIBLE);
-        text(R.id.tripBoardStatus, session.answer(2));
+        // 这款字体的空格很窄，箭头两侧用双空格才看得出间隔。
+        text(R.id.tripBoardStatus, session.answer(2).replace(" → ", "  →  "));
         View next = findViewById(R.id.nextButton);
         next.setVisibility(state.isGenerated() ? View.GONE : generation ? View.INVISIBLE : View.VISIBLE);
         // NEEDS_REVIEW 不允许用浏览箭头静默确认；用户必须点击当前选项或明确确认按钮。

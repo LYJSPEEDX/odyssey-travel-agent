@@ -23,9 +23,6 @@ final class GenerationDemoRenderer {
     }
     void render(int stage, boolean offline, boolean expanded) {
         ui.content.removeAllViews();
-        ui.card(trip.getDeparture() + "  →  " + trip.getDestination(),
-                trip.isFlexibleDates() ? "Flexible dates · Demo" : TripDates.format(trip.getStartDate()) + " – " + TripDates.format(trip.getEndDate()),
-                R.color.lime, null);
         // 航点只是轻量动效，不表示真实进度；系统关闭动画时保持静态。
         ui.content.addView(new GenerationRouteView(ui.context), new LinearLayout.LayoutParams(-1, ui.dp(42)));
         ui.text("Usually takes a few minutes", 14, false);

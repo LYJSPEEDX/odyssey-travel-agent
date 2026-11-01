@@ -29,7 +29,7 @@ final class TripDates {
     }
     static String format(int key) {
         if (key == 0) return "—";
-        SimpleDateFormat format = new SimpleDateFormat("d MMM yyyy", Locale.ENGLISH);
+        SimpleDateFormat format = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
         format.setTimeZone(TimeZone.getTimeZone("UTC"));
         return format.format(calendar(key).getTime());
     }

@@ -143,7 +143,7 @@ public class RegistrationActivity extends AppCompatActivity {
         TextView privacy = ui.text(getString(R.string.registration_privacy), 13, false);
         privacy.setTextColor(ui.color(R.color.text_primary));
         privacy.setGravity(android.view.Gravity.CENTER);
-        ui.content.addView(new android.widget.Space(this), new LinearLayout.LayoutParams(-1, 0, 1f));
+        ui.stamps();
         status = ui.text("", 14, false);
         status.setAccessibilityLiveRegion(android.view.View.ACCESSIBILITY_LIVE_REGION_POLITE);
         previous = findViewById(R.id.registrationPrevious);

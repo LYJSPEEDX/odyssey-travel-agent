@@ -6,7 +6,8 @@
     android:clickable="true" android:focusable="true" android:contentDescription="@string/create_my_trip"
     app:cardCornerRadius="@dimen/radius_large" app:cardBackgroundColor="@color/lime"
     app:cardElevation="0dp" app:strokeWidth="0dp">
-    <com.example.odyssey.BannerStampsView android:layout_width="match_parent" android:layout_height="match_parent" />
+    <com.example.odyssey.PassportStampsView android:layout_width="match_parent" android:layout_height="match_parent"
+        app:stampColor="#8CFFFFFF" />
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
         android:orientation="vertical" android:padding="@dimen/space_xl"
         android:importantForAccessibility="noHideDescendants">

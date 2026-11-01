@@ -5,14 +5,6 @@
     <string name="plan_headline">Start your journey from here</string>
     <string name="step_one_of_five">01 / 05</string>
 
-    <string name="assistant_destination_title">
-    Choose a place you want to visit
-    </string>
-
-    <string name="assistant_destination_message">
-    I’ll organise your choices as we chat. You can also type your own answer.
-    </string>
-
     <string name="style_city_walk">City walk</string>
     <string name="style_nature_retreat">Nature retreat</string>
     <string name="style_food_first">Food first</string>

@@ -43,9 +43,9 @@ final class PlanningSessionRenderer {
             if (twoColumns && index % 2 == 1) params.setMarginStart(dp(10));
             card.setRadius(dp(20)); card.setCardElevation(0);
             boolean selected = step.selected.contains(option.id);
-            // 未选中无边框；选中时紫色填充加边框，selected 属性仍供读屏识别。日期页的灵活选项用薄荷绿与日历区分。
+            // 未选中无边框；选中时紫色填充加边框，selected 属性仍供读屏识别。日期页的灵活选项用红橙色与日历区分。
             card.setSelected(selected); card.setMinimumHeight(dp(48));
-            card.setCardBackgroundColor(color(selected ? R.color.purple : session.current == 2 ? R.color.mint : R.color.surface));
+            card.setCardBackgroundColor(color(selected ? R.color.purple : session.current == 2 ? R.color.red : R.color.surface));
             card.setStrokeColor(color(R.color.text_primary)); card.setStrokeWidth(selected ? dp(1) : 0);
             LinearLayout body = new LinearLayout(content.getContext()); body.setOrientation(LinearLayout.VERTICAL); body.setPadding(dp(12), dp(8), dp(12), dp(8));
             if (session.current == 1) {
@@ -60,7 +60,7 @@ final class PlanningSessionRenderer {
                 TripPhotos.showResponse(image, new ResponseImage(option.imageUrl, option.title + " atmosphere photo", ""), option.value);
             }
             TextView title = paragraphView(option.title, 17);
-            AppFonts.style(title, selected || session.current == 1 ? Typeface.BOLD : Typeface.NORMAL);
+            AppFonts.style(title, selected || session.current == 1 || session.current == 2 ? Typeface.BOLD : Typeface.NORMAL);
             // 预算把描述开头的价格放到标题行右上角；其他步骤标题独占一行。
             int priceAt = session.current == 4 ? option.description.indexOf("AUD ") : -1;
             int priceEnd = priceAt < 0 ? -1 : option.description.indexOf(" · ", priceAt);
@@ -79,7 +79,7 @@ final class PlanningSessionRenderer {
                 body.addView(description);
             }
             if (session.current == 1) body.addView(paragraphView(String.join(" · ", option.keywords), 13));
-            if (selected) tintText(body, color(R.color.on_accent));
+            if (selected || session.current == 2) tintText(body, color(R.color.on_accent));
             card.addView(body); card.setEnabled(!loading); card.setClickable(true);
             card.setOnClickListener(view -> actions.option(option.id));
             if (!twoColumns) { content.addView(card); continue; }

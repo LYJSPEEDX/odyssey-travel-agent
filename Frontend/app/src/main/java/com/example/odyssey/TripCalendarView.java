@@ -89,8 +89,8 @@ final class TripCalendarView extends LinearLayout {
             if (endpoint || inRange) {
                 boolean range = state.getEndDate() != 0 && state.getStartDate() != state.getEndDate();
                 int side = !range ? 0 : key == state.getStartDate() ? 1 : -1;
-                if (endpoint) date.setBackground(new EndpointBackground(color(R.color.purple), color(R.color.mint), side));
-                else date.setBackground(shape(R.color.mint, 0));
+                if (endpoint) date.setBackground(new EndpointBackground(color(R.color.purple), color(R.color.purple_light), side));
+                else date.setBackground(shape(R.color.purple_light, 0));
                 date.setTextColor(color(R.color.on_accent));
                 AppFonts.style(date, endpoint ? Typeface.BOLD : Typeface.NORMAL);
                 date.setSelected(true);

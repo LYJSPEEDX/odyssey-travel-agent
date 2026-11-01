@@ -192,7 +192,7 @@
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/tripBoardPhoto" android:layout_width="88dp" android:layout_height="88dp"
-                android:layout_marginEnd="12dp" android:scaleType="centerCrop" android:visibility="gone"
+                android:layout_marginEnd="@dimen/space_xl" android:scaleType="centerCrop" android:visibility="gone"
                 android:importantForAccessibility="no" app:shapeAppearanceOverlay="@style/EditorialThumbnail" />
 
             <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
@@ -204,7 +204,7 @@
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:textColor="@color/on_trip_board"
-                android:textSize="@dimen/text_title"
+                android:textSize="22sp"
                 android:fontFamily="@font/plus_jakarta_sans"
                 android:textStyle="bold"
                 tools:text="Kyoto" />
@@ -217,7 +217,7 @@
                 android:id="@+id/tripBoardStatus"
                 android:visibility="gone"
                 android:textColor="@color/on_trip_board"
-                android:textSize="@dimen/text_label" />
+                android:textSize="@dimen/text_body" />
 
             </LinearLayout>
 
@@ -234,40 +234,6 @@
             android:textColor="@color/text_primary"
             android:textSize="@dimen/text_display"
             android:fontFamily="@font/fraunces" />
-
-        <!-- AI 对话气泡 -->
-        <LinearLayout
-            android:id="@+id/assistantBubble"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_lg"
-            android:background="@android:color/transparent"
-            android:orientation="vertical"
-            android:paddingVertical="@dimen/space_sm"
-            android:visibility="gone"
-            >
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:includeFontPadding="false"
-                android:id="@+id/assistantTitle"
-                android:text="@string/assistant_destination_title"
-                android:textColor="@color/text_primary"
-                android:textSize="@dimen/text_body"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/space_xs"
-                android:includeFontPadding="false"
-                android:id="@+id/assistantMessage"
-                android:text="@string/assistant_destination_message"
-                android:textColor="@color/text_secondary"
-                android:textSize="@dimen/text_label" />
-
-        </LinearLayout>
 
         <!-- 每一步的表单内容由 PlannerFormRenderer 填入 -->
         <LinearLayout
@@ -287,7 +253,7 @@
             android:textSize="@dimen/text_label"
             android:visibility="gone" />
 
-        <Space
+        <com.example.odyssey.PassportStampsView
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"

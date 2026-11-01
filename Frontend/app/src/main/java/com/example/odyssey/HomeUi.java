@@ -80,6 +80,8 @@ final class HomeUi {
         content.addView(button, new LinearLayout.LayoutParams(-1, -2));
         return button;
     }
+    /** 页面底部的弹性留白，留白足够大时显示淡色邮戳；需要外层 fillViewport 才有高度。 */
+    void stamps() { content.addView(new PassportStampsView(context), new LinearLayout.LayoutParams(-1, 0, 1f)); }
     /** 白色合并卡片：同组内容放在一张无描边圆角卡片上，页面底色作为分隔。 */
     LinearLayout group() {
         LinearLayout group = new LinearLayout(context);

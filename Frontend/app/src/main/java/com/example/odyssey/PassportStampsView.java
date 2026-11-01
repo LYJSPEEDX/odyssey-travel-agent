@@ -9,25 +9,32 @@ import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.View;
 
-/** 首页横幅右下角的淡白色护照邮戳，纯装饰：不响应点击，也不进入读屏顺序。 */
-public final class BannerStampsView extends View {
+/**
+ * 护照邮戳装饰，贴右下角绘制：不响应点击，也不进入读屏顺序。
+ * 放在弹性留白里时，空间不够就少画或不画，不会挤到内容。
+ */
+public final class PassportStampsView extends View {
     private final Paint line = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint label = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final float dp = getResources().getDisplayMetrics().density;
 
-    public BannerStampsView(Context context, AttributeSet attrs) {
+    public PassportStampsView(Context context) { this(context, null); }
+    public PassportStampsView(Context context, AttributeSet attrs) {
         super(context, attrs);
         setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
-        int white = 0x8CFFFFFF;
-        line.setStyle(Paint.Style.STROKE); line.setStrokeWidth(1.5f * dp); line.setColor(white);
-        label.setColor(white); label.setTypeface(Typeface.create(Typeface.MONOSPACE, Typeface.BOLD));
+        android.content.res.TypedArray values = context.obtainStyledAttributes(attrs, R.styleable.PassportStampsView);
+        int ink = values.getColor(R.styleable.PassportStampsView_stampColor, context.getColor(R.color.stamp_ink));
+        values.recycle();
+        line.setStyle(Paint.Style.STROKE); line.setStrokeWidth(1.5f * dp); line.setColor(ink);
+        label.setColor(ink); label.setTypeface(Typeface.create(Typeface.MONOSPACE, Typeface.BOLD));
         label.setTextAlign(Paint.Align.CENTER);
     }
     @Override protected void onDraw(Canvas canvas) {
         float right = getWidth(), bottom = getHeight();
+        if (bottom < 120 * dp) return;
         round(canvas, right - 62 * dp, bottom - 64 * dp, -14);
         box(canvas, right - 150 * dp, bottom - 42 * dp, 7);
-        oval(canvas, right - 44 * dp, bottom - 158 * dp, 18);
+        if (bottom >= 190 * dp) oval(canvas, right - 44 * dp, bottom - 158 * dp, 18);
     }
     private void round(Canvas canvas, float x, float y, float angle) {
         canvas.save(); canvas.rotate(angle, x, y);

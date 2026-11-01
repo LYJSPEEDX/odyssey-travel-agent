@@ -15,6 +15,8 @@
     <color name="purple">#A98BF5</color>
     <color name="mint">#B2EFCC</color>
     <color name="peach">#FFD2B8</color>
+    <color name="purple_light">#E4DAFC</color>
+    <color name="stamp_ink">#1F000000</color>
     <color name="assistant_bubble">#B2EFCC</color>
     <color name="composer_background">#25231F</color>
     <color name="composer_on_background">#F5F2E9</color>
