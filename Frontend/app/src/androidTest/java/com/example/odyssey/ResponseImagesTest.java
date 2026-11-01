@@ -5,15 +5,13 @@ import org.json.JSONObject;
 import org.junit.Test;
 import static org.junit.Assert.*;
 public class ResponseImagesTest {
-    @Test public void homeContractSamplesCarryResponseCovers() throws Exception {
+    @Test public void contractExamplesCarryResponseCovers() throws Exception {
         android.content.Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        int covers = 0;
-        for (SavedTrip trip : ExampleTrips.all(context)) if (trip.id.startsWith("contract_")) {
-            assertNotNull("Home must receive media before opening details", trip.contractJson);
-            assertNotNull(ResponseImage.cover(new JSONObject(trip.contractJson), true, System.currentTimeMillis()));
-            covers++;
+        for (String path : new String[]{TestTrips.CANBERRA, TestTrips.NEW_YORK}) {
+            JSONObject example = new JSONObject(TestTrips.raw(context, path));
+            ItineraryDocument.parse(context, example.toString());
+            assertNotNull(example.getJSONObject("summary"));
         }
-        assertEquals(2, covers);
     }
     @Test public void completedButQueuedResultCannotUpdateDetachedView() throws Exception {
         SafeImageLoader loader = new SafeImageLoader(url -> android.graphics.Bitmap.createBitmap(2, 2, android.graphics.Bitmap.Config.ARGB_8888));
@@ -55,25 +53,6 @@ public class ResponseImagesTest {
         media.put("expiresAt", JSONObject.NULL).put("status", "PENDING"); assertNull(ResponseImage.cover(root, false, 0));
         media.put("status", "READY").put("url", 42); assertNull(ResponseImage.cover(root, false, 0));
         root.getJSONObject("summary").put("coverImageId", JSONObject.NULL); assertNull(ResponseImage.cover(root, true, 0));
-    }
-    @Test public void mockResponsesCarryCatalogImages() throws Exception {
-        PlanningSession session = new PlanningSession("Sydney", "");
-        session.current = 1;
-        for (PlanningSession.Option option : session.step().question.options) assertNotNull(ImageUrlPolicy.accept(option.imageUrl));
-        PlanningSession parsed = PlanningJson.parse(PlanningJson.snapshot(session).toString());
-        assertEquals(session.step().question.options.get(0).imageUrl, parsed.step().question.options.get(0).imageUrl);
-        JSONObject raw = PlanningJson.snapshot(session);
-        raw.getJSONArray("steps").getJSONObject(1).getJSONObject("question").getJSONArray("options").getJSONObject(0).put("imageUrl", 42);
-        assertEquals("", PlanningJson.parse(raw.toString()).steps[1].question.options.get(0).imageUrl);
-        TripPlanState plan = new TripPlanState(); plan.selectDeparture("Sydney"); plan.selectDestination("Kyoto");
-        plan.useFlexibleDates(); plan.setCompanion("Couple"); plan.setBudget("Comfort");
-        JSONObject contract = MockItinerary.fromPlan(InstrumentationRegistry.getInstrumentation().getTargetContext(), plan, "image_test");
-        assertEquals(MockPhotoCatalog.url("Kyoto", false), ResponseImage.cover(contract, false, System.currentTimeMillis()).url);
-        for (String sample : new String[]{"contract_canberra", "contract_new_york"}) {
-            JSONObject example = new JSONObject(ItineraryAssets.example(InstrumentationRegistry.getInstrumentation().getTargetContext(), sample));
-            assertNotNull(ResponseImage.cover(example, true, System.currentTimeMillis()));
-            ItineraryDocument.parse(InstrumentationRegistry.getInstrumentation().getTargetContext(), example.toString());
-        }
     }
     @Test public void legacyAssetKeyRemainsLocalFallback() throws Exception {
         JSONObject root = new JSONObject("{summary:{coverImageId:'c'},media:[{id:'c',status:'READY',assetKey:'city_kyoto'}]}");

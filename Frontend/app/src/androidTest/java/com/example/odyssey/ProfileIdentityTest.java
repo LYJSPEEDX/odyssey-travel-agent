@@ -60,23 +60,6 @@ public class ProfileIdentityTest {
             assertTrue(payload.isNull("residenceCountryCode")); assertEquals("USD", payload.getString("displayCurrency"));
         } finally { path.delete(); }
     }
-    @Test public void mockSessionRetainsProfileAndRejectsSilentChanges() throws Exception {
-        File path = fixture();
-        try {
-            ProfileStore store = store(path); store.save(profile());
-            String snapshot = ProfilePayload.createSession(store.load()).toString();
-            PlanningSession session = new PlanningSession("Sydney", "Food"); session.profileRequest = snapshot;
-            JSONObject request = PlanningJson.request(session, "REFINE", PlanningJson.textInput("Perth"));
-            String response = new MockPlanningService().respond(request.toString(), PlanningJson.snapshot(session).toString());
-            PlanningJson.Applied applied = PlanningJson.applyResult(session, request, response);
-            assertEquals(store.load().getString("uid"), new JSONObject(applied.session.profileRequest)
-                    .getJSONObject("profile").getString("uid"));
-            JSONObject tampered = new JSONObject(response);
-            tampered.getJSONObject("session").getJSONObject("profileContext").getJSONObject("registrationProfile")
-                    .getJSONObject("profile").put("displayName", "Changed");
-            assertThrows(IllegalArgumentException.class, () -> PlanningJson.applyResult(session, request, tampered.toString()));
-        } finally { path.delete(); }
-    }
     @Test public void invalidExistingUidIsNotSilentlyReplaced() throws Exception {
         File path = fixture();
         try {

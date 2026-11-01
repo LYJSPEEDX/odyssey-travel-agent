@@ -18,8 +18,6 @@
     <string name="profile_save">Save profile</string>
     <string name="profile_cancel">Cancel</string>
     <string name="profile_use_location">Use current location</string>
-    <string name="profile_choose_country">Choose country</string>
-    <string name="profile_choose_region">Choose region</string>
     <color name="profile_field_text">#211F1D</color>
     <color name="profile_field_icon">#6C6A65</color>
     <string name="profile_gender">Gender</string>

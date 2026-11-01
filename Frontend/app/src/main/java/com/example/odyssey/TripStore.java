@@ -29,7 +29,7 @@ final class TripStore {
             // 四步：打开编辑器 → 用 trip_ID 作键 → 快照转 JSON 文本 → commit 同步写入并返回结果。
             return preferences.edit().putString(PREFIX + trip.id, trip.toJson().toString()).commit();
         } catch (JSONException exception) {
-            // 快照不能正确序列化时返回失败，交给 MainActivity 显示重试入口。
+            // 快照不能正确序列化时返回失败，交给调用方显示重试入口。
             return false;
         }
     }

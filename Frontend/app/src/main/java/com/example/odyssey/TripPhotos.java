@@ -74,12 +74,5 @@ final class TripPhotos {
         SafeImageLoader.SHARED.load(view, image.url, image.alt, () -> { });
     }
 
-    static String keywords(String city) {
-        TripOptions.Destination item = TripOptions.destination(city);
-        if (item != null) return item.description();
-        if ("Canberra".equalsIgnoreCase(city)) return "Museums · Lakes · Culture";
-        if ("New York".equalsIgnoreCase(city)) return "Art · Skyline · Neighbourhoods";
-        return "Your next chapter";
-    }
     private TripPhotos() {}
 }

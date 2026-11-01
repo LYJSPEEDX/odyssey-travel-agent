@@ -21,8 +21,7 @@ import org.junit.runner.RunWith;
 public class ItineraryJournalTest {
     @Test public void dayNotesRemainAccessible() {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        Intent intent = new Intent(context, TripDetailActivity.class)
-                .putExtra(TripDetailActivity.EXTRA_SAMPLE, true).putExtra(TripDetailActivity.EXTRA_ID, "contract_new_york");
+        Intent intent = TestTrips.saved(context, TestTrips.NEW_YORK);
         try (ActivityScenario<TripDetailActivity> scenario = ActivityScenario.launch(intent)) {
             scenario.onActivity(activity -> {
                 View day = activity.findViewById(R.id.tripDetailContent).findViewWithTag("contract-day-0");
@@ -33,31 +32,15 @@ public class ItineraryJournalTest {
                     .check(matches(withText(org.hamcrest.Matchers.containsString("A flexible day"))));
         }
     }
-    @Test public void guidedAdjustmentIsAnUnsentDraftAndSurvivesRecreation() {
-        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        Intent intent = new Intent(context, TripDetailActivity.class)
-                .putExtra(TripDetailActivity.EXTRA_SAMPLE, true).putExtra(TripDetailActivity.EXTRA_ID, "contract_canberra");
-        try (ActivityScenario<TripDetailActivity> scenario = ActivityScenario.launch(intent)) {
-            onView(withTagValue(is("journal-adjust"))).perform(click());
-            onView(withText("Less walking")).perform(click());
-            onView(withTagValue(is("adjustment-input"))).check(matches(withText("Please reduce walking and allow more breaks.")));
-            onView(withText("Keep draft")).perform(click());
-            scenario.recreate();
-            onView(withTagValue(is("journal-adjust"))).perform(click());
-            onView(withTagValue(is("adjustment-input"))).check(matches(withText("Please reduce walking and allow more breaks.")));
-        }
-    }
     @Test public void journalUsesCompactHeaderTimelineAndHotelRail() {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        Intent intent = new Intent(context, TripDetailActivity.class)
-                .putExtra(TripDetailActivity.EXTRA_SAMPLE, true).putExtra(TripDetailActivity.EXTRA_ID, "contract_new_york");
+        Intent intent = TestTrips.saved(context, TestTrips.NEW_YORK);
         try (ActivityScenario<TripDetailActivity> scenario = ActivityScenario.launch(intent)) {
             scenario.onActivity(activity -> {
                 View content = activity.findViewById(R.id.tripDetailContent);
                 assertNotNull("Compact journal header", content.findViewWithTag("journal-header"));
                 assertNotNull("Timeline connects events", content.findViewWithTag("timeline-row"));
                 assertNotNull("Hotels compare horizontally", content.findViewWithTag("hotel-carousel"));
-                assertNotNull("AI adjustment entry", activity.findViewById(android.R.id.content).findViewWithTag("journal-adjust"));
                 assertFalse(ItineraryIntegrationTest.contains(content, "Photo preview"));
                 assertFalse(ItineraryIntegrationTest.contains(content, "2026-11-10 06:00:00+11:00"));
             });

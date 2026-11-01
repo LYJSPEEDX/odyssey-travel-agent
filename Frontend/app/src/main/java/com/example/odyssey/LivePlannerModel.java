@@ -33,6 +33,7 @@ final class LivePlannerModel {
     String error = "", status = "", savedTripId = "", resultJson = "";
     boolean busy, generationUncertain;
     int selected;
+    final TripDateRange dates = new TripDateRange();
     private int event;
 
     LivePlannerModel(Application application) {
@@ -57,7 +58,7 @@ final class LivePlannerModel {
     private interface Work { void run() throws Exception; }
     private void run(String label, Work task) {
         if (busy) return;
-        if (transport == null) { error = "Configure a valid server URL in Settings first."; publish(); return; }
+        if (transport == null) { error = "No server is set up yet. Add its address in Settings."; publish(); return; }
         busy = true; status = label; error = ""; publish();
         worker.execute(() -> {
             try { task.run(); }
@@ -86,12 +87,6 @@ final class LivePlannerModel {
         session = response; selected = LivePlanningProtocol.index(response.getString("currentStep"));
         persist();
     }
-    void health() { run("Checking connection…", () -> {
-        JSONObject response = transport.call("GET", "/healthz", null, false);
-        if (!"ok".equals(response.optString("status")) || !"ok".equals(response.optString("db")))
-            throw new IOException("Server or database is unavailable.");
-        error = "Connected. The server and database are ready; model and travel providers are checked when used.";
-    }); }
     void start() { run("Opening your planning session…", () -> {
         if (session != null) { restoreInternal(); return; }
         if (creation == null) {

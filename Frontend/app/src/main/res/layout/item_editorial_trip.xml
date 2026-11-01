@@ -11,12 +11,8 @@
                 android:scaleType="centerCrop" android:importantForAccessibility="no" android:src="@drawable/bg_photo_placeholder" />
             <View android:layout_width="match_parent" android:layout_height="match_parent" android:background="@drawable/bg_photo_scrim" />
             <TextView android:id="@+id/editorialBadge" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:layout_margin="16dp" android:layout_marginEnd="68dp" android:paddingHorizontal="12dp" android:paddingVertical="8dp"
+                android:layout_margin="16dp" android:paddingHorizontal="12dp" android:paddingVertical="8dp"
                 android:background="@drawable/bg_photo_badge" android:textColor="@color/on_accent" android:textSize="10sp" android:letterSpacing="0.06" />
-            <com.google.android.material.button.MaterialButton android:id="@+id/editorialSave" style="@style/Widget.Material3.Button.IconButton.Filled"
-                android:layout_width="48dp" android:layout_height="48dp" android:layout_gravity="top|end" android:layout_margin="8dp"
-                android:contentDescription="@string/editorial_save_sample" app:icon="@drawable/ic_editorial_bookmark"
-                app:iconTint="@color/on_accent" app:backgroundTint="@color/lime" android:visibility="gone" />
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:layout_gravity="bottom" android:orientation="vertical" android:padding="20dp">
                 <TextView android:id="@+id/editorialEyebrow" android:layout_width="match_parent" android:layout_height="wrap_content"

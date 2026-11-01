@@ -22,4 +22,11 @@ public class BackendConfigTest {
         try { BackendConfig.normalize(url, http); fail("Accepted " + url); }
         catch (IllegalArgumentException expected) { }
     }
+    @org.junit.Test public void recognisesLocalNetworkHosts() {
+        org.junit.Assert.assertTrue(BackendConfig.isLocalNetwork("http://10.0.2.2:8000"));
+        org.junit.Assert.assertTrue(BackendConfig.isLocalNetwork("http://192.168.1.20:8000"));
+        org.junit.Assert.assertTrue(BackendConfig.isLocalNetwork("http://172.20.0.5:8000"));
+        org.junit.Assert.assertFalse(BackendConfig.isLocalNetwork("https://api.example.com"));
+        org.junit.Assert.assertFalse(BackendConfig.isLocalNetwork("https://172.32.0.1"));
+    }
 }

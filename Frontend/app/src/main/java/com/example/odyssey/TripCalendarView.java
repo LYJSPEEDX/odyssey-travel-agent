@@ -16,17 +16,17 @@ import java.util.Locale;
 import java.util.function.IntConsumer;
 
 /**
- * 嵌入表单的日期区间日历：本类绘制月份并回传日期，区间选择规则在 TripPlanState。
+ * 嵌入表单的日期区间日历：本类绘制月份并回传日期，区间选择规则在 TripDateRange。
  * month 表示正在浏览的月份；翻月不等于修改已选的出发/返回日期。
  */
 @SuppressLint("ViewConstructor") // Runtime-only view: state and selection callback are required.
 final class TripCalendarView extends LinearLayout {
-    private final TripPlanState state;
+    private final TripDateRange state;
     private final Calendar month;
     private final IntConsumer onDateSelected;
     private final Runnable onMonthChanged;
 
-    TripCalendarView(Context context, TripPlanState state, Calendar month,
+    TripCalendarView(Context context, TripDateRange state, Calendar month,
                      IntConsumer onDateSelected, Runnable onMonthChanged) {
         super(context);
         this.state = state;

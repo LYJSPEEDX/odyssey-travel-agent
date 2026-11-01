@@ -19,10 +19,8 @@ final class BackendSettingsDialog {
         url.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_URI);
         url.setHint(BuildConfig.DEBUG ? BackendConfig.DEFAULT_URL : "https://your-server.example");
         url.setContentDescription("Backend server URL"); url.setTag("backend-url"); url.setText(config.url()); form.addView(url);
-        AlertDialog dialog = new MaterialAlertDialogBuilder(activity).setTitle("Live demo server")
-                .setMessage(BuildConfig.DEBUG
-                        ? "Android emulator: http://10.0.2.2:8000. On a phone, use your computer’s LAN address and the same Wi-Fi. Use a trusted demo network for HTTP. Each server keeps a separate anonymous session."
-                        : "Enter your HTTPS API address. Each server keeps a separate anonymous session.")
+        AlertDialog dialog = new MaterialAlertDialogBuilder(activity).setTitle("Server")
+                .setMessage(BuildConfig.DEBUG ? "Android emulator: http://10.0.2.2:8000. On a phone, use your computer’s address on the same Wi-Fi." : "Enter your server’s HTTPS address.")
                 .setView(form).setNegativeButton("Cancel", null).setPositiveButton("Save server", null).create();
         dialog.setOnShowListener(ignored -> dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             try {

@@ -17,23 +17,6 @@ import org.junit.runner.RunWith;
 public class ItineraryIntegrationTest {
     private Context context() { return InstrumentationRegistry.getInstrumentation().getTargetContext(); }
 
-    @Test public void generatedSnapshotContainsStructuredContract() throws Exception {
-        TripPlanState state = new TripPlanState();
-        state.selectDeparture("Sydney"); state.selectDestination("Kyoto");
-        state.selectDate(20261110); state.selectDate(20261119);
-        state.setCompanion("Couple"); state.setBudget("Comfort");
-        state.setNote(5, "Avoid stairs");
-        for (int i = 0; i < 5; i++) state.goNext();
-        state.finishGeneration();
-        JSONObject saved = SavedTrip.fromPlan(context(), state, "test_contract").toJson();
-        assertEquals(2, saved.getInt("schema"));
-        JSONObject contract = saved.getJSONObject("contract");
-        assertEquals("2.0", contract.getString("schemaVersion"));
-        assertEquals("odyssey.frontend.itinerary", contract.getString("contractId"));
-        assertEquals(10, contract.getJSONArray("days").length());
-        assertTrue(contract.getJSONObject("requestSnapshot").getJSONArray("notes").toString().contains("Avoid stairs"));
-        assertEquals(saved.toString(), SavedTrip.fromJson(saved.toString()).toJson().toString());
-    }
 
     @Test public void legacySnapshotsRemainReadable() throws Exception {
         SavedTrip old = new SavedTrip("legacy", 1, "Kyoto", "Sydney → Kyoto", "Flexible", 3, "Brief", "Old result");
@@ -42,12 +25,11 @@ public class ItineraryIntegrationTest {
     }
 
     @Test public void examplesRenderEveryDayAndRejectBrokenContracts() throws Exception {
-        for (String id : new String[]{"contract_canberra", "contract_new_york"}) {
-            String raw = ItineraryAssets.example(context(), id);
+        for (String path : new String[]{TestTrips.CANBERRA, TestTrips.NEW_YORK}) {
+            String raw = TestTrips.raw(context(), path);
             ItineraryDocument document = ItineraryDocument.parse(context(), raw);
             int days = document.root.getJSONArray("days").length();
-            Intent intent = new Intent(context(), TripDetailActivity.class)
-                    .putExtra(TripDetailActivity.EXTRA_SAMPLE, true).putExtra(TripDetailActivity.EXTRA_ID, id);
+            Intent intent = TestTrips.saved(context(), path);
             try (ActivityScenario<TripDetailActivity> scenario = ActivityScenario.launch(intent)) {
                 for (int i = 0; i < days; i++) {
                     final int index = i;
@@ -76,7 +58,7 @@ public class ItineraryIntegrationTest {
     }
 
     @Test public void recommendationsDoNotOverridePlanningOption() throws Exception {
-        ItineraryDocument doc = ItineraryDocument.parse(context(), ItineraryAssets.example(context(), "contract_canberra"));
+        ItineraryDocument doc = ItineraryDocument.parse(context(), TestTrips.raw(context(), TestTrips.CANBERRA));
         JSONObject group = doc.root.getJSONArray("transportGroups").getJSONObject(0);
         String planned = group.getString("planningOptionId");
         group.put("userSelectedOptionId", JSONObject.NULL);
@@ -86,7 +68,7 @@ public class ItineraryIntegrationTest {
     }
 
     @Test public void externalContractBecomesPersistableSnapshot() throws Exception {
-        SavedTrip snapshot = SavedTrip.fromContract(context(), ItineraryAssets.example(context(), "contract_new_york"));
+        SavedTrip snapshot = SavedTrip.fromContract(context(), TestTrips.raw(context(), TestTrips.NEW_YORK));
         assertEquals("demo_new_york_10d", snapshot.id);
         assertEquals(10, snapshot.totalDays);
         assertTrue(snapshot.route.contains("Sydney"));
@@ -117,9 +99,7 @@ public class ItineraryIntegrationTest {
     }
 
     @Test public void tenDayExampleRendersAndRestoresDaySelection() {
-        Intent intent = new Intent(context(), TripDetailActivity.class)
-                .putExtra(TripDetailActivity.EXTRA_SAMPLE, true)
-                .putExtra(TripDetailActivity.EXTRA_ID, "contract_new_york");
+        Intent intent = TestTrips.saved(context(), TestTrips.NEW_YORK);
         try (ActivityScenario<TripDetailActivity> scenario = ActivityScenario.launch(intent)) {
             scenario.onActivity(activity -> {
                 View day = activity.findViewById(R.id.tripDetailContent).findViewWithTag("contract-day-8");

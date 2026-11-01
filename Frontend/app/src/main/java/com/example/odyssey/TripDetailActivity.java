@@ -16,14 +16,11 @@ import org.json.JSONException;
 public class TripDetailActivity extends AppCompatActivity {
     // 与调用页 putExtra 的键名一致；static final 常量避免两处手写字符串造成拼写不匹配。
     static final String EXTRA_ID = "trip_id";
-    static final String EXTRA_SAMPLE = "sample";
     private int selectedDay; // 数组下标从 0 开始，界面 Day 1 对应下标 0。
     // 解析后的完整数据，既有 root JSON，也有方便按 ID 查找对象的索引。
     private ItineraryDocument document;
     private HomeUi ui;
     // 本详情页的调整文字；不写回 document，也不是五步表单中的输入草稿。
-    private String adjustmentDraft = "";
-    private final JournalAdjustment adjustment = new JournalAdjustment();
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
@@ -31,9 +28,7 @@ public class TripDetailActivity extends AppCompatActivity {
         // Toolbar 是详情页顶栏；点击它的导航箭头关闭详情，不等于日程的“前一天”。
         MaterialToolbar toolbar = findViewById(R.id.tripDetailToolbar);
         toolbar.setNavigationOnClickListener(view -> finish());
-        // 读取启动本页时携带的来源标记；未传时默认打开用户保存的记录。
-        boolean sample = getIntent().getBooleanExtra(EXTRA_SAMPLE, false);
-        toolbar.setTitle(sample ? R.string.sample_badge : R.string.my_title);
+        toolbar.setTitle(R.string.my_title);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.tripDetailRoot), (view, insets) -> {
             Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             view.setPadding(bars.left, bars.top, bars.right, bars.bottom);
@@ -43,13 +38,11 @@ public class TripDetailActivity extends AppCompatActivity {
         ui = new HomeUi(findViewById(R.id.tripDetailContent));
         // 首次打开选 Day 1（下标 0）；重建时恢复之前的日期下标。
         selectedDay = savedInstanceState == null ? 0 : savedInstanceState.getInt("itinerary_day", 0);
-        if (savedInstanceState != null) adjustmentDraft = savedInstanceState.getString("adjustment_draft", "");
         try {
             // ID 只是行程的定位符，不包含 JSON 内容；没有 ID 就不会猜测打开哪条记录。
             String id = getIntent().getStringExtra(EXTRA_ID);
-            // 示例直接读打包资源；My Trips 则按 ID 读取已保存的快照，不重新生成。
-            SavedTrip trip = id == null ? null : sample ? ExampleTrips.get(this, id) : new TripStore(this).get(id);
-            // 示例不存在或本地未找到时显示错误并结束加载，避免访问 trip.route 导致空指针。
+            SavedTrip trip = id == null ? null : new TripStore(this).get(id);
+            // 本地未找到时显示错误并结束加载，避免访问 trip.route 导致空指针。
             if (trip == null) {
                 ui.text(getString(R.string.trip_not_found), 18, true);
                 return;
@@ -60,14 +53,7 @@ public class TripDetailActivity extends AppCompatActivity {
                 document = ItineraryDocument.parse(this, trip.contractJson);
                 // 例：只有 3 天时合法下标是 0～2；Math.min 限上限，Math.max 限下限。
                 selectedDay = Math.max(0, Math.min(selectedDay, document.root.getJSONArray("days").length() - 1));
-                // 先成功画出结构化详情，再显示只适用于新版详情的底部调整入口。
                 renderItinerary();
-                findViewById(R.id.journalFooter).setVisibility(android.view.View.VISIBLE);
-                // 外层回调响应按钮点击；内层 draft -> ... 响应弹层输入变化，是两种不同事件。
-                findViewById(R.id.journalAdjust).setOnClickListener(view -> adjustment.show(this, adjustmentDraft, draft -> {
-                    // 将新文字保存在 Activity 字段里，并同步底部“草稿已保留”的提示。
-                    adjustmentDraft = draft;
-                }));
                 // 已显示新版 JSON 页面，不再执行下面的旧版纯文本布局。
                 return;
             }
@@ -75,11 +61,7 @@ public class TripDetailActivity extends AppCompatActivity {
             TripCoverView.add(ui, ui.content, trip.destination, trip.destination, null);
             ui.text(trip.route, 28, true);
             ui.text(trip.dates, 14, false);
-            ui.card(getString(sample ? R.string.sample_badge : R.string.trip_saved),
-                    getString(sample ? R.string.sample_description : R.string.saved_trip_notice),
-                    R.color.mint, null);
-            // 示例行程的 brief 与上方提示相同，不重复显示。
-            if (!trip.brief.equals(getString(R.string.sample_description))) ui.text(trip.brief, 14, false);
+                        ui.text(trip.brief, 14, false);
             // 旧版纯文本以空行分段：每段首行作标题，合并进一张白色卡片。
             HomeUi days = new HomeUi(ui.group());
             days.content.setPadding(ui.dp(16), ui.dp(8), ui.dp(16), ui.dp(8));
@@ -110,11 +92,7 @@ public class TripDetailActivity extends AppCompatActivity {
         }).render();
     }
     @Override protected void onSaveInstanceState(Bundle outState) {
-        // 旋转/页面重建时恢复草稿；这里不写 TripStore，退出详情后不长期保留草稿。
         outState.putInt("itinerary_day", selectedDay);
-        outState.putString("adjustment_draft", adjustmentDraft);
         super.onSaveInstanceState(outState);
     }
-    // 页面销毁时关闭持有 Activity 的弹层，避免旧窗口继续挂在已销毁的页面上。
-    @Override protected void onDestroy() { adjustment.dismiss(); super.onDestroy(); }
 }

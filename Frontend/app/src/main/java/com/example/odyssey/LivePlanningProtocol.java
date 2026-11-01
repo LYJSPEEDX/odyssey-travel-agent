@@ -5,9 +5,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.UUID;
 
-/** The backend protocol is independent from the offline MockPlanningService protocol. */
+/** Requests, validation and display text for the backend planning API. */
 final class LivePlanningProtocol {
-    static final String[] STEPS = PlanningSession.IDS;
+    static final String[] STEPS = {"ORIGIN", "DESTINATION", "DATES", "COMPANIONS", "BUDGET", "CONSTRAINTS", "FOLLOW_UP_1", "FOLLOW_UP_2"};
     static final String[] TITLES = {"Departure", "Destination", "Dates", "Travellers", "Budget", "Requirements", "Pace", "Experiences"};
     static int index(String step) {
         for (int i = 0; i < STEPS.length; i++) if (STEPS[i].equals(step)) return i;
@@ -58,6 +58,45 @@ final class LivePlanningProtocol {
                 for (int i = 0; i < preferences.length(); i++) { if (i > 0) lines.append(" · "); lines.append(preferences.getString(i)); }
                 return lines.toString();
         }
+    }
+    /** 行程卡上的城市名；"Osaka, Japan" 只取 Osaka。 */
+    static String place(JSONObject answer) {
+        if (answer == null) return "";
+        String label = answer.optString("label");
+        int comma = label.indexOf(',');
+        return comma < 0 ? label : label.substring(0, comma).trim();
+    }
+    static String dates(JSONObject answer) throws JSONException {
+        if (answer == null || !"FIXED".equals(answer.optString("mode"))) return "";
+        return TripDates.format(dateKey(answer.getString("startDate"))) + "  →  " + TripDates.format(dateKey(answer.getString("endDate")));
+    }
+    private static int dateKey(String iso) { return Integer.parseInt(iso.replace("-", "")); }
+    static String isoDate(int key) { return String.format(java.util.Locale.US, "%04d-%02d-%02d", key / 10000, key / 100 % 100, key % 100); }
+    static String companions(JSONObject answer) throws JSONException {
+        int adults = answer.getInt("adults"), children = answer.getJSONArray("childrenAges").length();
+        return adults + (adults == 1 ? " adult" : " adults") + (children == 0 ? "" : " · " + children + (children == 1 ? " child" : " children"));
+    }
+    static String budgetTitle(JSONObject answer) throws JSONException { return budgetAmount(answer).replace("Amount: ", ""); }
+    static String budgetCaption(JSONObject answer) throws JSONException {
+        return answer.getString("scope").toLowerCase(java.util.Locale.ROOT).replace('_', ' ')
+                + (answer.getBoolean("includesFlights") ? " · flights included" : " · flights excluded");
+    }
+    /** 把要求、节奏和体验拆成一个个标签。 */
+    static java.util.List<String> preferences(JSONObject steps) throws JSONException {
+        java.util.List<String> values = new java.util.ArrayList<>();
+        JSONObject constraints = steps.getJSONObject("CONSTRAINTS").optJSONObject("answer");
+        if (constraints != null) {
+            JSONArray requirements = constraints.getJSONArray("requirements");
+            for (int i = 0; i < requirements.length(); i++) values.add(requirements.getJSONObject(i).getString("description"));
+        }
+        JSONObject pace = steps.getJSONObject("FOLLOW_UP_1").optJSONObject("answer");
+        if (pace != null) values.add(pace.getString("description"));
+        JSONObject experience = steps.getJSONObject("FOLLOW_UP_2").optJSONObject("answer");
+        if (experience != null) {
+            JSONArray items = experience.getJSONArray("preferences");
+            for (int i = 0; i < items.length(); i++) values.add(items.getString(i));
+        }
+        return values;
     }
     private static String budgetAmount(JSONObject answer) throws JSONException {
         if (answer.isNull("amountMinor")) return "Amount not specified";

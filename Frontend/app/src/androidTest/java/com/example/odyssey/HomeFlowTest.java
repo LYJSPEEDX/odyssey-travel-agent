@@ -39,8 +39,10 @@ public class HomeFlowTest {
     @Test public void bannerOpensPlannerAndFirstBackReturnsHome() {
         try (ActivityScenario<HomeActivity> scenario = ActivityScenario.launch(HomeActivity.class)) {
             awaitHome(scenario);
+            InstrumentationRegistry.getInstrumentation().getUiAutomation().grantRuntimePermission(
+                    InstrumentationRegistry.getInstrumentation().getTargetContext().getPackageName(), "android.permission.ACCESS_LOCAL_NETWORK");
             onView(withId(R.id.createTripBanner)).perform(click());
-            onView(withId(R.id.liveToolbar)).check(matches(isDisplayed()));
+            onView(withId(R.id.liveStep)).check(matches(isDisplayed()));
             pressBack();
             onView(withId(R.id.createTripBanner)).check(matches(isDisplayed()));
         }

@@ -1,21 +1,348 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/liveRoot" android:layout_width="match_parent" android:layout_height="match_parent"
-    android:orientation="vertical" android:background="@color/background" android:paddingHorizontal="20dp">
-    <com.google.android.material.appbar.MaterialToolbar android:id="@+id/liveToolbar"
-        android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="56dp" />
-    <androidx.core.widget.NestedScrollView android:id="@+id/liveScroll" android:layout_width="match_parent"
-        android:layout_height="0dp" android:layout_weight="1" android:fillViewport="true">
-        <LinearLayout android:id="@+id/liveContent" android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:orientation="vertical" android:paddingBottom="24dp" />
-    </androidx.core.widget.NestedScrollView>
-    <LinearLayout android:id="@+id/liveComposer" android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:orientation="vertical" android:paddingVertical="8dp">
-        <androidx.appcompat.widget.AppCompatEditText android:id="@+id/liveInput" android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:minHeight="56dp" android:maxLength="500" android:maxLines="5"
-            android:inputType="textCapSentences|textMultiLine" android:hint="Describe your travel plans…"
-            android:contentDescription="Message to planning assistant" />
-        <com.google.android.material.button.MaterialButton android:id="@+id/liveSend" android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:minHeight="48dp" android:text="Send to planner" />
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:orientation="vertical">
+
+<androidx.core.widget.NestedScrollView
+    android:id="@+id/liveScroll"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1"
+    android:background="@color/background"
+    android:fillViewport="true"
+    tools:context=".LivePlannerActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingStart="@dimen/screen_padding_horizontal"
+        android:paddingTop="@dimen/screen_padding_vertical"
+        android:paddingEnd="@dimen/screen_padding_horizontal"
+        android:paddingBottom="@dimen/screen_padding_vertical">
+
+        <!-- 顶部步骤导航 -->
+        <LinearLayout
+            android:id="@+id/topNavigationBar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/composer_height"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/liveBack"
+                style="@style/Widget.Material3.Button"
+                android:layout_width="@dimen/navigation_button_width"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/navigation_back"
+                android:enabled="false"
+                android:gravity="center"
+                android:insetLeft="@dimen/space_xs"
+                android:insetTop="@dimen/navigation_button_vertical_inset"
+                android:insetRight="@dimen/space_xs"
+                android:insetBottom="@dimen/navigation_button_vertical_inset"
+                android:minWidth="0dp"
+                android:padding="0dp"
+                app:backgroundTint="@color/navigation_back_background"
+                app:cornerRadius="@dimen/navigation_button_radius"
+                app:icon="@drawable/ic_arrow_back"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="20dp"
+                app:iconTint="@color/navigation_next_content"
+                tools:enabled="true" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/liveStep"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/touch_target_min"
+                android:layout_marginHorizontal="@dimen/space_xs"
+                android:background="@drawable/bg_step_indicator"
+                android:fontFamily="@font/plus_jakarta_sans"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:minWidth="64dp"
+                android:paddingHorizontal="@dimen/space_md"
+                android:textAlignment="center"
+                android:textColor="@color/step_indicator_text"
+                android:textSize="@dimen/text_body"
+                tools:text="1/7" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/liveNext"
+                style="@style/Widget.Material3.Button"
+                android:layout_width="@dimen/navigation_button_width"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/navigation_next"
+                android:enabled="false"
+                android:gravity="center"
+                android:insetLeft="@dimen/space_xs"
+                android:insetTop="@dimen/navigation_button_vertical_inset"
+                android:insetRight="@dimen/space_xs"
+                android:insetBottom="@dimen/navigation_button_vertical_inset"
+                android:minWidth="0dp"
+                android:padding="0dp"
+                app:backgroundTint="@color/navigation_next_background"
+                app:cornerRadius="@dimen/navigation_button_radius"
+                app:icon="@drawable/ic_arrow_forward"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="20dp"
+                app:iconTint="@color/navigation_next_content"
+                tools:enabled="true" />
+
+        </LinearLayout>
+
+        <!-- 八步进度 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/progress_height"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <View
+                android:id="@+id/progressStep1"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/space_xs"
+                android:layout_marginEnd="@dimen/space_xs"
+                android:layout_weight="1"
+                android:background="@color/lime" />
+
+            <View
+                android:id="@+id/progressStep2"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/space_xs"
+                android:layout_marginEnd="@dimen/space_xs"
+                android:layout_weight="1"
+                android:background="@color/outline" />
+
+            <View
+                android:id="@+id/progressStep3"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/space_xs"
+                android:layout_marginEnd="@dimen/space_xs"
+                android:layout_weight="1"
+                android:background="@color/outline" />
+
+            <View
+                android:id="@+id/progressStep4"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/space_xs"
+                android:layout_marginEnd="@dimen/space_xs"
+                android:layout_weight="1"
+                android:background="@color/outline" />
+
+            <View
+                android:id="@+id/progressStep5"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/space_xs"
+                android:layout_weight="1"
+                android:background="@color/outline" />
+
+            <View
+                android:id="@+id/progressStep6"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/space_xs"
+                android:layout_marginStart="@dimen/space_xs"
+                android:layout_weight="1"
+                android:background="@color/outline" />
+
+            <View
+                android:id="@+id/progressStep7"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/space_xs"
+                android:layout_marginStart="@dimen/space_xs"
+                android:layout_weight="1"
+                android:background="@color/outline" />
+
+            <View
+                android:id="@+id/progressStep8"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/space_xs"
+                android:layout_marginStart="@dimen/space_xs"
+                android:layout_weight="1"
+                android:background="@color/outline" />
+
+
+        </LinearLayout>
+
+        <!-- 出发地确认后立即显示的实时旅行板 -->
+        <LinearLayout
+            android:id="@+id/tripBoard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_sm"
+            android:accessibilityLiveRegion="polite"
+            android:background="@drawable/bg_trip_board"
+            android:importantForAccessibility="yes"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="@dimen/space_lg"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/tripBoardPhoto" android:layout_width="88dp" android:layout_height="88dp"
+                android:layout_marginEnd="@dimen/space_xl" android:scaleType="centerCrop" android:visibility="gone"
+                android:importantForAccessibility="no" app:shapeAppearanceOverlay="@style/EditorialThumbnail" />
+
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tripBoardDestination"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:textColor="@color/on_trip_board"
+                android:textSize="22sp"
+                android:fontFamily="@font/plus_jakarta_sans"
+                android:textStyle="bold"
+                tools:text="Kyoto" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xs"
+                android:includeFontPadding="false"
+                android:id="@+id/tripBoardStatus"
+                android:visibility="gone"
+                android:textColor="@color/on_trip_board"
+                android:textSize="@dimen/text_body" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- 主标题 -->
+        <TextView
+            android:id="@+id/liveHeadline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_lg"
+            android:includeFontPadding="false"
+            android:text="@string/plan_headline"
+            android:textColor="@color/text_primary"
+            android:textSize="@dimen/text_display"
+            android:fontFamily="@font/fraunces" />
+
+        <!-- 每一步的内容由 LivePlannerActivity 填入 -->
+        <LinearLayout
+            android:id="@+id/liveContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_md"
+            android:orientation="vertical" />
+
+        <com.example.odyssey.PassportStampsView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:minHeight="@dimen/space_xl" />
+
+
+
+        <!-- 底部 AI 输入框 -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/liveComposer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="56dp"
+            android:layout_marginTop="@dimen/space_md"
+            app:cardBackgroundColor="@color/composer_background"
+            app:cardCornerRadius="28dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/outline"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="56dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/liveInput"
+                    android:maxLength="300"
+                    android:saveEnabled="false"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:minHeight="56dp"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:gravity="center_vertical"
+                    android:hint="@string/composer_hint"
+                    android:imeOptions="actionSend"
+                    android:includeFontPadding="false"
+                    android:inputType="textCapSentences"
+                    android:paddingStart="@dimen/space_lg"
+                    android:paddingTop="0dp"
+                    android:paddingEnd="@dimen/space_sm"
+                    android:paddingBottom="0dp"
+                    android:singleLine="true"
+                    android:textColor="@color/composer_on_background"
+                    android:textColorHint="@color/composer_hint"
+                    android:textSize="@dimen/text_body" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/liveSend"
+                    android:layout_width="@dimen/composer_height"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="4dp"
+                    android:contentDescription="@string/send_message"
+                    android:insetLeft="@dimen/space_xs"
+                    android:insetTop="@dimen/space_xs"
+                    android:insetRight="@dimen/space_xs"
+                    android:insetBottom="@dimen/space_xs"
+                    android:gravity="center"
+                    android:minWidth="0dp"
+                    android:padding="0dp"
+                    app:backgroundTint="@color/composer_action"
+                    app:cornerRadius="20dp"
+                    app:icon="@drawable/ic_arrow_upward"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp"
+                    app:iconSize="20dp"
+                    app:iconTint="@color/on_accent" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>
+
+    <!-- 行程生成完成后不能再回退，用标签栏离开本页 -->
+    <LinearLayout
+        android:id="@+id/liveNavigationBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/outline" />
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/liveNavigation" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:background="@color/surface" app:elevation="0dp" app:menu="@menu/home_navigation"
+            app:itemIconTint="@color/bottom_nav_icon" app:itemTextColor="@color/bottom_nav_text"
+            app:itemActiveIndicatorStyle="@style/HomeNavigationIndicator" app:labelVisibilityMode="labeled" />
     </LinearLayout>
 </LinearLayout>

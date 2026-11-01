@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Android 17 起访问局域网地址（电脑上的后端、模拟器的 10.0.2.2）需要此权限。 -->
+    <uses-permission android:name="android.permission.ACCESS_LOCAL_NETWORK" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <application
         android:usesCleartextTraffic="false"
@@ -16,10 +18,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Odyssey">
         <activity android:name=".LivePlannerActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".MainActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
         <activity android:name=".TripDetailActivity" android:exported="false" />
         <activity android:name=".RegistrationActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
         <activity android:name=".HomeActivity" android:exported="true"

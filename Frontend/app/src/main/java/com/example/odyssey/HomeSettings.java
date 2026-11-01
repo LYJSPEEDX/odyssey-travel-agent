@@ -38,6 +38,9 @@ final class HomeSettings {
         String[] themes = activity.getResources().getStringArray(R.array.settings_theme_options);
         new HomeUi(ui.group()).actionRow(activity.getString(R.string.settings_theme), themes[preferences.themeIndex()],
                 this::chooseTheme).setId(R.id.settingsTheme);
+        section(R.string.settings_server_section);
+        new HomeUi(ui.group()).actionRow(activity.getString(R.string.settings_server), new BackendConfig(activity).url(),
+                () -> new BackendSettingsDialog(activity, refresh).show()).setTag("settings-backend");
         section(R.string.settings_about_section);
         HomeUi about = new HomeUi(ui.group());
         about.actionRow(activity.getString(R.string.settings_about), "",

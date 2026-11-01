@@ -39,37 +39,6 @@ final class SavedTrip {
         this.contractJson = contractJson;
     }
 
-    /** 把完成的五步表单转成本地 MOCK 行程；此入口不是后端模型调用。 */
-    static SavedTrip fromPlan(Context context, TripPlanState state, String id) {
-        if (!state.isGenerated()) throw new IllegalStateException("Only completed results can be saved");
-        String dates = state.isFlexibleDates() ? context.getString(R.string.flexible_dates_summary)
-                : context.getString(R.string.date_range, TripDates.format(state.getStartDate()),
-                TripDates.format(state.getEndDate()));
-        String budget = TripOptions.budgetDescription(state);
-        // brief 是可读摘要，contract 是可按字段解析的 JSON，两者并非同一用途。
-        StringBuilder brief = new StringBuilder(context.getString(R.string.summary_companion, state.getCompanion()))
-                .append("\n").append(context.getString(R.string.summary_budget, budget))
-                .append("\n").append(context.getString(budget.equals(state.getBudget())
-                        ? R.string.custom_budget_disclaimer : R.string.budget_disclaimer))
-                .append("\n").append(context.getString(R.string.summary_constraints,
-                        state.getConstraints().isEmpty() ? context.getString(R.string.no_restrictions)
-                                : String.join(" · ", state.getConstraints())));
-        String[] steps = context.getResources().getStringArray(R.array.step_names);
-        for (int step = 1; step <= 5; step++) {
-            if (!state.getNote(step).isEmpty()) brief.append("\n").append(
-                    context.getString(R.string.summary_note, steps[step - 1], state.getNote(step)));
-        }
-        String contract;
-        // JSONObject.toString 把对象树序列化成文本，这时还没有写入磁盘。
-        try { contract = MockItinerary.fromPlan(context, state, id).toString(); }
-        catch (JSONException error) { throw new IllegalArgumentException("Cannot create itinerary", error); }
-        // currentTimeMillis 是快照创建时间，用于列表排序，不是旅行出发时间。
-        return new SavedTrip(id, System.currentTimeMillis(), state.getDestination(),
-                context.getString(R.string.trip_route, state.getDeparture(), state.getDestination()),
-                dates, state.isFlexibleDates() ? 3 : state.getDurationDays(),
-                brief.toString(), "", contract);
-    }
-
     JSONObject toJson() throws JSONException {
         // schema=1/2 是本机存储信封的版本，与后端 contract.schemaVersion=1.0 不同。
         JSONObject result = new JSONObject().put("schema", contractJson == null ? 1 : 2).put("id", id).put("createdAt", createdAt)
@@ -80,9 +49,9 @@ final class SavedTrip {
         return result;
     }
 
-    /** 未来接口返回完整 JSON 后可调用此入口；这里只解析并创建快照，还需 TripStore.save 才落盘。 */
+    /** 后端返回完整 JSON 后调用此入口；这里只解析并创建快照，还需 TripStore.save 才落盘。 */
     static SavedTrip fromContract(Context context, String raw) throws JSONException {
-        // 真实模型响应应走此入口而非 fromPlan：校验响应，再提取列表需要的摘要字段。
+        // 校验响应，再提取列表需要的摘要字段。
         ItineraryDocument document = ItineraryDocument.parse(context, raw);
         JSONObject root = document.root, summary = root.getJSONObject("summary"), request = root.getJSONObject("requestSnapshot");
         org.json.JSONArray destinations = request.getJSONArray("destinationPlaceIds");

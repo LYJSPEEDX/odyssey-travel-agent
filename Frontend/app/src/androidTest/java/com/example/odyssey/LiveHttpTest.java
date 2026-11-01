@@ -11,8 +11,9 @@ import org.junit.Test;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Requires backend/tests/android_http_server.py on host port 8765. Synthetic facts only. */
-public class LiveHttpDemoTest {
-    private static final String URL = "http://10.0.2.2:8765";
+public class LiveHttpTest {
+    // 模拟器连不到 10.0.2.2 时，可用 adb reverse 加 -e liveUrl http://127.0.0.1:8765。
+    private static final String URL = androidx.test.platform.app.InstrumentationRegistry.getArguments().getString("liveUrl", "http://10.0.2.2:8765");
     private interface Check { boolean ready(); }
     private void await(Check check) {
         long end = SystemClock.elapsedRealtime() + 15_000;
@@ -26,6 +27,7 @@ public class LiveHttpDemoTest {
     }
     @Test public void confirmsEightStepsGeneratesOnceAcrossRotationAndRecoversServerTrip() throws Exception {
         Application app = (Application) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().grantRuntimePermission(app.getPackageName(), "android.permission.ACCESS_LOCAL_NETWORK");
         BackendConfig config = new BackendConfig(app);
         String original = config.url(), prefix = config.key(URL);
         java.util.Map<String, ?> previous = new java.util.HashMap<>(config.preferences.getAll());
@@ -40,7 +42,7 @@ public class LiveHttpDemoTest {
         JSONObject initialStats = http.call("GET", "/test/stats", null, false);
         int before = initialStats.getInt("generation"), beforeTurns = initialStats.getInt("turn");
         try (ActivityScenario<LivePlannerActivity> scenario = ActivityScenario.launch(LivePlannerActivity.class)) {
-            scenario.onActivity(activity -> activity.findViewById(R.id.liveContent).findViewWithTag("live-start").performClick());
+            // 打开页面即自动连接，不需要手动开始。
             await(() -> !model.busy && model.session != null);
             assertEquals(owner, new BackendConfig(app).owner(URL));
             String[] messages = {"simulate-lost-reply", "Destination Osaka, Japan", "Depart 2026-12-10, leave destination 2026-12-13",

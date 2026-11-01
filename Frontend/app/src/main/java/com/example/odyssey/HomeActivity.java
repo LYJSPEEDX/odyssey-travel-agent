@@ -22,7 +22,6 @@ import java.util.List;
 public class HomeActivity extends AppCompatActivity {
     static final String EXTRA_OPEN_MY = "open_my";
     static final String EXTRA_OPEN_TAB = "open_tab";
-    static final String EXTRA_RETURN_TO_DEMO = "return_to_demo";
     private BottomNavigationView navigation;
     private NestedScrollView scroll;
     private HomeUi ui;
@@ -30,9 +29,8 @@ public class HomeActivity extends AppCompatActivity {
     private int[] scrollPositions = {0, 0, 0};
     private OnBackPressedCallback backToHome;
     private LaunchWelcome launchWelcome; // 原生票券欢迎层，展示结束后移除，不新增返回栈页面。
-    // 图片无需网络；这个工作线程只处理用户主动点击的本机示例保存。
-    private final java.util.concurrent.ExecutorService sampleWorker = java.util.concurrent.Executors.newSingleThreadExecutor();
-    private boolean savingSample;
+    // 读取本机资料的工作线程，不阻塞界面。
+    private final java.util.concurrent.ExecutorService worker = java.util.concurrent.Executors.newSingleThreadExecutor();
     private boolean checkingProfile, openingProfile;
     private boolean profileComplete, profileChecked;
 
@@ -101,7 +99,7 @@ public class HomeActivity extends AppCompatActivity {
     }
     @Override protected void onDestroy() {
         if (launchWelcome != null) launchWelcome.dismiss(); // 清理延迟任务，避免持有旧 Activity。
-        sampleWorker.shutdown(); // 已开始的短写入可完成，但不再接受新任务。
+        worker.shutdown(); // 已开始的读取可完成，但不再接受新任务。
         super.onDestroy();
     }
     private void render() {
@@ -115,21 +113,21 @@ public class HomeActivity extends AppCompatActivity {
     private void home() {
         // 品牌栏保持轻量；主要视觉焦点留给下方照片，而不是重复的彩色面板。
         AppFonts.style(ui.text(getString(R.string.editorial_wordmark), 30, true), android.graphics.Typeface.BOLD);
-        if (getIntent().getBooleanExtra(EXTRA_RETURN_TO_DEMO, false)) {
-            ui.card("A demo trip is in progress", "Return to see the simulated updates.", R.color.mint, this::finish);
-        }
         View banner = LayoutInflater.from(this).inflate(R.layout.home_banner, ui.content, false);
         banner.setOnClickListener(view -> startPlanner());
         ui.content.addView(banner);
-        ui.text(getString(R.string.editorial_inspiration), 23, true).setPadding(0, ui.dp(28), 0, 0);
-        ui.text(getString(R.string.editorial_inspiration_subtitle), 12, false).setPadding(0, ui.dp(2), 0, ui.dp(12));
-        List<SavedTrip> examples = ExampleTrips.all(this);
-        for (int i = 0; i < examples.size(); i++) {
-            SavedTrip trip = examples.get(i);
-            TripCardView.add(ui, trip, true, () -> openTrip(trip.id, true), () -> saveExample(trip.id))
-                    .setTag("example-" + trip.id);
+        // 首页只展示用户自己最近的行程，没有行程时留白显示邮戳。
+        try {
+            List<SavedTrip> trips = new TripStore(this).list();
+            if (!trips.isEmpty()) ui.text(getString(R.string.home_recent_trips), 23, true).setPadding(0, ui.dp(28), 0, ui.dp(8));
+            for (int i = 0; i < Math.min(trips.size(), 3); i++) {
+                SavedTrip trip = trips.get(i);
+                TripCardView.add(ui, trip, () -> openTrip(trip.id)).setTag("saved-" + trip.id);
+            }
+        } catch (JSONException | ClassCastException exception) {
+            ui.text(getString(R.string.trip_read_error), 14, false);
         }
-        ui.text(getString(R.string.editorial_sample_note), 12, false);
+        ui.stamps();
     }
     private void myTrips() {
         ui.text(getString(R.string.editorial_my_title), 28, true);
@@ -143,7 +141,7 @@ public class HomeActivity extends AppCompatActivity {
                 ui.button(R.string.create_my_trip, this::startPlanner);
             } else {
                 for (SavedTrip trip : trips) {
-                    TripCardView.add(ui, trip, false, () -> openTrip(trip.id, false), null)
+                    TripCardView.add(ui, trip, () -> openTrip(trip.id))
                             .setTag("saved-" + trip.id);
                 }
             }
@@ -154,13 +152,13 @@ public class HomeActivity extends AppCompatActivity {
         ui.text(getString(R.string.local_only_notice), 12, false);
         ui.stamps();
     }
-    private void startPlanner() { startActivity(new Intent(this, MainActivity.class)); }
+    private void startPlanner() { startActivity(new Intent(this, LivePlannerActivity.class)); }
     /** 首页保持桌面入口；资料检查完成后由正确页面接手欢迎层。 */
     private void checkProfile() {
         if (checkingProfile) return;
         checkingProfile = true;
         enableTree(findViewById(R.id.homeRoot), false);
-        sampleWorker.execute(() -> {
+        worker.execute(() -> {
             boolean complete = false;
             try { complete = ProfileStore.isComplete(new ProfileStore(this).load()); }
             catch (java.io.IOException | JSONException | IllegalArgumentException ignored) { /* 由资料页展示读取错误与重试。 */ }
@@ -193,26 +191,9 @@ public class HomeActivity extends AppCompatActivity {
             for (int i = 0; i < group.getChildCount(); i++) enableTree(group.getChildAt(i), enabled);
         }
     }
-    /** 收藏示例实际保存完整快照，不只是变一下图标颜色；重复点击不会覆盖已有记录。 */
-    private void saveExample(String id) {
-        if (savingSample) return; // 忽略正在保存期间的重复点击。
-        savingSample = true;
-        sampleWorker.execute(() -> {
-            boolean saved = ExampleTrips.save(getApplicationContext(), id);
-            runOnUiThread(() -> {
-                savingSample = false;
-                if (isFinishing() || isDestroyed()) return; // 旋转后不操作已销毁的页面。
-                android.widget.Toast.makeText(this, saved ? R.string.editorial_sample_saved
-                        : R.string.trip_save_failed, android.widget.Toast.LENGTH_SHORT).show();
-                // 若用户已切到 My Trips，保存后立即刷新；首页不会突然跳页或改变滚动位置。
-                if (saved && selected == R.id.nav_my) render();
-            });
-        });
-    }
-    private void openTrip(String id, boolean sample) {
-        // 页面间只传 ID 和来源，不把整份大 JSON 塞进 Intent；详情页按来源加载内容。
-        startActivity(new Intent(this, TripDetailActivity.class)
-                .putExtra(TripDetailActivity.EXTRA_ID, id).putExtra(TripDetailActivity.EXTRA_SAMPLE, sample));
+    private void openTrip(String id) {
+        // 页面间只传 ID，不把整份大 JSON 塞进 Intent；详情页按 ID 读取已保存的行程。
+        startActivity(new Intent(this, TripDetailActivity.class).putExtra(TripDetailActivity.EXTRA_ID, id));
     }
     private int tabIndex(int id) { return id == R.id.nav_my ? 1 : id == R.id.nav_settings ? 2 : 0; }
     @Override protected void onSaveInstanceState(Bundle outState) {
