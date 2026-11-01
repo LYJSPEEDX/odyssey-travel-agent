@@ -181,8 +181,9 @@ public class LivePlannerActivity extends AppCompatActivity {
         text(R.id.tripBoardDestination, destination.isEmpty() ? "Depart from " + origin : origin + " → " + destination);
         android.widget.ImageView photo = findViewById(R.id.tripBoardPhoto);
         boolean hasPhoto = !destination.isEmpty();
+        String photoPlace = hasPhoto ? steps.getJSONObject("DESTINATION").getJSONObject("answer").optString("label") : "";
         photo.setVisibility(hasPhoto ? View.VISIBLE : View.GONE);
-        if (hasPhoto) TripPhotos.show(photo, destination);
+        if (hasPhoto) TripPhotos.show(photo, photoPlace);
         // 这款字体的空格很窄，箭头两侧用双空格才看得出间隔。
         String dates = LivePlanningProtocol.dates(steps.getJSONObject("DATES").optJSONObject("answer"));
         findViewById(R.id.tripBoardStatus).setVisibility(dates.isEmpty() ? View.GONE : View.VISIBLE);
@@ -240,7 +241,7 @@ public class LivePlannerActivity extends AppCompatActivity {
             String id = option.getString("id");
             JSONObject answer = option.getJSONObject("answer");
             ui.content.addView(optionCard(LivePlanningProtocol.headline(step, answer), LivePlanningProtocol.detail(step, answer),
-                    photos ? LivePlanningProtocol.place(answer) : "", id.equals(chosenOption), () -> { chosenOption = id; render(); }), cardParams());
+                    photos ? answer.optString("label") : "", id.equals(chosenOption), () -> { chosenOption = id; render(); }), cardParams());
         }
         // 超过人数上限的提议不能确认，否则要到生成时才失败。
         if (step.equals("COMPANIONS")) for (JSONObject option : distinct)

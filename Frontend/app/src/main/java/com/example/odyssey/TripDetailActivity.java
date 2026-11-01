@@ -49,7 +49,7 @@ public class TripDetailActivity extends AppCompatActivity {
                 ui.text(getString(R.string.trip_not_found), 18, true);
                 return;
             }
-            if (!sample) toolbar.getMenu().add("Delete").setShowAsActionFlags(android.view.MenuItem.SHOW_AS_ACTION_ALWAYS)
+            if (!sample) toolbar.getMenu().add("Delete").setIcon(R.drawable.ic_delete).setShowAsActionFlags(android.view.MenuItem.SHOW_AS_ACTION_ALWAYS)
                     .setOnMenuItemClickListener(item -> { confirmDelete(id); return true; });
             if (trip.contractJson != null) {
                 // 新版结构化行程先校验再绘制；恢复的日期下标需要限制在实际天数内。

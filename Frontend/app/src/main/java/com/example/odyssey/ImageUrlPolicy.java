@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 /** 唯一远程图片域名配置；增加提供商时在这里审核，重定向逐跳复查。 */
 final class ImageUrlPolicy {
-    private static final Set<String> HOSTS = new HashSet<>(Arrays.asList("images.unsplash.com", "images.pexels.com", "upload.wikimedia.org"));
+    private static final Set<String> HOSTS = new HashSet<>(Arrays.asList("images.unsplash.com", "images.pexels.com", "upload.wikimedia.org", "thumb.wikimedia.org"));
     static String accept(Object raw) {
         try {
             String value = InputValidation.optionalText(raw, 2000, "Image URL");

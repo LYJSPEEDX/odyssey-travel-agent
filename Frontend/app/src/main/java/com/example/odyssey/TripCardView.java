@@ -20,7 +20,8 @@ final class TripCardView {
     private static MaterialCardView add(HomeUi ui, SavedTrip trip, String title, String badge, String route, String keywords, Runnable open) {
         MaterialCardView card = (MaterialCardView) LayoutInflater.from(ui.context)
                 .inflate(R.layout.item_editorial_trip, ui.content, false);
-        String city = shortCity(TripPhotos.destination(trip));
+        // 照片按完整地名匹配，标题才用短名。
+        String city = TripPhotos.destination(trip);
         ImageView photo = card.findViewById(R.id.editorialPhoto);
         TripPhotos.show(photo, city);
         if (trip.contractJson != null) try {

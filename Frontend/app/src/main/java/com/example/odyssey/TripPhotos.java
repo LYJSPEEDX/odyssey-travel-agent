@@ -14,7 +14,7 @@ import java.util.Locale;
 final class TripPhotos {
     static int resource(String city) {
         // 精确匹配而非 contains：例如 Paris, Texas 不能错误使用法国巴黎照片。
-        String key = InputValidation.text(city).toLowerCase(Locale.ROOT);
+        String key = bundledKey(InputValidation.text(city).toLowerCase(Locale.ROOT));
         switch (key) {
             case "kyoto": return R.drawable.photo_kyoto;
             case "tokyo": return R.drawable.photo_tokyo;
@@ -26,6 +26,22 @@ final class TripPhotos {
         }
     }
 
+    /** "Tokyo, Japan" 用自带照片；"Bali, West Java, Indonesia" 是另一个地方，不能用。 */
+    private static String bundledKey(String place) {
+        String[] parts = place.split(",\\s*");
+        if (parts.length == 1) return place;
+        String country;
+        switch (parts[0]) {
+            case "kyoto": case "tokyo": country = "japan"; break;
+            case "bali": country = "indonesia"; break;
+            case "paris": country = "france"; break;
+            case "new york": country = "united states"; break;
+            case "canberra": country = "australia"; break;
+            default: return place;
+        }
+        boolean sameRegion = parts.length == 2 || parts.length == 3 && parts[1].startsWith(parts[0]);
+        return sameRegion && parts[parts.length - 1].equals(country) ? parts[0] : place;
+    }
     /** 本地快照兼容：从 contract 的地点 ID 解析城市，不误用整段行程标题作为城市名。 */
     static String destination(SavedTrip trip) {
         if (trip.contractJson != null) try {
