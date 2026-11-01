@@ -56,7 +56,7 @@ final class ItineraryRenderer {
         facts.setPadding(0, ui.dp(4), 0, ui.dp(10)); header.addView(facts);
         for (String fact : new String[]{summary.getInt("dayCount") + " days", label(request.getString("companions")), label(root.getString("status"))})
             journal.tag(facts, fact, R.color.purple);
-        if (budget.getJSONArray("activeCostItemIds").length() > 0)
+        if (hasPricedActiveCosts())
             journal.text(header, money(budget.getJSONObject("total"), false) + " est. · Entire party"
                     + (budget.getString("completeness").equals("PARTIAL") ? " · Partial" : ""), 14, true);
         JSONArray notices = root.getJSONObject("quality").getJSONArray("notices");
@@ -257,7 +257,8 @@ final class ItineraryRenderer {
                         .append(" · Flight: ").append(optional(detail, "flightNumber", "To be confirmed"))
                         .append("\nOperating airline: ").append(optional(detail, "operatingAirline", "To be confirmed"))
                         .append("\nBaggage: ").append(optional(detail, "checkedBaggageKgPerPerson", "Unknown")).append(" kg per person");
-                if (detail.getBoolean("isSelfTransfer")) result.append("\nSelf-transfer — verify connection and entry requirements.");
+                if (detail.isNull("isSelfTransfer")) result.append("\nSelf-transfer status unverified.");
+                else if (detail.getBoolean("isSelfTransfer")) result.append("\nSelf-transfer — verify connection and entry requirements.");
             } else {
                 if (detail.has("operator")) result.append("\nOperator: ").append(optional(detail, "operator", "To be confirmed"));
                 result.append("\n").append(detail.getString("routeInstructions"));
@@ -285,8 +286,8 @@ final class ItineraryRenderer {
                 boolean planned = selected != null && selected.getString("id").equals(option.getString("id"));
                 String body = (planned ? "In this plan · not booked\n" : "Alternative · not included in total\n")
                         + option.getString("reason") + "\n" + placeDetails(option.getString("placeId"))
-                        + "\n" + option.getInt("roomCount") + " × " + option.getString("roomType")
-                        + " · Capacity: " + option.getInt("guestCapacity")
+                        + "\n" + option.getInt("roomCount") + " × " + optional(option, "roomType", "Room type unverified")
+                        + " · Capacity: " + optional(option, "guestCapacity", "Unverified")
                         + "\n" + join(option.getJSONArray("amenities"))
                         + "\nAvailability: " + label(option.getString("availability"))
                         + "\n" + optional(option, "cancellationSummary", "Cancellation policy unverified")
@@ -313,7 +314,7 @@ final class ItineraryRenderer {
         JSONObject budget = doc.root.getJSONObject("budget");
         ui.text("Estimated budget", 22, true);
         JSONArray active = budget.getJSONArray("activeCostItemIds");
-        ui.card(active.length() == 0 ? "Estimate pending" : money(budget.getJSONObject("total")),
+        ui.card(!hasPricedActiveCosts() ? "Estimate pending" : money(budget.getJSONObject("total")),
                 "Entire party · whole trip\n" + (budget.getString("completeness").equals("PARTIAL")
                         ? "Partial estimate — excludes unpriced items." : "Estimate only — not a quote.")
                         + "\n" + join(budget.getJSONArray("notes")), R.color.surface, null);
@@ -322,6 +323,12 @@ final class ItineraryRenderer {
         if (budget.getJSONArray("excludedCategories").length() > 0)
             details.append("\nExcluded: ").append(join(budget.getJSONArray("excludedCategories")));
         disclosure("Cost breakdown", details.toString());
+    }
+    private boolean hasPricedActiveCosts() throws JSONException {
+        JSONArray active = doc.root.getJSONObject("budget").getJSONArray("activeCostItemIds");
+        for (int i = 0; i < active.length(); i++)
+            if (!doc.get(active.getString(i)).isNull("displayTotal")) return true;
+        return false;
     }
     private String costs(JSONArray ids) throws JSONException {
         // 只展示指定费用 ID 的明细，不把备选项目累加成新的总价。

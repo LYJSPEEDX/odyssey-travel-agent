@@ -28,11 +28,11 @@ final class TripBriefView {
         LinearLayout row = new LinearLayout(context);
         row.setBaselineAligned(false);
         row.addView(tile(context, context.getString(R.string.brief_with), state.getCompanion(), "",
-                R.color.mint, R.color.on_accent), margins(context, new LinearLayout.LayoutParams(0, -1, 1f)));
+                R.color.purple, R.color.on_accent), margins(context, new LinearLayout.LayoutParams(0, -1, 1f)));
         LinearLayout.LayoutParams second = margins(context, new LinearLayout.LayoutParams(0, -1, 1f));
         second.setMarginStart(dp(context, 10));
         row.addView(tile(context, context.getString(R.string.brief_budget), split > 0 ? budget.substring(0, split) : budget,
-                split > 0 ? context.getString(R.string.brief_budget_unit) : "", R.color.peach, R.color.on_accent), second);
+                split > 0 ? context.getString(R.string.brief_budget_unit) : "", R.color.purple_light, R.color.on_accent), second);
         content.addView(row, new LinearLayout.LayoutParams(-1, -2));
 
         MaterialCardView card = card(context, R.color.surface);
@@ -79,7 +79,7 @@ final class TripBriefView {
         chip.setText(value); chip.setClickable(false); chip.setCheckable(false); chip.setFocusable(false);
         chip.setEnsureMinTouchTargetSize(false); chip.setChipMinHeight(dp(context, 32));
         chip.setChipStrokeWidth(0); chip.setTextSize(13);
-        chip.setChipBackgroundColor(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.purple)));
+        chip.setChipBackgroundColor(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.purple_light)));
         chip.setTextColor(ContextCompat.getColor(context, R.color.on_accent));
         chip.setShapeAppearanceModel(chip.getShapeAppearanceModel().toBuilder().setAllCornerSizes(dp(context, 16)).build());
         AppFonts.style(chip, Typeface.BOLD);

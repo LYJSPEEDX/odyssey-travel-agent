@@ -81,8 +81,7 @@ public class PlannerFlowTest {
             scenario.onActivity(a -> { clickText(a, "Vegetarian"); clickText(a, "Less walking"); clickText(a, "Continue"); });
             awaitStep(scenario, "6/7"); choose(scenario, "Relaxed", "7/7"); choose(scenario, "Local discoveries", "DEMO");
             scenario.onActivity(a -> clickText(a, "Finish demo now"));
-            await(scenario, a -> a.findViewById(R.id.saveTripStatus) instanceof TextView
-                    && value(a, R.id.saveTripStatus).equals("Saved to My Trips · On this device"));
+            await(scenario, a -> a.findViewById(R.id.openItinerary) != null);
             scenario.onActivity(a -> {
                 // 生成完成后不再回退，只能经标签栏离开。
                 assertEquals("Trip generated", value(a, R.id.stepText));

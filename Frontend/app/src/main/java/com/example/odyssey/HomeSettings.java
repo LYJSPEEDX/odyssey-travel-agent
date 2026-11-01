@@ -45,6 +45,7 @@ final class HomeSettings {
         about.actionRow(activity.getString(R.string.settings_storage), "",
                 () -> info(R.string.settings_storage, R.string.settings_storage_description));
         about.actionRow(activity.getString(R.string.settings_version), version(), null).setId(R.id.settingsVersion);
+        ui.stamps();
     }
     private void section(int title) {
         ui.text(activity.getString(title), 13, false).setPadding(ui.dp(4), ui.dp(8), 0, ui.dp(8));

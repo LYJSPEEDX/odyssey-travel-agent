@@ -228,15 +228,14 @@ final class PlannerFormRenderer {
                 if (actions.saveStatus() == 2) button(R.string.trip_save_retry, actions::saveTrip);
                 button(R.string.edit_trip, actions::back);
             }
-            TextView saved = paragraph(context.getString(actions.saveStatus() == 1
-                    ? R.string.trip_saved : actions.saveStatus() == 2
-                    ? R.string.trip_save_failed : R.string.trip_saving));
-            saved.setId(R.id.saveTripStatus);
-            saved.setTextSize(12); saved.setGravity(android.view.Gravity.CENTER); saved.setPadding(0, dp(8), 0, 0);
-            // 保存结果变化时，读屏工具可在合适时机播报，不强行打断当前朗读。
-            saved.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
-            TextView notice = paragraph(context.getString(R.string.brief_disclaimer));
-            notice.setTextSize(12); notice.setGravity(android.view.Gravity.CENTER); notice.setPadding(0, dp(2), 0, dp(12));
+            // 保存成功后不再显示说明文字；保存中和失败仍要告知，否则用户不知道行程没存上。
+            if (actions.saveStatus() != 1) {
+                TextView saved = paragraph(context.getString(actions.saveStatus() == 2 ? R.string.trip_save_failed : R.string.trip_saving));
+                saved.setId(R.id.saveTripStatus);
+                saved.setTextSize(12); saved.setGravity(android.view.Gravity.CENTER); saved.setPadding(0, dp(8), 0, dp(12));
+                // 保存结果变化时，读屏工具可在合适时机播报，不强行打断当前朗读。
+                saved.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
+            }
         }
     }
 

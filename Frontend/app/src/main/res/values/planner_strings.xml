@@ -89,7 +89,6 @@
     <string name="brief_budget">BUDGET</string>
     <string name="brief_budget_unit">per person, per day</string>
     <string name="brief_preferences">YOUR PREFERENCES</string>
-    <string name="brief_disclaimer">Sample plan. Prices, hours and routes aren’t verified.</string>
     <string name="summary_route">Route: %1$s</string>
     <string name="summary_dates">Dates: %1$s</string>
     <string name="summary_companion">With: %1$s</string>

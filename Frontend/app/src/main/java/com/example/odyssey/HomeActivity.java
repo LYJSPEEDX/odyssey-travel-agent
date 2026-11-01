@@ -152,6 +152,7 @@ public class HomeActivity extends AppCompatActivity {
             ui.button(R.string.retry, this::render);
         }
         ui.text(getString(R.string.local_only_notice), 12, false);
+        ui.stamps();
     }
     private void startPlanner() { startActivity(new Intent(this, MainActivity.class)); }
     /** 首页保持桌面入口；资料检查完成后由正确页面接手欢迎层。 */
